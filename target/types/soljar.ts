@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/soljar.json`.
  */
 export type Soljar = {
-  "address": "coUnmi3oBUtwtd9fjeAvSsJssXh5A5xyPbhpewyzRVF",
+  "address": "APfu475CVFEop5CJbpRW9c2sbpbvvQmtixsTfe27pN7g",
   "metadata": {
     "name": "soljar",
     "version": "0.1.0",
@@ -14,92 +14,183 @@ export type Soljar = {
   },
   "instructions": [
     {
-      "name": "close",
+      "name": "createIndexes",
       "discriminator": [
-        98,
-        165,
-        201,
-        177,
-        108,
-        65,
-        206,
-        96
-      ],
-      "accounts": [
-        {
-          "name": "payer",
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "soljar",
-          "writable": true
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "decrement",
-      "discriminator": [
-        106,
-        227,
-        168,
-        59,
-        248,
-        27,
-        150,
-        101
-      ],
-      "accounts": [
-        {
-          "name": "soljar",
-          "writable": true
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "increment",
-      "discriminator": [
-        11,
-        18,
-        104,
-        9,
-        104,
-        174,
-        59,
-        33
-      ],
-      "accounts": [
-        {
-          "name": "soljar",
-          "writable": true
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "initialize",
-      "discriminator": [
-        175,
-        175,
-        109,
-        31,
+        120,
+        209,
+        231,
+        89,
+        145,
+        140,
         13,
-        152,
-        155,
-        237
+        193
       ],
       "accounts": [
         {
-          "name": "payer",
+          "name": "signer",
           "writable": true,
           "signer": true
         },
         {
-          "name": "soljar",
+          "name": "jar",
           "writable": true,
-          "signer": true
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  106,
+                  97,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user"
+              }
+            ]
+          }
+        },
+        {
+          "name": "user",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "depositIndex",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  112,
+                  111,
+                  115,
+                  105,
+                  116,
+                  95,
+                  105,
+                  110,
+                  100,
+                  101,
+                  120
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "jar"
+              }
+            ]
+          }
+        },
+        {
+          "name": "withdrawlIndex",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  119,
+                  105,
+                  116,
+                  104,
+                  100,
+                  114,
+                  97,
+                  119,
+                  108,
+                  95,
+                  105,
+                  110,
+                  100,
+                  101,
+                  120
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "jar"
+              }
+            ]
+          }
+        },
+        {
+          "name": "metaIndex",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  116,
+                  97,
+                  95,
+                  105,
+                  110,
+                  100,
+                  101,
+                  120
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "jar"
+              }
+            ]
+          }
+        },
+        {
+          "name": "tipLinkIndex",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  105,
+                  112,
+                  95,
+                  108,
+                  105,
+                  110,
+                  107,
+                  95,
+                  105,
+                  110,
+                  100,
+                  101,
+                  120
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "jar"
+              }
+            ]
+          }
         },
         {
           "name": "systemProgram",
@@ -109,55 +200,398 @@ export type Soljar = {
       "args": []
     },
     {
-      "name": "set",
+      "name": "createUser",
       "discriminator": [
-        198,
-        51,
-        53,
-        241,
-        116,
-        29,
-        126,
-        194
+        108,
+        227,
+        130,
+        130,
+        252,
+        109,
+        75,
+        218
       ],
       "accounts": [
         {
-          "name": "soljar",
-          "writable": true
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "user",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "jar",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  106,
+                  97,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user"
+              }
+            ]
+          }
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
         }
       ],
       "args": [
         {
-          "name": "value",
-          "type": "u8"
+          "name": "username",
+          "type": "string"
         }
       ]
     }
   ],
   "accounts": [
     {
-      "name": "soljar",
+      "name": "depositIndex",
       "discriminator": [
-        255,
-        176,
-        4,
-        245,
-        188,
-        253,
-        124,
-        25
+        56,
+        236,
+        229,
+        13,
+        113,
+        72,
+        90,
+        142
       ]
+    },
+    {
+      "name": "jar",
+      "discriminator": [
+        197,
+        50,
+        234,
+        142,
+        247,
+        216,
+        114,
+        137
+      ]
+    },
+    {
+      "name": "metaIndex",
+      "discriminator": [
+        241,
+        40,
+        192,
+        50,
+        17,
+        120,
+        10,
+        53
+      ]
+    },
+    {
+      "name": "tipLinkIndex",
+      "discriminator": [
+        254,
+        119,
+        238,
+        213,
+        125,
+        13,
+        253,
+        15
+      ]
+    },
+    {
+      "name": "user",
+      "discriminator": [
+        159,
+        117,
+        95,
+        227,
+        239,
+        151,
+        58,
+        236
+      ]
+    },
+    {
+      "name": "withdrawlIndex",
+      "discriminator": [
+        66,
+        186,
+        158,
+        34,
+        20,
+        214,
+        95,
+        50
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "overflow",
+      "msg": "overflow"
+    },
+    {
+      "code": 6001,
+      "name": "noChanges",
+      "msg": "noChangesDetected"
+    },
+    {
+      "code": 6002,
+      "name": "usernameTooLong",
+      "msg": "usernameTooLong"
+    },
+    {
+      "code": 6003,
+      "name": "usernameAlreadyExists",
+      "msg": "usernameAlreadyExists"
     }
   ],
   "types": [
     {
-      "name": "soljar",
+      "name": "depositIndex",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "count",
-            "type": "u8"
+            "name": "jarKey",
+            "type": "pubkey"
+          },
+          {
+            "name": "index",
+            "type": "u64"
+          },
+          {
+            "name": "createdAt",
+            "type": "i64"
+          },
+          {
+            "name": "updatedAt",
+            "type": "i64"
+          },
+          {
+            "name": "totalItems",
+            "type": "u64"
+          },
+          {
+            "name": "deposits",
+            "type": {
+              "vec": "pubkey"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "jar",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "userKey",
+            "type": "pubkey"
+          },
+          {
+            "name": "depositIndexKey",
+            "type": "pubkey"
+          },
+          {
+            "name": "withdrawlIndexKey",
+            "type": "pubkey"
+          },
+          {
+            "name": "metaIndexKey",
+            "type": "pubkey"
+          },
+          {
+            "name": "tipLinkIndexKey",
+            "type": "pubkey"
+          },
+          {
+            "name": "createdAt",
+            "type": "i64"
+          },
+          {
+            "name": "updatedAt",
+            "type": "i64"
+          },
+          {
+            "name": "totalDeposits",
+            "type": "u64"
+          },
+          {
+            "name": "totalWithdrawls",
+            "type": "u64"
+          },
+          {
+            "name": "totalMetas",
+            "type": "u64"
+          },
+          {
+            "name": "balances",
+            "type": {
+              "vec": "pubkey"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "metaIndex",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "jarKey",
+            "type": "pubkey"
+          },
+          {
+            "name": "index",
+            "type": "u64"
+          },
+          {
+            "name": "createdAt",
+            "type": "i64"
+          },
+          {
+            "name": "updatedAt",
+            "type": "i64"
+          },
+          {
+            "name": "totalItems",
+            "type": "u64"
+          },
+          {
+            "name": "metas",
+            "type": {
+              "vec": "pubkey"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "tipLinkIndex",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "jarKey",
+            "type": "pubkey"
+          },
+          {
+            "name": "index",
+            "type": "u64"
+          },
+          {
+            "name": "createdAt",
+            "type": "i64"
+          },
+          {
+            "name": "updatedAt",
+            "type": "i64"
+          },
+          {
+            "name": "totalItems",
+            "type": "u64"
+          },
+          {
+            "name": "tipLinks",
+            "type": {
+              "vec": "pubkey"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "user",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "username",
+            "type": "string"
+          },
+          {
+            "name": "receiverWallet",
+            "type": "pubkey"
+          },
+          {
+            "name": "jarKey",
+            "type": "pubkey"
+          },
+          {
+            "name": "createdAt",
+            "type": "i64"
+          },
+          {
+            "name": "updatedAt",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "withdrawlIndex",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "jarKey",
+            "type": "pubkey"
+          },
+          {
+            "name": "index",
+            "type": "u64"
+          },
+          {
+            "name": "createdAt",
+            "type": "i64"
+          },
+          {
+            "name": "updatedAt",
+            "type": "i64"
+          },
+          {
+            "name": "totalItems",
+            "type": "u64"
+          },
+          {
+            "name": "withdrawls",
+            "type": {
+              "vec": "pubkey"
+            }
           }
         ]
       }
