@@ -4,6 +4,7 @@ use anchor_lang::prelude::*;
 #[derive(InitSpace)]
 pub struct User {
     pub user: Pubkey,
+    pub platform_key: Pubkey,
     #[max_len(15)]
     pub username: String,
     pub receiver_wallet: Pubkey,

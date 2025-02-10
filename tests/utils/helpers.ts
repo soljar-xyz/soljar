@@ -1,6 +1,15 @@
 import { getTestContext } from "../utils/setup";
 import { PublicKey } from "@solana/web3.js";
 
+export const findPlatformPDA = () => {
+  const { program } = getTestContext();
+  const [pda] = PublicKey.findProgramAddressSync(
+    [Buffer.from("platform")],
+    program.programId
+  );
+  return pda;
+};
+
 export const findUserPDA = (user: PublicKey) => {
   const { program } = getTestContext();
   const [pda] = PublicKey.findProgramAddressSync(

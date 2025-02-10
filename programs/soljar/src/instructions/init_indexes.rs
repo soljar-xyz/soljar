@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use crate::state::*;
 
-pub fn create_indexes(ctx: Context<CreateIndexes>) -> Result<()> {
+pub fn init_indexes(ctx: Context<InitIndexes>) -> Result<()> {
     let index = &mut ctx.accounts.index;
 
     // Initialize deposit index
@@ -36,7 +36,7 @@ pub fn create_indexes(ctx: Context<CreateIndexes>) -> Result<()> {
 }
 
 #[derive(Accounts)]
-pub struct CreateIndexes<'info> {
+pub struct InitIndexes<'info> {
     #[account(mut)]
     pub signer: Signer<'info>,
 

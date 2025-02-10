@@ -9,6 +9,10 @@ pub fn create_user(ctx: Context<CreateUser>, username: String) -> Result<()> {
         !ctx.accounts.user_by_name.username_taken,
         ErrorCode::UsernameAlreadyTaken
     );
+
+    let platform = &mut ctx.accounts.platform;
+    platform.user_count += 1;
+    platform.updated_at = Clock::get()?.unix_timestamp;
     
     let user = &mut ctx.accounts.user;
     user.username = username;
@@ -51,6 +55,13 @@ pub struct CreateUser<'info> {
     #[account(mut)]
     pub signer: Signer<'info>,
 
+    #[account(
+        mut,
+        seeds = [b"platform"],
+        bump
+    )]
+    pub platform: Account<'info, Platform>,
+    
     #[account(
         init,
         payer = signer,

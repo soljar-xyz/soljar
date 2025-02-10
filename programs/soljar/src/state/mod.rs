@@ -1,3 +1,4 @@
+pub mod platform;
 pub mod user;
 pub mod jar;
 pub mod deposit;
@@ -12,6 +13,8 @@ pub mod index;
 pub mod deposit_index;
 pub mod withdrawl_index;
 pub mod meta_index;
+
+pub use platform::*;
 
 pub use user::*;
 pub use jar::*;

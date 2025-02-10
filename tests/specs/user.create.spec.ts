@@ -8,8 +8,8 @@ import {
   findTipLinkIndexPDA,
   findTipLinkPDA,
   findUserNamePDA,
+  findPlatformPDA,
 } from "../utils/helpers";
-import { PublicKey } from "@solana/web3.js";
 import { BankrunProvider } from "anchor-bankrun";
 import IDL from "../../target/idl/soljar.json";
 import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
@@ -20,6 +20,7 @@ describe("1. User Creation", () => {
   it("should create a new user", async () => {
     const { program, creator } = getTestContext();
     const username = "satoshi";
+    const platformPDA = findPlatformPDA();
     const userPDA = findUserPDA(creator.publicKey);
     const jarPDA = findJarPDA(userPDA);
     const userByNamePDA = findUserNamePDA(username);
@@ -30,12 +31,12 @@ describe("1. User Creation", () => {
       .accounts({})
       .postInstructions([
         await program.methods
-          .createIndexes()
+          .initIndexes()
           .accounts({})
           .signers([creator])
           .instruction(),
         await program.methods
-          .createTipLink(username, "Default tiplink")
+          .initTipLink(username, "Default tiplink")
           .accounts({})
           .signers([creator])
           .instruction(),
@@ -108,6 +109,9 @@ describe("1. User Creation", () => {
     expect(tipLink.jarKey.equals(jarPDA)).toBe(true);
     expect(tipLink.id).toBe(username);
     expect(tipLink.description).toBe("Default tiplink");
+
+    const platform = await program.account.platform.fetch(platformPDA);
+    expect(Number(platform.userCount)).toBe(1);
   });
 
   it("should fail with username too long", async () => {

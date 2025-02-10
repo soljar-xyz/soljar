@@ -1,8 +1,8 @@
 use anchor_lang::prelude::*;
 use crate::state::*;
 
-pub fn create_tip_link(
-    ctx: Context<CreateTipLink>,
+pub fn init_tip_link(
+    ctx: Context<InitTipLink>,
     id: String,
     description: String,
 ) -> Result<()> {
@@ -26,7 +26,7 @@ pub fn create_tip_link(
 }
 
 #[derive(Accounts)]
-pub struct CreateTipLink<'info> {
+pub struct InitTipLink<'info> {
     #[account(mut)]
     pub signer: Signer<'info>,
 
