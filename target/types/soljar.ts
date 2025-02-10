@@ -14,129 +14,6 @@ export type Soljar = {
   },
   "instructions": [
     {
-      "name": "createDepositIndex",
-      "discriminator": [
-        93,
-        55,
-        71,
-        41,
-        97,
-        23,
-        11,
-        207
-      ],
-      "accounts": [
-        {
-          "name": "signer",
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "jar",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  106,
-                  97,
-                  114
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "user"
-              }
-            ]
-          }
-        },
-        {
-          "name": "user",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  117,
-                  115,
-                  101,
-                  114
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "signer"
-              }
-            ]
-          }
-        },
-        {
-          "name": "index",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  105,
-                  110,
-                  100,
-                  101,
-                  120
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "jar"
-              }
-            ]
-          }
-        },
-        {
-          "name": "depositIndex",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  100,
-                  101,
-                  112,
-                  111,
-                  115,
-                  105,
-                  116,
-                  95,
-                  105,
-                  110,
-                  100,
-                  101,
-                  120
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "index"
-              },
-              {
-                "kind": "account",
-                "path": "index.deposit_index_page",
-                "account": "index"
-              }
-            ]
-          }
-        },
-        {
-          "name": "systemProgram",
-          "address": "11111111111111111111111111111111"
-        }
-      ],
-      "args": []
-    },
-    {
       "name": "createUser",
       "discriminator": [
         108,
@@ -690,14 +567,8 @@ export type Soljar = {
                 ]
               },
               {
-                "kind": "account",
-                "path": "index"
-              },
-              {
-                "kind": "const",
-                "value": [
-                  48
-                ]
+                "kind": "arg",
+                "path": "id"
               }
             ]
           }
@@ -880,11 +751,11 @@ export type Soljar = {
         "kind": "struct",
         "fields": [
           {
-            "name": "indexKey",
+            "name": "index",
             "type": "pubkey"
           },
           {
-            "name": "index",
+            "name": "indexPage",
             "type": "u32"
           },
           {
@@ -914,11 +785,11 @@ export type Soljar = {
         "kind": "struct",
         "fields": [
           {
-            "name": "userKey",
+            "name": "user",
             "type": "pubkey"
           },
           {
-            "name": "jarKey",
+            "name": "jar",
             "type": "pubkey"
           },
           {
@@ -970,11 +841,11 @@ export type Soljar = {
         "kind": "struct",
         "fields": [
           {
-            "name": "userKey",
+            "name": "user",
             "type": "pubkey"
           },
           {
-            "name": "indexKey",
+            "name": "index",
             "type": "pubkey"
           },
           {
@@ -1000,11 +871,11 @@ export type Soljar = {
         "kind": "struct",
         "fields": [
           {
-            "name": "indexKey",
+            "name": "index",
             "type": "pubkey"
           },
           {
-            "name": "index",
+            "name": "indexPage",
             "type": "u32"
           },
           {
@@ -1070,11 +941,11 @@ export type Soljar = {
         "kind": "struct",
         "fields": [
           {
-            "name": "userKey",
+            "name": "user",
             "type": "pubkey"
           },
           {
-            "name": "jarKey",
+            "name": "jar",
             "type": "pubkey"
           },
           {
@@ -1102,11 +973,11 @@ export type Soljar = {
         "kind": "struct",
         "fields": [
           {
-            "name": "indexKey",
+            "name": "index",
             "type": "pubkey"
           },
           {
-            "name": "index",
+            "name": "indexPage",
             "type": "u32"
           },
           {
@@ -1140,7 +1011,7 @@ export type Soljar = {
             "type": "pubkey"
           },
           {
-            "name": "platformKey",
+            "name": "platform",
             "type": "pubkey"
           },
           {
@@ -1152,7 +1023,7 @@ export type Soljar = {
             "type": "pubkey"
           },
           {
-            "name": "jarKey",
+            "name": "jar",
             "type": "pubkey"
           },
           {
@@ -1184,11 +1055,11 @@ export type Soljar = {
         "kind": "struct",
         "fields": [
           {
-            "name": "indexKey",
+            "name": "index",
             "type": "pubkey"
           },
           {
-            "name": "index",
+            "name": "indexPage",
             "type": "u32"
           },
           {

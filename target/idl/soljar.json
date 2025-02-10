@@ -8,129 +8,6 @@
   },
   "instructions": [
     {
-      "name": "create_deposit_index",
-      "discriminator": [
-        93,
-        55,
-        71,
-        41,
-        97,
-        23,
-        11,
-        207
-      ],
-      "accounts": [
-        {
-          "name": "signer",
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "jar",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  106,
-                  97,
-                  114
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "user"
-              }
-            ]
-          }
-        },
-        {
-          "name": "user",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  117,
-                  115,
-                  101,
-                  114
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "signer"
-              }
-            ]
-          }
-        },
-        {
-          "name": "index",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  105,
-                  110,
-                  100,
-                  101,
-                  120
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "jar"
-              }
-            ]
-          }
-        },
-        {
-          "name": "deposit_index",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  100,
-                  101,
-                  112,
-                  111,
-                  115,
-                  105,
-                  116,
-                  95,
-                  105,
-                  110,
-                  100,
-                  101,
-                  120
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "index"
-              },
-              {
-                "kind": "account",
-                "path": "index.deposit_index_page",
-                "account": "Index"
-              }
-            ]
-          }
-        },
-        {
-          "name": "system_program",
-          "address": "11111111111111111111111111111111"
-        }
-      ],
-      "args": []
-    },
-    {
       "name": "create_user",
       "discriminator": [
         108,
@@ -684,14 +561,8 @@
                 ]
               },
               {
-                "kind": "account",
-                "path": "index"
-              },
-              {
-                "kind": "const",
-                "value": [
-                  48
-                ]
+                "kind": "arg",
+                "path": "id"
               }
             ]
           }
@@ -874,11 +745,11 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "index_key",
+            "name": "index",
             "type": "pubkey"
           },
           {
-            "name": "index",
+            "name": "index_page",
             "type": "u32"
           },
           {
@@ -908,11 +779,11 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "user_key",
+            "name": "user",
             "type": "pubkey"
           },
           {
-            "name": "jar_key",
+            "name": "jar",
             "type": "pubkey"
           },
           {
@@ -964,11 +835,11 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "user_key",
+            "name": "user",
             "type": "pubkey"
           },
           {
-            "name": "index_key",
+            "name": "index",
             "type": "pubkey"
           },
           {
@@ -994,11 +865,11 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "index_key",
+            "name": "index",
             "type": "pubkey"
           },
           {
-            "name": "index",
+            "name": "index_page",
             "type": "u32"
           },
           {
@@ -1064,11 +935,11 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "user_key",
+            "name": "user",
             "type": "pubkey"
           },
           {
-            "name": "jar_key",
+            "name": "jar",
             "type": "pubkey"
           },
           {
@@ -1096,11 +967,11 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "index_key",
+            "name": "index",
             "type": "pubkey"
           },
           {
-            "name": "index",
+            "name": "index_page",
             "type": "u32"
           },
           {
@@ -1134,7 +1005,7 @@
             "type": "pubkey"
           },
           {
-            "name": "platform_key",
+            "name": "platform",
             "type": "pubkey"
           },
           {
@@ -1146,7 +1017,7 @@
             "type": "pubkey"
           },
           {
-            "name": "jar_key",
+            "name": "jar",
             "type": "pubkey"
           },
           {
@@ -1178,11 +1049,11 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "index_key",
+            "name": "index",
             "type": "pubkey"
           },
           {
-            "name": "index",
+            "name": "index_page",
             "type": "u32"
           },
           {

@@ -10,8 +10,8 @@ pub struct Balance {
 #[account]
 #[derive(InitSpace)]
 pub struct Jar {
-    pub user_key: Pubkey,
-    pub index_key: Pubkey,
+    pub user: Pubkey,
+    pub index: Pubkey,
     pub created_at: i64,
     pub updated_at: i64,
     #[max_len(50)]

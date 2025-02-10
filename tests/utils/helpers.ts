@@ -96,14 +96,10 @@ export const findTipLinkIndexPDA = (indexPDA: PublicKey, page: number) => {
   return pda;
 };
 
-export const findTipLinkPDA = (indexPDA: PublicKey, tipLinkIndex: number) => {
+export const findTipLinkPDA = (id: string) => {
   const { program } = getTestContext();
   const [pda] = PublicKey.findProgramAddressSync(
-    [
-      Buffer.from("tip_link"),
-      indexPDA.toBuffer(),
-      Buffer.from(tipLinkIndex.toString()),
-    ],
+    [Buffer.from("tip_link"), Buffer.from(id)],
     program.programId
   );
   return pda;

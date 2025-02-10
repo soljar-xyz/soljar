@@ -10,8 +10,8 @@ pub fn init_tip_link(
     let tip_link_index = &mut ctx.accounts.tip_link_index;
     let index = &mut ctx.accounts.index;
     // Initialize tip link
-    tip_link.user_key = ctx.accounts.user.key();
-    tip_link.jar_key = ctx.accounts.jar.key();
+    tip_link.user = ctx.accounts.user.key();
+    tip_link.jar = ctx.accounts.jar.key();
     tip_link.id = id;
     tip_link.description = description;
     tip_link.created_at = Clock::get()?.unix_timestamp;
@@ -26,6 +26,7 @@ pub fn init_tip_link(
 }
 
 #[derive(Accounts)]
+#[instruction(id: String)]
 pub struct InitTipLink<'info> {
     #[account(mut)]
     pub signer: Signer<'info>,
@@ -41,7 +42,6 @@ pub struct InitTipLink<'info> {
         mut,
         seeds = [b"user", signer.key().as_ref()],
         bump,
-        constraint = user.jar_key == jar.key()
     )]
     pub user: Box<Account<'info, User>>,
 
@@ -63,7 +63,7 @@ pub struct InitTipLink<'info> {
         init,
         payer = signer,
         space = 8 + TipLink::INIT_SPACE,
-        seeds = [b"tip_link", index.key().as_ref(), b"0"],
+        seeds = [b"tip_link", id.as_bytes()],
         bump
     )]
     pub tip_link: Box<Account<'info, TipLink>>,

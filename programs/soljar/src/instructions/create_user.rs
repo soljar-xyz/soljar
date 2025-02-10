@@ -17,20 +17,20 @@ pub fn create_user(ctx: Context<CreateUser>, username: String) -> Result<()> {
     let user = &mut ctx.accounts.user;
     user.username = username;
     user.receiver_wallet = ctx.accounts.signer.key();
-    user.jar_key = ctx.accounts.jar.key();
+    user.jar = ctx.accounts.jar.key();
     user.created_at = Clock::get()?.unix_timestamp;
     user.updated_at = Clock::get()?.unix_timestamp;
 
     let jar = &mut ctx.accounts.jar;
-    jar.user_key = ctx.accounts.user.key();
-    jar.index_key = ctx.accounts.index.key();
+    jar.user = ctx.accounts.user.key();
+    jar.index = ctx.accounts.index.key();
     jar.created_at = Clock::get()?.unix_timestamp;
     jar.updated_at = Clock::get()?.unix_timestamp;
     jar.balances = vec![];  // Will track SOL and USDC balances
 
     let index = &mut ctx.accounts.index;
-    index.user_key = ctx.accounts.user.key();
-    index.jar_key = ctx.accounts.jar.key();
+    index.user = ctx.accounts.user.key();
+    index.jar = ctx.accounts.jar.key();
     index.deposit_index_page = 0;
     index.withdrawl_index_page = 0;
     index.meta_index_page = 0;

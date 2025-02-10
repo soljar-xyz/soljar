@@ -3,8 +3,8 @@ use anchor_lang::prelude::*;
 #[account]
 #[derive(InitSpace)]
 pub struct DepositIndex {
-    pub index_key: Pubkey,
-    pub index: u32,
+    pub index: Pubkey,
+    pub index_page: u32,
     pub created_at: i64,
     pub updated_at: i64,
     pub total_items: u64,

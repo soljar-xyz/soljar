@@ -54,11 +54,11 @@ describe("1. User Creation", () => {
     expect(userByName.usernameTaken).toBe(true);
 
     // Fetch and verify jar account
-    const jar = await program.account.jar.fetch(user.jarKey);
-    expect(jar.userKey.equals(userPDA)).toBe(true);
+    const jar = await program.account.jar.fetch(user.jar);
+    expect(jar.user.equals(userPDA)).toBe(true);
     expect(jar.balances).toHaveLength(0);
 
-    const indexPDA = jar.indexKey;
+    const indexPDA = jar.index;
 
     const index = await program.account.index.fetch(indexPDA);
 
@@ -77,36 +77,36 @@ describe("1. User Creation", () => {
     const depositIndex = await program.account.depositIndex.fetch(
       depositIndexPDA
     );
-    expect(depositIndex.indexKey.equals(indexPDA)).toBe(true);
-    expect(Number(depositIndex.index)).toBe(0);
+    expect(depositIndex.index.equals(indexPDA)).toBe(true);
+    expect(Number(depositIndex.indexPage)).toBe(0);
     expect(Number(depositIndex.totalItems)).toBe(0);
 
     // Verify withdrawal index initialization
     const withdrawlIndex = await program.account.withdrawlIndex.fetch(
       withdrawlIndexPDA
     );
-    expect(withdrawlIndex.indexKey.equals(indexPDA)).toBe(true);
-    expect(Number(withdrawlIndex.index)).toBe(0);
+    expect(withdrawlIndex.index.equals(indexPDA)).toBe(true);
+    expect(Number(withdrawlIndex.indexPage)).toBe(0);
     expect(Number(withdrawlIndex.totalItems)).toBe(0);
 
     // Verify meta index initialization
     const metaIndex = await program.account.metaIndex.fetch(metaIndexPDA);
-    expect(metaIndex.indexKey.equals(indexPDA)).toBe(true);
-    expect(Number(metaIndex.index)).toBe(0);
+    expect(metaIndex.index.equals(indexPDA)).toBe(true);
+    expect(Number(metaIndex.indexPage)).toBe(0);
     expect(Number(metaIndex.totalItems)).toBe(0);
 
     // Verify tip link index initialization
     const tipLinkIndex = await program.account.tipLinkIndex.fetch(
       tipLinkIndexPDA
     );
-    expect(tipLinkIndex.indexKey.equals(indexPDA)).toBe(true);
-    expect(Number(tipLinkIndex.index)).toBe(0);
+    expect(tipLinkIndex.index.equals(indexPDA)).toBe(true);
+    expect(Number(tipLinkIndex.indexPage)).toBe(0);
     expect(Number(tipLinkIndex.totalItems)).toBe(1);
 
-    const tipLinkPDA = findTipLinkPDA(indexPDA, 0);
+    const tipLinkPDA = findTipLinkPDA(username);
     const tipLink = await program.account.tipLink.fetch(tipLinkPDA);
-    expect(tipLink.userKey.equals(userPDA)).toBe(true);
-    expect(tipLink.jarKey.equals(jarPDA)).toBe(true);
+    expect(tipLink.user.equals(userPDA)).toBe(true);
+    expect(tipLink.jar.equals(jarPDA)).toBe(true);
     expect(tipLink.id).toBe(username);
     expect(tipLink.description).toBe("Default tiplink");
 
