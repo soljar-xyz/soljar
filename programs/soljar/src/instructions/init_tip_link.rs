@@ -5,6 +5,7 @@ pub fn init_tip_link(
     ctx: Context<InitTipLink>,
     id: String,
     description: String,
+    _index_page: u32,
 ) -> Result<()> {
     let tip_link = &mut ctx.accounts.tip_link;
     let tip_link_index = &mut ctx.accounts.tip_link_index;
@@ -26,7 +27,7 @@ pub fn init_tip_link(
 }
 
 #[derive(Accounts)]
-#[instruction(id: String)]
+#[instruction(id: String, description: String, index_page: u32)]
 pub struct InitTipLink<'info> {
     #[account(mut)]
     pub signer: Signer<'info>,
@@ -54,7 +55,7 @@ pub struct InitTipLink<'info> {
 
     #[account(
         mut,
-        seeds = [b"tip_link_index", index.key().as_ref(), b"0"],
+        seeds = [b"tip_link_index", index.key().as_ref(), &index_page.to_le_bytes()],
         bump
     )]
     pub tip_link_index: Box<Account<'info, TipLinkIndex>>,

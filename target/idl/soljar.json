@@ -8,6 +8,172 @@
   },
   "instructions": [
     {
+      "name": "create_deposit",
+      "discriminator": [
+        157,
+        30,
+        11,
+        129,
+        16,
+        166,
+        115,
+        75
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "tip_link",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  105,
+                  112,
+                  95,
+                  108,
+                  105,
+                  110,
+                  107
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "tip_link_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "jar",
+          "writable": true,
+          "relations": [
+            "tip_link"
+          ]
+        },
+        {
+          "name": "index",
+          "writable": true,
+          "relations": [
+            "jar"
+          ]
+        },
+        {
+          "name": "deposit_index",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  112,
+                  111,
+                  115,
+                  105,
+                  116,
+                  95,
+                  105,
+                  110,
+                  100,
+                  101,
+                  120
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "index"
+              },
+              {
+                "kind": "account",
+                "path": "index.deposit_index_page",
+                "account": "Index"
+              }
+            ]
+          }
+        },
+        {
+          "name": "deposit",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  112,
+                  111,
+                  115,
+                  105,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "deposit_index"
+              },
+              {
+                "kind": "account",
+                "path": "deposit_index.total_items",
+                "account": "DepositIndex"
+              }
+            ]
+          }
+        },
+        {
+          "name": "meta",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "deposit"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "tip_link_id",
+          "type": "string"
+        },
+        {
+          "name": "referrer",
+          "type": "string"
+        },
+        {
+          "name": "memo",
+          "type": "string"
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
       "name": "create_user",
       "discriminator": [
         108,
@@ -255,10 +421,8 @@
                 "path": "index"
               },
               {
-                "kind": "const",
-                "value": [
-                  48
-                ]
+                "kind": "arg",
+                "path": "index_page"
               }
             ]
           }
@@ -293,10 +457,8 @@
                 "path": "index"
               },
               {
-                "kind": "const",
-                "value": [
-                  48
-                ]
+                "kind": "arg",
+                "path": "index_page"
               }
             ]
           }
@@ -326,10 +488,8 @@
                 "path": "index"
               },
               {
-                "kind": "const",
-                "value": [
-                  48
-                ]
+                "kind": "arg",
+                "path": "index_page"
               }
             ]
           }
@@ -363,10 +523,8 @@
                 "path": "index"
               },
               {
-                "kind": "const",
-                "value": [
-                  48
-                ]
+                "kind": "arg",
+                "path": "index_page"
               }
             ]
           }
@@ -376,7 +534,12 @@
           "address": "11111111111111111111111111111111"
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "index_page",
+          "type": "u32"
+        }
+      ]
     },
     {
       "name": "init_platform",
@@ -534,10 +697,8 @@
                 "path": "index"
               },
               {
-                "kind": "const",
-                "value": [
-                  48
-                ]
+                "kind": "arg",
+                "path": "index_page"
               }
             ]
           }
@@ -580,11 +741,28 @@
         {
           "name": "description",
           "type": "string"
+        },
+        {
+          "name": "index_page",
+          "type": "u32"
         }
       ]
     }
   ],
   "accounts": [
+    {
+      "name": "Deposit",
+      "discriminator": [
+        148,
+        146,
+        121,
+        66,
+        207,
+        173,
+        21,
+        227
+      ]
+    },
     {
       "name": "DepositIndex",
       "discriminator": [
@@ -622,6 +800,19 @@
         216,
         114,
         137
+      ]
+    },
+    {
+      "name": "Meta",
+      "discriminator": [
+        7,
+        115,
+        152,
+        83,
+        222,
+        207,
+        126,
+        180
       ]
     },
     {
@@ -740,6 +931,46 @@
   ],
   "types": [
     {
+      "name": "Deposit",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "signer",
+            "type": "pubkey"
+          },
+          {
+            "name": "jar",
+            "type": "pubkey"
+          },
+          {
+            "name": "meta",
+            "type": "pubkey"
+          },
+          {
+            "name": "tip_link",
+            "type": "pubkey"
+          },
+          {
+            "name": "currency_mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          },
+          {
+            "name": "updated_at",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
       "name": "DepositIndex",
       "type": {
         "kind": "struct",
@@ -762,7 +993,7 @@
           },
           {
             "name": "total_items",
-            "type": "u64"
+            "type": "u8"
           },
           {
             "name": "deposits",
@@ -849,12 +1080,38 @@
           {
             "name": "updated_at",
             "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Meta",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "jar",
+            "type": "pubkey"
           },
           {
-            "name": "balances",
-            "type": {
-              "vec": "pubkey"
-            }
+            "name": "deposit",
+            "type": "pubkey"
+          },
+          {
+            "name": "referrer",
+            "type": "string"
+          },
+          {
+            "name": "memo",
+            "type": "string"
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          },
+          {
+            "name": "updated_at",
+            "type": "i64"
           }
         ]
       }
@@ -882,7 +1139,7 @@
           },
           {
             "name": "total_items",
-            "type": "u64"
+            "type": "u8"
           },
           {
             "name": "metas",
@@ -943,6 +1200,10 @@
             "type": "pubkey"
           },
           {
+            "name": "deposit_count",
+            "type": "u64"
+          },
+          {
             "name": "created_at",
             "type": "i64"
           },
@@ -984,7 +1245,7 @@
           },
           {
             "name": "total_items",
-            "type": "u64"
+            "type": "u8"
           },
           {
             "name": "tip_links",
@@ -1066,7 +1327,7 @@
           },
           {
             "name": "total_items",
-            "type": "u64"
+            "type": "u8"
           },
           {
             "name": "withdrawls",

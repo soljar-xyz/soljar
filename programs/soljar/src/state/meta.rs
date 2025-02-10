@@ -7,6 +7,8 @@ pub struct Meta {
     pub deposit: Pubkey,
     #[max_len(100)]
     pub referrer: String,
+    #[max_len(100)]
+    pub memo: String,
     pub created_at: i64,
     pub updated_at: i64,
 }

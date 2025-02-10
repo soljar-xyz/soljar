@@ -26,7 +26,6 @@ pub fn create_user(ctx: Context<CreateUser>, username: String) -> Result<()> {
     jar.index = ctx.accounts.index.key();
     jar.created_at = Clock::get()?.unix_timestamp;
     jar.updated_at = Clock::get()?.unix_timestamp;
-    jar.balances = vec![];  // Will track SOL and USDC balances
 
     let index = &mut ctx.accounts.index;
     index.user = ctx.accounts.user.key();

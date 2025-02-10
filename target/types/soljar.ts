@@ -14,6 +14,172 @@ export type Soljar = {
   },
   "instructions": [
     {
+      "name": "createDeposit",
+      "discriminator": [
+        157,
+        30,
+        11,
+        129,
+        16,
+        166,
+        115,
+        75
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "tipLink",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  105,
+                  112,
+                  95,
+                  108,
+                  105,
+                  110,
+                  107
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "tipLinkId"
+              }
+            ]
+          }
+        },
+        {
+          "name": "jar",
+          "writable": true,
+          "relations": [
+            "tipLink"
+          ]
+        },
+        {
+          "name": "index",
+          "writable": true,
+          "relations": [
+            "jar"
+          ]
+        },
+        {
+          "name": "depositIndex",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  112,
+                  111,
+                  115,
+                  105,
+                  116,
+                  95,
+                  105,
+                  110,
+                  100,
+                  101,
+                  120
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "index"
+              },
+              {
+                "kind": "account",
+                "path": "index.deposit_index_page",
+                "account": "index"
+              }
+            ]
+          }
+        },
+        {
+          "name": "deposit",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  112,
+                  111,
+                  115,
+                  105,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "depositIndex"
+              },
+              {
+                "kind": "account",
+                "path": "deposit_index.total_items",
+                "account": "depositIndex"
+              }
+            ]
+          }
+        },
+        {
+          "name": "meta",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "deposit"
+              }
+            ]
+          }
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "tipLinkId",
+          "type": "string"
+        },
+        {
+          "name": "referrer",
+          "type": "string"
+        },
+        {
+          "name": "memo",
+          "type": "string"
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
       "name": "createUser",
       "discriminator": [
         108,
@@ -261,10 +427,8 @@ export type Soljar = {
                 "path": "index"
               },
               {
-                "kind": "const",
-                "value": [
-                  48
-                ]
+                "kind": "arg",
+                "path": "indexPage"
               }
             ]
           }
@@ -299,10 +463,8 @@ export type Soljar = {
                 "path": "index"
               },
               {
-                "kind": "const",
-                "value": [
-                  48
-                ]
+                "kind": "arg",
+                "path": "indexPage"
               }
             ]
           }
@@ -332,10 +494,8 @@ export type Soljar = {
                 "path": "index"
               },
               {
-                "kind": "const",
-                "value": [
-                  48
-                ]
+                "kind": "arg",
+                "path": "indexPage"
               }
             ]
           }
@@ -369,10 +529,8 @@ export type Soljar = {
                 "path": "index"
               },
               {
-                "kind": "const",
-                "value": [
-                  48
-                ]
+                "kind": "arg",
+                "path": "indexPage"
               }
             ]
           }
@@ -382,7 +540,12 @@ export type Soljar = {
           "address": "11111111111111111111111111111111"
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "indexPage",
+          "type": "u32"
+        }
+      ]
     },
     {
       "name": "initPlatform",
@@ -540,10 +703,8 @@ export type Soljar = {
                 "path": "index"
               },
               {
-                "kind": "const",
-                "value": [
-                  48
-                ]
+                "kind": "arg",
+                "path": "indexPage"
               }
             ]
           }
@@ -586,11 +747,28 @@ export type Soljar = {
         {
           "name": "description",
           "type": "string"
+        },
+        {
+          "name": "indexPage",
+          "type": "u32"
         }
       ]
     }
   ],
   "accounts": [
+    {
+      "name": "deposit",
+      "discriminator": [
+        148,
+        146,
+        121,
+        66,
+        207,
+        173,
+        21,
+        227
+      ]
+    },
     {
       "name": "depositIndex",
       "discriminator": [
@@ -628,6 +806,19 @@ export type Soljar = {
         216,
         114,
         137
+      ]
+    },
+    {
+      "name": "meta",
+      "discriminator": [
+        7,
+        115,
+        152,
+        83,
+        222,
+        207,
+        126,
+        180
       ]
     },
     {
@@ -746,6 +937,46 @@ export type Soljar = {
   ],
   "types": [
     {
+      "name": "deposit",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "signer",
+            "type": "pubkey"
+          },
+          {
+            "name": "jar",
+            "type": "pubkey"
+          },
+          {
+            "name": "meta",
+            "type": "pubkey"
+          },
+          {
+            "name": "tipLink",
+            "type": "pubkey"
+          },
+          {
+            "name": "currencyMint",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "createdAt",
+            "type": "i64"
+          },
+          {
+            "name": "updatedAt",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
       "name": "depositIndex",
       "type": {
         "kind": "struct",
@@ -768,7 +999,7 @@ export type Soljar = {
           },
           {
             "name": "totalItems",
-            "type": "u64"
+            "type": "u8"
           },
           {
             "name": "deposits",
@@ -855,12 +1086,38 @@ export type Soljar = {
           {
             "name": "updatedAt",
             "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "meta",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "jar",
+            "type": "pubkey"
           },
           {
-            "name": "balances",
-            "type": {
-              "vec": "pubkey"
-            }
+            "name": "deposit",
+            "type": "pubkey"
+          },
+          {
+            "name": "referrer",
+            "type": "string"
+          },
+          {
+            "name": "memo",
+            "type": "string"
+          },
+          {
+            "name": "createdAt",
+            "type": "i64"
+          },
+          {
+            "name": "updatedAt",
+            "type": "i64"
           }
         ]
       }
@@ -888,7 +1145,7 @@ export type Soljar = {
           },
           {
             "name": "totalItems",
-            "type": "u64"
+            "type": "u8"
           },
           {
             "name": "metas",
@@ -949,6 +1206,10 @@ export type Soljar = {
             "type": "pubkey"
           },
           {
+            "name": "depositCount",
+            "type": "u64"
+          },
+          {
             "name": "createdAt",
             "type": "i64"
           },
@@ -990,7 +1251,7 @@ export type Soljar = {
           },
           {
             "name": "totalItems",
-            "type": "u64"
+            "type": "u8"
           },
           {
             "name": "tipLinks",
@@ -1072,7 +1333,7 @@ export type Soljar = {
           },
           {
             "name": "totalItems",
-            "type": "u64"
+            "type": "u8"
           },
           {
             "name": "withdrawls",

@@ -1,3 +1,4 @@
+import { BN } from "@coral-xyz/anchor";
 import { getTestContext } from "../utils/setup";
 import { PublicKey } from "@solana/web3.js";
 
@@ -50,7 +51,7 @@ export const findDepositIndexPDA = (indexPDA: PublicKey, page: number) => {
     [
       Buffer.from("deposit_index"),
       indexPDA.toBuffer(),
-      Buffer.from(page.toString()),
+      Buffer.from(new Uint32Array([page]).buffer),
     ],
     program.programId
   );
@@ -63,7 +64,7 @@ export const findWithdrawlIndexPDA = (indexPDA: PublicKey, page: number) => {
     [
       Buffer.from("withdrawl_index"),
       indexPDA.toBuffer(),
-      Buffer.from(page.toString()),
+      Buffer.from(new Uint32Array([page]).buffer),
     ],
     program.programId
   );
@@ -76,7 +77,7 @@ export const findMetaIndexPDA = (indexPDA: PublicKey, page: number) => {
     [
       Buffer.from("meta_index"),
       indexPDA.toBuffer(),
-      Buffer.from(page.toString()),
+      Buffer.from(new Uint32Array([page]).buffer),
     ],
     program.programId
   );
@@ -89,7 +90,7 @@ export const findTipLinkIndexPDA = (indexPDA: PublicKey, page: number) => {
     [
       Buffer.from("tip_link_index"),
       indexPDA.toBuffer(),
-      Buffer.from(page.toString()),
+      Buffer.from(new Uint32Array([page]).buffer),
     ],
     program.programId
   );
@@ -100,6 +101,28 @@ export const findTipLinkPDA = (id: string) => {
   const { program } = getTestContext();
   const [pda] = PublicKey.findProgramAddressSync(
     [Buffer.from("tip_link"), Buffer.from(id)],
+    program.programId
+  );
+  return pda;
+};
+
+export const findMetaPDA = (depositPDA: PublicKey) => {
+  const { program } = getTestContext();
+  const [pda] = PublicKey.findProgramAddressSync(
+    [Buffer.from("meta"), depositPDA.toBuffer()],
+    program.programId
+  );
+  return pda;
+};
+
+export const findDepositPDA = (depositIndexPDA: PublicKey, index: number) => {
+  const { program } = getTestContext();
+  const [pda] = PublicKey.findProgramAddressSync(
+    [
+      Buffer.from("deposit"),
+      depositIndexPDA.toBuffer(),
+      Buffer.from(new Uint8Array([index]).buffer),
+    ],
     program.programId
   );
   return pda;

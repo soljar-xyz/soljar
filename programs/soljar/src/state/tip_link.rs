@@ -5,6 +5,7 @@ use anchor_lang::prelude::*;
 pub struct TipLink {
     pub user: Pubkey,
     pub jar: Pubkey,
+    pub deposit_count: u64,
     pub created_at: i64,
     pub updated_at: i64,
     #[max_len(25)]

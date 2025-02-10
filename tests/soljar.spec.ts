@@ -11,4 +11,5 @@ describe("Soljar Program Tests", () => {
   // Import test suites in order
   require("./specs/platform.init.spec");
   require("./specs/user.create.spec");
+  require("./specs/deposit.create.spec");
 });
