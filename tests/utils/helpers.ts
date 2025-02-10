@@ -10,6 +10,14 @@ export const findUserPDA = (user: PublicKey) => {
   return pda;
 };
 
+export const findUserNamePDA = (username: string) => {
+  const { program } = getTestContext();
+  const [pda] = PublicKey.findProgramAddressSync(
+    [Buffer.from("username"), Buffer.from(username)],
+    program.programId
+  );
+  return pda;
+};
 export const findJarPDA = (userPDA: PublicKey) => {
   const { program } = getTestContext();
   const [pda] = PublicKey.findProgramAddressSync(

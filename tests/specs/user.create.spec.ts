@@ -7,6 +7,7 @@ import {
   findMetaIndexPDA,
   findTipLinkIndexPDA,
   findTipLinkPDA,
+  findUserNamePDA,
 } from "../utils/helpers";
 import { PublicKey } from "@solana/web3.js";
 import { BankrunProvider } from "anchor-bankrun";
@@ -21,6 +22,7 @@ describe("1. User Creation", () => {
     const username = "satoshi";
     const userPDA = findUserPDA(creator.publicKey);
     const jarPDA = findJarPDA(userPDA);
+    const userByNamePDA = findUserNamePDA(username);
 
     // Create user account
     await program.methods
@@ -33,7 +35,7 @@ describe("1. User Creation", () => {
           .signers([creator])
           .instruction(),
         await program.methods
-          .createTipLink("test", "test")
+          .createTipLink(username, "Default tiplink")
           .accounts({})
           .signers([creator])
           .instruction(),
@@ -45,6 +47,10 @@ describe("1. User Creation", () => {
     const user = await program.account.user.fetch(userPDA);
     expect(user.username).toBe(username);
     expect(user.receiverWallet.equals(creator.publicKey)).toBe(true);
+
+    // Verify username tracker account
+    const userByName = await program.account.userByName.fetch(userByNamePDA);
+    expect(userByName.usernameTaken).toBe(true);
 
     // Fetch and verify jar account
     const jar = await program.account.jar.fetch(user.jarKey);
@@ -100,19 +106,19 @@ describe("1. User Creation", () => {
     const tipLink = await program.account.tipLink.fetch(tipLinkPDA);
     expect(tipLink.userKey.equals(userPDA)).toBe(true);
     expect(tipLink.jarKey.equals(jarPDA)).toBe(true);
-    expect(tipLink.id).toBe("test");
-    expect(tipLink.description).toBe("test");
+    expect(tipLink.id).toBe(username);
+    expect(tipLink.description).toBe("Default tiplink");
   });
 
   it("should fail with username too long", async () => {
     const { context, newMember } = getTestContext();
 
-    const validatorMemberProvider = new BankrunProvider(context);
-    validatorMemberProvider.wallet = new NodeWallet(newMember);
+    const newMemberProvider = new BankrunProvider(context);
+    newMemberProvider.wallet = new NodeWallet(newMember);
 
     const newMemberProgram = new anchor.Program<Soljar>(
       IDL as Soljar,
-      validatorMemberProvider
+      newMemberProvider
     );
 
     await expect(
@@ -124,5 +130,33 @@ describe("1. User Creation", () => {
         .signers([newMember])
         .rpc()
     ).rejects.toThrow("UsernameTooLong");
+  });
+
+  it("should fail with duplicate username", async () => {
+    const { context, newMember } = getTestContext();
+    const username = "satoshi";
+
+    const newMemberProvider = new BankrunProvider(context);
+    newMemberProvider.wallet = new NodeWallet(newMember);
+
+    const newMemberProgram = new anchor.Program<Soljar>(
+      IDL as Soljar,
+      newMemberProvider
+    );
+
+    const newUserPDA = findUserPDA(newMember.publicKey);
+    const jarPDA = findJarPDA(newUserPDA);
+    const userByNamePDA = findUserNamePDA(username);
+
+    try {
+      await newMemberProgram.methods
+        .createUser(username)
+        .accounts({})
+        .signers([newMember])
+        .rpc();
+      throw new Error("Should have failed");
+    } catch (error: any) {
+      expect(error.toString()).toContain("already in use");
+    }
   });
 });

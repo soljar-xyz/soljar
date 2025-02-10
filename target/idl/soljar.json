@@ -567,6 +567,31 @@
           }
         },
         {
+          "name": "user_by_name",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114,
+                  110,
+                  97,
+                  109,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "username"
+              }
+            ]
+          }
+        },
+        {
           "name": "jar",
           "writable": true,
           "pda": {
@@ -714,6 +739,19 @@
       ]
     },
     {
+      "name": "UserByName",
+      "discriminator": [
+        166,
+        9,
+        56,
+        163,
+        76,
+        235,
+        143,
+        10
+      ]
+    },
+    {
       "name": "WithdrawlIndex",
       "discriminator": [
         66,
@@ -745,8 +783,8 @@
     },
     {
       "code": 6003,
-      "name": "UsernameAlreadyExists",
-      "msg": "username_already_exists"
+      "name": "UsernameAlreadyTaken",
+      "msg": "USERNAME_ALREADY_TAKEN"
     }
   ],
   "types": [
@@ -998,6 +1036,18 @@
           {
             "name": "updated_at",
             "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "UserByName",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "username_taken",
+            "type": "bool"
           }
         ]
       }

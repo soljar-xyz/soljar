@@ -8,6 +8,6 @@ pub enum ErrorCode {
     NoChanges,
     #[msg("USERNAME_TOO_LONG")]
     UsernameTooLong,
-    #[msg("username_already_exists")]
-    UsernameAlreadyExists,
+    #[msg("USERNAME_ALREADY_TAKEN")]
+    UsernameAlreadyTaken,
 }

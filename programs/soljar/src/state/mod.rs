@@ -5,6 +5,7 @@ pub mod withdrawl;
 pub mod meta;
 pub mod tip_link;
 pub mod tip_link_index;
+pub mod user_by_name;
 
 // indexes
 pub mod index;
@@ -18,6 +19,7 @@ pub use deposit::*;
 pub use withdrawl::*;
 pub use meta::*;
 pub use tip_link::*;
+pub use user_by_name::*;
 
 // indexes
 pub use index::*;

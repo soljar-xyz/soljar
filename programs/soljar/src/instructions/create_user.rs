@@ -5,6 +5,10 @@ use crate::error::ErrorCode;
 
 pub fn create_user(ctx: Context<CreateUser>, username: String) -> Result<()> {
     require!(username.len() <= 15, ErrorCode::UsernameTooLong);
+    require!(
+        !ctx.accounts.user_by_name.username_taken,
+        ErrorCode::UsernameAlreadyTaken
+    );
     
     let user = &mut ctx.accounts.user;
     user.username = username;
@@ -34,11 +38,15 @@ pub fn create_user(ctx: Context<CreateUser>, username: String) -> Result<()> {
     index.created_at = Clock::get()?.unix_timestamp;
     index.updated_at = Clock::get()?.unix_timestamp;
 
+    // Set the username as taken in the username tracker account
+    let username_tracker = &mut ctx.accounts.user_by_name;
+    username_tracker.username_taken = true;
 
     Ok(())
 }
 
 #[derive(Accounts)]
+#[instruction(username: String)]
 pub struct CreateUser<'info> {
     #[account(mut)]
     pub signer: Signer<'info>,
@@ -51,6 +59,15 @@ pub struct CreateUser<'info> {
         bump
     )]
     pub user: Box<Account<'info, User>>,
+
+    #[account(
+        init,
+        payer = signer,
+        space = 8 + UserByName::INIT_SPACE,
+        seeds = [b"username", username.as_bytes()],
+        bump
+    )]
+    pub user_by_name: Box<Account<'info, UserByName>>,
 
     #[account(
         init,

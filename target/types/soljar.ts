@@ -573,6 +573,31 @@ export type Soljar = {
           }
         },
         {
+          "name": "userByName",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114,
+                  110,
+                  97,
+                  109,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "username"
+              }
+            ]
+          }
+        },
+        {
           "name": "jar",
           "writable": true,
           "pda": {
@@ -720,6 +745,19 @@ export type Soljar = {
       ]
     },
     {
+      "name": "userByName",
+      "discriminator": [
+        166,
+        9,
+        56,
+        163,
+        76,
+        235,
+        143,
+        10
+      ]
+    },
+    {
       "name": "withdrawlIndex",
       "discriminator": [
         66,
@@ -751,8 +789,8 @@ export type Soljar = {
     },
     {
       "code": 6003,
-      "name": "usernameAlreadyExists",
-      "msg": "usernameAlreadyExists"
+      "name": "usernameAlreadyTaken",
+      "msg": "usernameAlreadyTaken"
     }
   ],
   "types": [
@@ -1004,6 +1042,18 @@ export type Soljar = {
           {
             "name": "updatedAt",
             "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "userByName",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "usernameTaken",
+            "type": "bool"
           }
         ]
       }
