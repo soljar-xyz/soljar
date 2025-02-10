@@ -7,6 +7,8 @@ use instructions::init_treasury::*;
 use instructions::init_indexes::*;
 use instructions::init_tip_link::*;
 use instructions::create_deposit::*;
+use instructions::transfer_tokens::*;
+
 declare_id!("APfu475CVFEop5CJbpRW9c2sbpbvvQmtixsTfe27pN7g");
 
 pub mod error;
@@ -40,5 +42,9 @@ pub mod soljar {
 
     pub fn create_deposit(ctx: Context<CreateDeposit>, tip_link_id: String, currency_mint: Pubkey, referrer: String, memo: String, amount: u64) -> Result<()> {
         instructions::create_deposit::create_deposit(ctx, tip_link_id, currency_mint, referrer, memo, amount)
+    }
+
+    pub fn transfer_tokens(ctx: Context<TransferTokens>, tip_link_id: String, amount: u64) -> Result<()> {
+        instructions::transfer_tokens::transfer_tokens(ctx, tip_link_id, amount)
     }
 }

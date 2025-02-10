@@ -7,9 +7,18 @@ import { BankrunProvider } from "anchor-bankrun";
 import IDL from "../../target/idl/soljar.json";
 import { SYSTEM_PROGRAM_ID } from "@coral-xyz/anchor/dist/cjs/native/system";
 import { TestContext } from "./setup";
+import {
+  createAssociatedTokenAccount,
+  createMint,
+  getAccount,
+  mintTo,
+} from "spl-token-bankrun";
+import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 
 export async function initializeTestContext(): Promise<TestContext> {
   const newMember = new anchor.web3.Keypair();
+  let creatorTokenAccount: PublicKey;
+  let mint: PublicKey;
 
   const context = await startAnchor(
     "",
@@ -39,6 +48,29 @@ export async function initializeTestContext(): Promise<TestContext> {
   const banksClient = context.banksClient;
   const creator = provider.wallet.payer;
 
+  // @ts-expect-error - Type mismatch in spl-token-bankrun and solana banks client
+  mint = await createMint(banksClient, creator, creator.publicKey, null, 2);
+
+  creatorTokenAccount = await createAssociatedTokenAccount(
+    // @ts-expect-error - Type mismatch in spl-token-bankrun and solana banks client
+    banksClient,
+    creator,
+    mint,
+    creator.publicKey,
+    TOKEN_PROGRAM_ID
+  );
+
+  // // Mint some tokens to the creator's account
+  await mintTo(
+    // @ts-expect-error - Type mismatch in spl-token-bankrun and solana banks client
+    banksClient,
+    creator,
+    mint,
+    creatorTokenAccount,
+    creator,
+    1000000000000
+  );
+
   return {
     context,
     provider,
@@ -46,5 +78,7 @@ export async function initializeTestContext(): Promise<TestContext> {
     banksClient,
     newMember,
     creator,
+    mint,
+    creatorTokenAccount,
   };
 }

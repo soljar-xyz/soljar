@@ -13,6 +13,8 @@ export interface TestContext {
 
   creator: Keypair;
   newMember: Keypair;
+  mint: PublicKey;
+  creatorTokenAccount: PublicKey;
 }
 
 let globalTestContext: TestContext;

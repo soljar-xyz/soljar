@@ -13,6 +13,8 @@ import {
 import { BN } from "@coral-xyz/anchor";
 import * as anchor from "@coral-xyz/anchor";
 import { PublicKey } from "@solana/web3.js";
+import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import { getAccount } from "spl-token-bankrun";
 
 describe("3. Deposit Creation", () => {
   it("should create a deposit", async () => {
@@ -85,5 +87,84 @@ describe("3. Deposit Creation", () => {
     const treasuryBalance = await banksClient.getBalance(treasuryPDA);
     console.log("Treasury SOL Balance: ", Number(treasuryBalance));
     expect(Number(treasuryBalance)).toEqual(1001287600); // 1 SOL = 1,000,000,000 lamports
+  });
+
+  it("should create an SPL token deposit", async () => {
+    const { program, creator, mint, creatorTokenAccount, banksClient } =
+      getTestContext();
+    const username = "satoshi";
+
+    const userPDA = findUserPDA(creator.publicKey);
+    const jarPDA = findJarPDA(userPDA);
+    const treasuryPDA = findTreasuryPDA(jarPDA);
+
+    const tipLinkPDA = findTipLinkPDA(username);
+    const indexPDA = findIndexPDA(jarPDA);
+    const depositIndexPDA = findDepositIndexPDA(indexPDA, 0);
+    const depositPDA = findDepositPDA(depositIndexPDA, 0);
+    const metaPDA = findMetaPDA(depositPDA);
+
+    // Find the treasury's token account PDA
+    const [treasuryTokenAccount] = PublicKey.findProgramAddressSync(
+      [Buffer.from("token_account"), treasuryPDA.toBuffer(), mint.toBuffer()],
+      program.programId
+    );
+
+    const amount = new BN(100000000); // 1 token with 2 decimals
+
+    await program.methods
+      .createDeposit(username, mint, "referrer", "memo", amount)
+      .accounts({
+        signer: creator.publicKey,
+      })
+      .postInstructions([
+        await program.methods
+          .transferTokens(username, amount)
+          .accounts({
+            mint,
+            sourceTokenAccount: creatorTokenAccount,
+            tokenProgram: TOKEN_PROGRAM_ID,
+          })
+          .instruction(),
+      ])
+      .signers([creator])
+      .rpc();
+
+    // Verify deposit account data
+    const deposit = await program.account.deposit.fetch(depositPDA);
+    const meta = await program.account.meta.fetch(metaPDA);
+    const tipLink = await program.account.tipLink.fetch(tipLinkPDA);
+    const depositIndex = await program.account.depositIndex.fetch(
+      depositIndexPDA
+    );
+    const index = await program.account.index.fetch(indexPDA);
+
+    // Verify deposit details
+    expect(deposit.signer).toEqual(creator.publicKey);
+    expect(deposit.jar).toEqual(jarPDA);
+    expect(deposit.meta).toEqual(metaPDA);
+    expect(deposit.tipLink).toEqual(tipLinkPDA);
+    expect(Number(deposit.amount)).toEqual(1000000000);
+
+    // // Verify meta details
+    expect(meta.jar).toEqual(jarPDA);
+    expect(meta.deposit).toEqual(depositPDA);
+    expect(meta.referrer).toEqual("referrer");
+    expect(meta.memo).toEqual("memo");
+
+    // Verify tip link and index updates
+    expect(Number(tipLink.depositCount)).toEqual(2); // 1 for the initial deposit and 1 for the SPL token deposit
+    expect(Number(depositIndex.totalItems)).toEqual(2); // 1 for the initial deposit and 1 for the SPL token deposit
+    expect(depositIndex.deposits[0]).toEqual(depositPDA);
+    expect(Number(index.depositIndexPage)).toEqual(0);
+    expect(Number(index.totalDeposits)).toEqual(2); // 1 for the initial deposit and 1 for the SPL token deposit
+
+    // Verify token balances
+    const treasuryTokenAccountInfo = await getAccount(
+      // @ts-expect-error - Type mismatch in spl-token-bankrun and solana banks client
+      banksClient,
+      treasuryTokenAccount
+    );
+    expect(Number(treasuryTokenAccountInfo.amount)).toEqual(100000000);
   });
 });

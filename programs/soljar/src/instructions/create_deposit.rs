@@ -4,7 +4,7 @@ use anchor_lang::solana_program::system_instruction::transfer;
 
 use crate::state::*;
 
-pub fn create_deposit(ctx: Context<CreateDeposit>, _tip_link_id: String, currency_mint: Pubkey, referrer: String, memo: String, amount: u64, ) -> Result<()> {
+pub fn create_deposit(ctx: Context<CreateDeposit>, _tip_link_id: String, currency_mint: Pubkey, referrer: String, memo: String, amount: u64) -> Result<()> {
 
     if currency_mint == Pubkey::default() {
         msg!("TRANSFERING SOL");
