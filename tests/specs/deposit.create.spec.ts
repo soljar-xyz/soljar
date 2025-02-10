@@ -7,18 +7,21 @@ import {
   findMetaPDA,
   findPlatformPDA,
   findTipLinkPDA,
+  findTreasuryPDA,
   findUserPDA,
 } from "../utils/helpers";
 import { BN } from "@coral-xyz/anchor";
 import * as anchor from "@coral-xyz/anchor";
+import { PublicKey } from "@solana/web3.js";
 
 describe("3. Deposit Creation", () => {
   it("should create a deposit", async () => {
-    const { program, creator } = getTestContext();
+    const { program, creator, banksClient } = getTestContext();
     const username = "satoshi";
 
     const userPDA = findUserPDA(creator.publicKey);
     const jarPDA = findJarPDA(userPDA);
+    const treasuryPDA = findTreasuryPDA(jarPDA);
 
     const tipLinkPDA = findTipLinkPDA(username);
     const indexPDA = findIndexPDA(jarPDA);
@@ -27,8 +30,12 @@ describe("3. Deposit Creation", () => {
 
     const metaPDA = findMetaPDA(depositPDA);
 
+    const SOL_MINT = PublicKey.default;
+
+    console.log("SOL_MINT: ", SOL_MINT);
+
     await program.methods
-      .createDeposit(username, "referrer", "memo", new BN(100))
+      .createDeposit(username, SOL_MINT, "referrer", "memo", new BN(1000000000))
       .accounts({
         signer: creator.publicKey,
       })
@@ -56,7 +63,7 @@ describe("3. Deposit Creation", () => {
     expect(deposit.jar).toEqual(jarPDA);
     expect(deposit.meta).toEqual(metaPDA);
     expect(deposit.tipLink).toEqual(tipLinkPDA);
-    expect(Number(deposit.amount)).toEqual(100);
+    expect(Number(deposit.amount)).toEqual(1000000000);
 
     expect(meta.jar).toEqual(jarPDA);
     expect(meta.deposit).toEqual(depositPDA);
@@ -70,5 +77,13 @@ describe("3. Deposit Creation", () => {
 
     expect(Number(index.depositIndexPage)).toEqual(0);
     expect(Number(index.totalDeposits)).toEqual(1);
+
+    const treasury = await program.account.treasury.fetch(treasuryPDA);
+    console.log("Treasury: ", treasury);
+
+    // Fetch the SOL balance of the treasury
+    const treasuryBalance = await banksClient.getBalance(treasuryPDA);
+    console.log("Treasury SOL Balance: ", Number(treasuryBalance));
+    expect(Number(treasuryBalance)).toEqual(1001287600); // 1 SOL = 1,000,000,000 lamports
   });
 });

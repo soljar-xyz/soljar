@@ -36,6 +36,11 @@ describe("1. User Creation", () => {
           .signers([creator])
           .instruction(),
         await program.methods
+          .initTreasury()
+          .accounts({})
+          .signers([creator])
+          .instruction(),
+        await program.methods
           .initTipLink(username, "Default tiplink", 0)
           .accounts({})
           .signers([creator])

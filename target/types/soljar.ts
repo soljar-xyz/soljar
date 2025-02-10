@@ -64,6 +64,13 @@ export type Soljar = {
           ]
         },
         {
+          "name": "treasury",
+          "writable": true,
+          "relations": [
+            "jar"
+          ]
+        },
+        {
           "name": "index",
           "writable": true,
           "relations": [
@@ -164,6 +171,10 @@ export type Soljar = {
         {
           "name": "tipLinkId",
           "type": "string"
+        },
+        {
+          "name": "currencyMint",
+          "type": "pubkey"
         },
         {
           "name": "referrer",
@@ -753,6 +764,97 @@ export type Soljar = {
           "type": "u32"
         }
       ]
+    },
+    {
+      "name": "initTreasury",
+      "discriminator": [
+        105,
+        152,
+        173,
+        51,
+        158,
+        151,
+        49,
+        14
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "treasury",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  101,
+                  97,
+                  115,
+                  117,
+                  114,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "jar"
+              }
+            ]
+          }
+        },
+        {
+          "name": "jar",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  106,
+                  97,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user"
+              }
+            ]
+          }
+        },
+        {
+          "name": "user",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
     }
   ],
   "accounts": [
@@ -871,6 +973,19 @@ export type Soljar = {
         13,
         253,
         15
+      ]
+    },
+    {
+      "name": "treasury",
+      "discriminator": [
+        238,
+        239,
+        123,
+        238,
+        89,
+        1,
+        168,
+        253
       ]
     },
     {
@@ -1080,6 +1195,10 @@ export type Soljar = {
             "type": "pubkey"
           },
           {
+            "name": "treasury",
+            "type": "pubkey"
+          },
+          {
             "name": "createdAt",
             "type": "i64"
           },
@@ -1258,6 +1377,30 @@ export type Soljar = {
             "type": {
               "vec": "pubkey"
             }
+          }
+        ]
+      }
+    },
+    {
+      "name": "treasury",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "jar",
+            "type": "pubkey"
+          },
+          {
+            "name": "createdAt",
+            "type": "i64"
+          },
+          {
+            "name": "updatedAt",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
           }
         ]
       }

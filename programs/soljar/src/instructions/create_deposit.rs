@@ -1,10 +1,38 @@
 use anchor_lang::prelude::*;
+use anchor_lang::solana_program::program::invoke;
+use anchor_lang::solana_program::system_instruction::transfer;
+
 use crate::state::*;
 
-pub fn create_deposit(ctx: Context<CreateDeposit>, _tip_link_id: String, referrer: String, memo: String, amount: u64) -> Result<()> {
+pub fn create_deposit(ctx: Context<CreateDeposit>, _tip_link_id: String, currency_mint: Pubkey, referrer: String, memo: String, amount: u64, ) -> Result<()> {
+
+    if currency_mint == Pubkey::default() {
+        msg!("TRANSFERING SOL");
+        let treasury = &mut ctx.accounts.treasury;
+
+    //  Transfer SOL from signer to treasury
+     let transfer_seed_ix = transfer(
+        &ctx.accounts.signer.key(),
+        treasury.to_account_info().key,
+        amount,
+    );
+
+    invoke(
+        &transfer_seed_ix,
+        &[
+            ctx.accounts.signer.to_account_info(),
+            treasury.to_account_info(),
+                ctx.accounts.system_program.to_account_info(),
+            ],
+        )?;
+    }
+
+
     let tip_link: &mut Account<'_, TipLink> = &mut ctx.accounts.tip_link;
     tip_link.deposit_count += 1;
     tip_link.updated_at = Clock::get()?.unix_timestamp;
+
+    
 
     let meta = &mut ctx.accounts.meta;
     meta.jar = ctx.accounts.jar.key();
@@ -19,7 +47,7 @@ pub fn create_deposit(ctx: Context<CreateDeposit>, _tip_link_id: String, referre
     deposit.jar = ctx.accounts.jar.key();
     deposit.meta = meta.key();
     deposit.tip_link = tip_link.key();
-    // deposit.currency_mint = ctx.accounts.currency_mint.key(); will implement this later
+    deposit.currency_mint = currency_mint;
     deposit.amount = amount;
     deposit.created_at = Clock::get()?.unix_timestamp;
     deposit.updated_at = Clock::get()?.unix_timestamp;
@@ -38,7 +66,7 @@ pub fn create_deposit(ctx: Context<CreateDeposit>, _tip_link_id: String, referre
 // const TOTAL_ITEMS: u32 = 0;
 
 #[derive(Accounts)]
-#[instruction(tip_link_id: String)]
+#[instruction(tip_link_id: String, currency_mint: Pubkey)]
 pub struct CreateDeposit<'info> {
     #[account(mut)]
     pub signer: Signer<'info>,
@@ -53,9 +81,15 @@ pub struct CreateDeposit<'info> {
 
     #[account(
         mut,
-        has_one = index
+        has_one = index,
+        has_one = treasury
     )]
     pub jar: Account<'info, Jar>,
+
+    #[account(
+        mut,
+    )]
+    pub treasury: Account<'info, Treasury>,
 
     #[account(
         mut,

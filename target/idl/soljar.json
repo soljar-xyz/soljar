@@ -58,6 +58,13 @@
           ]
         },
         {
+          "name": "treasury",
+          "writable": true,
+          "relations": [
+            "jar"
+          ]
+        },
+        {
           "name": "index",
           "writable": true,
           "relations": [
@@ -158,6 +165,10 @@
         {
           "name": "tip_link_id",
           "type": "string"
+        },
+        {
+          "name": "currency_mint",
+          "type": "pubkey"
         },
         {
           "name": "referrer",
@@ -747,6 +758,97 @@
           "type": "u32"
         }
       ]
+    },
+    {
+      "name": "init_treasury",
+      "discriminator": [
+        105,
+        152,
+        173,
+        51,
+        158,
+        151,
+        49,
+        14
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "treasury",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  101,
+                  97,
+                  115,
+                  117,
+                  114,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "jar"
+              }
+            ]
+          }
+        },
+        {
+          "name": "jar",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  106,
+                  97,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user"
+              }
+            ]
+          }
+        },
+        {
+          "name": "user",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
     }
   ],
   "accounts": [
@@ -865,6 +967,19 @@
         13,
         253,
         15
+      ]
+    },
+    {
+      "name": "Treasury",
+      "discriminator": [
+        238,
+        239,
+        123,
+        238,
+        89,
+        1,
+        168,
+        253
       ]
     },
     {
@@ -1074,6 +1189,10 @@
             "type": "pubkey"
           },
           {
+            "name": "treasury",
+            "type": "pubkey"
+          },
+          {
             "name": "created_at",
             "type": "i64"
           },
@@ -1252,6 +1371,30 @@
             "type": {
               "vec": "pubkey"
             }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Treasury",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "jar",
+            "type": "pubkey"
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          },
+          {
+            "name": "updated_at",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
           }
         ]
       }

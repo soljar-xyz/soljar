@@ -7,6 +7,7 @@ pub mod meta;
 pub mod tip_link;
 pub mod tip_link_index;
 pub mod user_by_name;
+pub mod treasury;
 
 // indexes
 pub mod index;
@@ -23,6 +24,7 @@ pub use withdrawl::*;
 pub use meta::*;
 pub use tip_link::*;
 pub use user_by_name::*;
+pub use treasury::*;
 
 // indexes
 pub use index::*;

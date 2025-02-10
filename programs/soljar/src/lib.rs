@@ -3,6 +3,7 @@
 use anchor_lang::prelude::*;
 use instructions::init_platform::*;
 use instructions::create_user::*;
+use instructions::init_treasury::*;
 use instructions::init_indexes::*;
 use instructions::init_tip_link::*;
 use instructions::create_deposit::*;
@@ -25,6 +26,10 @@ pub mod soljar {
         instructions::create_user::create_user(ctx, username)
     }
 
+    pub fn init_treasury(ctx: Context<InitTreasury>) -> Result<()> {
+        instructions::init_treasury::init_treasury(ctx)
+    }
+
     pub fn init_indexes(ctx: Context<InitIndexes>, index_page: u32) -> Result<()> {
         instructions::init_indexes::init_indexes(ctx, index_page)
     }
@@ -33,7 +38,7 @@ pub mod soljar {
         instructions::init_tip_link::init_tip_link(ctx, id, description, index_page)
     }
 
-    pub fn create_deposit(ctx: Context<CreateDeposit>, tip_link_id: String, referrer: String, memo: String, amount: u64) -> Result<()> {
-        instructions::create_deposit::create_deposit(ctx, tip_link_id, referrer, memo, amount)
+    pub fn create_deposit(ctx: Context<CreateDeposit>, tip_link_id: String, currency_mint: Pubkey, referrer: String, memo: String, amount: u64) -> Result<()> {
+        instructions::create_deposit::create_deposit(ctx, tip_link_id, currency_mint, referrer, memo, amount)
     }
 }

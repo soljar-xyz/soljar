@@ -37,6 +37,14 @@ export const findJarPDA = (userPDA: PublicKey) => {
   return pda;
 };
 
+export const findTreasuryPDA = (jarPDA: PublicKey) => {
+  const { program } = getTestContext();
+  const [pda] = PublicKey.findProgramAddressSync(
+    [Buffer.from("treasury"), jarPDA.toBuffer()],
+    program.programId
+  );
+  return pda;
+};
 export const findIndexPDA = (jarPDA: PublicKey) => {
   const { program } = getTestContext();
   const [pda] = PublicKey.findProgramAddressSync(
