@@ -19,37 +19,74 @@ export const findJarPDA = (userPDA: PublicKey) => {
   return pda;
 };
 
-export const findDepositIndexPDA = (jarPDA: PublicKey) => {
+export const findIndexPDA = (jarPDA: PublicKey) => {
   const { program } = getTestContext();
   const [pda] = PublicKey.findProgramAddressSync(
-    [Buffer.from("deposit_index"), jarPDA.toBuffer()],
+    [Buffer.from("index"), jarPDA.toBuffer()],
+    program.programId
+  );
+  return pda;
+};
+export const findDepositIndexPDA = (indexPDA: PublicKey, page: number) => {
+  const { program } = getTestContext();
+  const [pda] = PublicKey.findProgramAddressSync(
+    [
+      Buffer.from("deposit_index"),
+      indexPDA.toBuffer(),
+      Buffer.from(page.toString()),
+    ],
     program.programId
   );
   return pda;
 };
 
-export const findWithdrawalIndexPDA = (jarPDA: PublicKey) => {
+export const findWithdrawlIndexPDA = (indexPDA: PublicKey, page: number) => {
   const { program } = getTestContext();
   const [pda] = PublicKey.findProgramAddressSync(
-    [Buffer.from("withdrawl_index"), jarPDA.toBuffer()],
+    [
+      Buffer.from("withdrawl_index"),
+      indexPDA.toBuffer(),
+      Buffer.from(page.toString()),
+    ],
     program.programId
   );
   return pda;
 };
 
-export const findMetaIndexPDA = (jarPDA: PublicKey) => {
+export const findMetaIndexPDA = (indexPDA: PublicKey, page: number) => {
   const { program } = getTestContext();
   const [pda] = PublicKey.findProgramAddressSync(
-    [Buffer.from("meta_index"), jarPDA.toBuffer()],
+    [
+      Buffer.from("meta_index"),
+      indexPDA.toBuffer(),
+      Buffer.from(page.toString()),
+    ],
     program.programId
   );
   return pda;
 };
 
-export const findTipLinkIndexPDA = (jarPDA: PublicKey) => {
+export const findTipLinkIndexPDA = (indexPDA: PublicKey, page: number) => {
   const { program } = getTestContext();
   const [pda] = PublicKey.findProgramAddressSync(
-    [Buffer.from("tip_link_index"), jarPDA.toBuffer()],
+    [
+      Buffer.from("tip_link_index"),
+      indexPDA.toBuffer(),
+      Buffer.from(page.toString()),
+    ],
+    program.programId
+  );
+  return pda;
+};
+
+export const findTipLinkPDA = (indexPDA: PublicKey, tipLinkIndex: number) => {
+  const { program } = getTestContext();
+  const [pda] = PublicKey.findProgramAddressSync(
+    [
+      Buffer.from("tip_link"),
+      indexPDA.toBuffer(),
+      Buffer.from(tipLinkIndex.toString()),
+    ],
     program.programId
   );
   return pda;

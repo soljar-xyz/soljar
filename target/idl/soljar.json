@@ -8,6 +8,129 @@
   },
   "instructions": [
     {
+      "name": "create_deposit_index",
+      "discriminator": [
+        93,
+        55,
+        71,
+        41,
+        97,
+        23,
+        11,
+        207
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "jar",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  106,
+                  97,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user"
+              }
+            ]
+          }
+        },
+        {
+          "name": "user",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "index",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  105,
+                  110,
+                  100,
+                  101,
+                  120
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "jar"
+              }
+            ]
+          }
+        },
+        {
+          "name": "deposit_index",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  112,
+                  111,
+                  115,
+                  105,
+                  116,
+                  95,
+                  105,
+                  110,
+                  100,
+                  101,
+                  120
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "index"
+              },
+              {
+                "kind": "account",
+                "path": "index.deposit_index_page",
+                "account": "Index"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "create_indexes",
       "discriminator": [
         120,
@@ -67,6 +190,28 @@
           }
         },
         {
+          "name": "index",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  105,
+                  110,
+                  100,
+                  101,
+                  120
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "jar"
+              }
+            ]
+          }
+        },
+        {
           "name": "deposit_index",
           "writable": true,
           "pda": {
@@ -91,7 +236,13 @@
               },
               {
                 "kind": "account",
-                "path": "jar"
+                "path": "index"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  48
+                ]
               }
             ]
           }
@@ -123,7 +274,13 @@
               },
               {
                 "kind": "account",
-                "path": "jar"
+                "path": "index"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  48
+                ]
               }
             ]
           }
@@ -141,6 +298,137 @@
                   116,
                   97,
                   95,
+                  105,
+                  110,
+                  100,
+                  101,
+                  120
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "index"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  48
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "tip_link_index",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  105,
+                  112,
+                  95,
+                  108,
+                  105,
+                  110,
+                  107,
+                  95,
+                  105,
+                  110,
+                  100,
+                  101,
+                  120
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "index"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  48
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "create_tip_link",
+      "discriminator": [
+        62,
+        173,
+        19,
+        0,
+        138,
+        53,
+        189,
+        20
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "jar",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  106,
+                  97,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user"
+              }
+            ]
+          }
+        },
+        {
+          "name": "user",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "index",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
                   105,
                   110,
                   100,
@@ -181,7 +469,44 @@
               },
               {
                 "kind": "account",
-                "path": "jar"
+                "path": "index"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  48
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "tip_link",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  105,
+                  112,
+                  95,
+                  108,
+                  105,
+                  110,
+                  107
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "index"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  48
+                ]
               }
             ]
           }
@@ -191,7 +516,16 @@
           "address": "11111111111111111111111111111111"
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "id",
+          "type": "string"
+        },
+        {
+          "name": "description",
+          "type": "string"
+        }
+      ]
     },
     {
       "name": "create_user",
@@ -253,6 +587,28 @@
           }
         },
         {
+          "name": "index",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  105,
+                  110,
+                  100,
+                  101,
+                  120
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "jar"
+              }
+            ]
+          }
+        },
+        {
           "name": "system_program",
           "address": "11111111111111111111111111111111"
         }
@@ -280,6 +636,19 @@
       ]
     },
     {
+      "name": "Index",
+      "discriminator": [
+        140,
+        66,
+        194,
+        132,
+        78,
+        26,
+        135,
+        186
+      ]
+    },
+    {
       "name": "Jar",
       "discriminator": [
         197,
@@ -303,6 +672,19 @@
         120,
         10,
         53
+      ]
+    },
+    {
+      "name": "TipLink",
+      "discriminator": [
+        197,
+        93,
+        252,
+        135,
+        16,
+        11,
+        146,
+        202
       ]
     },
     {
@@ -374,12 +756,12 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "jar_key",
+            "name": "index_key",
             "type": "pubkey"
           },
           {
             "name": "index",
-            "type": "u64"
+            "type": "u32"
           },
           {
             "name": "created_at",
@@ -403,6 +785,62 @@
       }
     },
     {
+      "name": "Index",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user_key",
+            "type": "pubkey"
+          },
+          {
+            "name": "jar_key",
+            "type": "pubkey"
+          },
+          {
+            "name": "deposit_index_page",
+            "type": "u32"
+          },
+          {
+            "name": "withdrawl_index_page",
+            "type": "u32"
+          },
+          {
+            "name": "meta_index_page",
+            "type": "u32"
+          },
+          {
+            "name": "tip_link_index_page",
+            "type": "u32"
+          },
+          {
+            "name": "total_deposits",
+            "type": "u32"
+          },
+          {
+            "name": "total_withdrawls",
+            "type": "u32"
+          },
+          {
+            "name": "total_metas",
+            "type": "u32"
+          },
+          {
+            "name": "total_tip_links",
+            "type": "u32"
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          },
+          {
+            "name": "updated_at",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
       "name": "Jar",
       "type": {
         "kind": "struct",
@@ -412,19 +850,7 @@
             "type": "pubkey"
           },
           {
-            "name": "deposit_index_key",
-            "type": "pubkey"
-          },
-          {
-            "name": "withdrawl_index_key",
-            "type": "pubkey"
-          },
-          {
-            "name": "meta_index_key",
-            "type": "pubkey"
-          },
-          {
-            "name": "tip_link_index_key",
+            "name": "index_key",
             "type": "pubkey"
           },
           {
@@ -434,18 +860,6 @@
           {
             "name": "updated_at",
             "type": "i64"
-          },
-          {
-            "name": "total_deposits",
-            "type": "u64"
-          },
-          {
-            "name": "total_withdrawls",
-            "type": "u64"
-          },
-          {
-            "name": "total_metas",
-            "type": "u64"
           },
           {
             "name": "balances",
@@ -462,12 +876,12 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "jar_key",
+            "name": "index_key",
             "type": "pubkey"
           },
           {
             "name": "index",
-            "type": "u64"
+            "type": "u32"
           },
           {
             "name": "created_at",
@@ -491,17 +905,49 @@
       }
     },
     {
-      "name": "TipLinkIndex",
+      "name": "TipLink",
       "type": {
         "kind": "struct",
         "fields": [
+          {
+            "name": "user_key",
+            "type": "pubkey"
+          },
           {
             "name": "jar_key",
             "type": "pubkey"
           },
           {
+            "name": "created_at",
+            "type": "i64"
+          },
+          {
+            "name": "updated_at",
+            "type": "i64"
+          },
+          {
+            "name": "id",
+            "type": "string"
+          },
+          {
+            "name": "description",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TipLinkIndex",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "index_key",
+            "type": "pubkey"
+          },
+          {
             "name": "index",
-            "type": "u64"
+            "type": "u32"
           },
           {
             "name": "created_at",
@@ -562,12 +1008,12 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "jar_key",
+            "name": "index_key",
             "type": "pubkey"
           },
           {
             "name": "index",
-            "type": "u64"
+            "type": "u32"
           },
           {
             "name": "created_at",

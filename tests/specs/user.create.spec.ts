@@ -3,9 +3,10 @@ import {
   findUserPDA,
   findJarPDA,
   findDepositIndexPDA,
-  findWithdrawalIndexPDA,
+  findWithdrawlIndexPDA,
   findMetaIndexPDA,
   findTipLinkIndexPDA,
+  findTipLinkPDA,
 } from "../utils/helpers";
 import { PublicKey } from "@solana/web3.js";
 import { BankrunProvider } from "anchor-bankrun";
@@ -21,12 +22,6 @@ describe("1. User Creation", () => {
     const userPDA = findUserPDA(creator.publicKey);
     const jarPDA = findJarPDA(userPDA);
 
-    // Derive index PDAs
-    const depositIndexPDA = findDepositIndexPDA(jarPDA);
-    const withdrawalIndexPDA = findWithdrawalIndexPDA(jarPDA);
-    const metaIndexPDA = findMetaIndexPDA(jarPDA);
-    const tipLinkIndexPDA = findTipLinkIndexPDA(jarPDA);
-
     // Create user account
     await program.methods
       .createUser(username)
@@ -34,6 +29,11 @@ describe("1. User Creation", () => {
       .postInstructions([
         await program.methods
           .createIndexes()
+          .accounts({})
+          .signers([creator])
+          .instruction(),
+        await program.methods
+          .createTipLink("test", "test")
           .accounts({})
           .signers([creator])
           .instruction(),
@@ -49,16 +49,59 @@ describe("1. User Creation", () => {
     // Fetch and verify jar account
     const jar = await program.account.jar.fetch(user.jarKey);
     expect(jar.userKey.equals(userPDA)).toBe(true);
-    expect(Number(jar.totalDeposits)).toBe(0);
-    expect(Number(jar.totalWithdrawls)).toBe(0);
-    expect(Number(jar.totalMetas)).toBe(0);
     expect(jar.balances).toHaveLength(0);
 
-    // Verify index accounts were created and linked
-    expect(jar.depositIndexKey.equals(depositIndexPDA)).toBe(true);
-    expect(jar.withdrawlIndexKey.equals(withdrawalIndexPDA)).toBe(true);
-    expect(jar.metaIndexKey.equals(metaIndexPDA)).toBe(true);
-    expect(jar.tipLinkIndexKey.equals(tipLinkIndexPDA)).toBe(true);
+    const indexPDA = jar.indexKey;
+
+    const index = await program.account.index.fetch(indexPDA);
+
+    expect(Number(index.totalDeposits)).toBe(0);
+    expect(Number(index.totalWithdrawls)).toBe(0);
+    expect(Number(index.totalMetas)).toBe(0);
+    expect(Number(index.totalTipLinks)).toBe(1);
+
+    // Derive index PDAs
+    const depositIndexPDA = findDepositIndexPDA(indexPDA, 0);
+    const withdrawlIndexPDA = findWithdrawlIndexPDA(indexPDA, 0);
+    const metaIndexPDA = findMetaIndexPDA(indexPDA, 0);
+    const tipLinkIndexPDA = findTipLinkIndexPDA(indexPDA, 0);
+
+    // Verify deposit index initialization
+    const depositIndex = await program.account.depositIndex.fetch(
+      depositIndexPDA
+    );
+    expect(depositIndex.indexKey.equals(indexPDA)).toBe(true);
+    expect(Number(depositIndex.index)).toBe(0);
+    expect(Number(depositIndex.totalItems)).toBe(0);
+
+    // Verify withdrawal index initialization
+    const withdrawlIndex = await program.account.withdrawlIndex.fetch(
+      withdrawlIndexPDA
+    );
+    expect(withdrawlIndex.indexKey.equals(indexPDA)).toBe(true);
+    expect(Number(withdrawlIndex.index)).toBe(0);
+    expect(Number(withdrawlIndex.totalItems)).toBe(0);
+
+    // Verify meta index initialization
+    const metaIndex = await program.account.metaIndex.fetch(metaIndexPDA);
+    expect(metaIndex.indexKey.equals(indexPDA)).toBe(true);
+    expect(Number(metaIndex.index)).toBe(0);
+    expect(Number(metaIndex.totalItems)).toBe(0);
+
+    // Verify tip link index initialization
+    const tipLinkIndex = await program.account.tipLinkIndex.fetch(
+      tipLinkIndexPDA
+    );
+    expect(tipLinkIndex.indexKey.equals(indexPDA)).toBe(true);
+    expect(Number(tipLinkIndex.index)).toBe(0);
+    expect(Number(tipLinkIndex.totalItems)).toBe(1);
+
+    const tipLinkPDA = findTipLinkPDA(indexPDA, 0);
+    const tipLink = await program.account.tipLink.fetch(tipLinkPDA);
+    expect(tipLink.userKey.equals(userPDA)).toBe(true);
+    expect(tipLink.jarKey.equals(jarPDA)).toBe(true);
+    expect(tipLink.id).toBe("test");
+    expect(tipLink.description).toBe("test");
   });
 
   it("should fail with username too long", async () => {
