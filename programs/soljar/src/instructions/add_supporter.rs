@@ -29,6 +29,8 @@ pub fn add_supporter(ctx: Context<AddSupporter>, _tip_link_id: String, currency_
 
         let index = &mut ctx.accounts.index;
 
+        index.total_supporters += 1;
+
         if supporter_index.total_items == 49 {
             index.supporter_index_page += 1;
         }
