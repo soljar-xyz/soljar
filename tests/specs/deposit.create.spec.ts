@@ -5,13 +5,10 @@ import {
   findIndexPDA,
   findJarPDA,
   findMetaPDA,
-  findPlatformPDA,
   findTipLinkPDA,
-  findTreasuryPDA,
   findUserPDA,
 } from "../utils/helpers";
 import { BN } from "@coral-xyz/anchor";
-import * as anchor from "@coral-xyz/anchor";
 import { PublicKey } from "@solana/web3.js";
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { getAccount } from "spl-token-bankrun";
@@ -23,7 +20,6 @@ describe("3. Deposit Creation", () => {
 
     const userPDA = findUserPDA(creator.publicKey);
     const jarPDA = findJarPDA(userPDA);
-    const treasuryPDA = findTreasuryPDA(jarPDA);
 
     const tipLinkPDA = findTipLinkPDA(username);
     const indexPDA = findIndexPDA(jarPDA);
@@ -80,13 +76,10 @@ describe("3. Deposit Creation", () => {
     expect(Number(index.depositIndexPage)).toEqual(0);
     expect(Number(index.totalDeposits)).toEqual(1);
 
-    const treasury = await program.account.treasury.fetch(treasuryPDA);
-    console.log("Treasury: ", treasury);
-
     // Fetch the SOL balance of the treasury
-    const treasuryBalance = await banksClient.getBalance(treasuryPDA);
-    console.log("Treasury SOL Balance: ", Number(treasuryBalance));
-    expect(Number(treasuryBalance)).toEqual(1001287600); // 1 SOL = 1,000,000,000 lamports
+    const jarBalance = await banksClient.getBalance(jarPDA);
+    console.log("Jar SOL Balance: ", Number(jarBalance));
+    expect(Number(jarBalance)).toEqual(1001510320); // 1 SOL = 1,000,000,000 lamports
   });
 
   it("should create an SPL token deposit", async () => {
@@ -96,7 +89,6 @@ describe("3. Deposit Creation", () => {
 
     const userPDA = findUserPDA(creator.publicKey);
     const jarPDA = findJarPDA(userPDA);
-    const treasuryPDA = findTreasuryPDA(jarPDA);
 
     const tipLinkPDA = findTipLinkPDA(username);
     const indexPDA = findIndexPDA(jarPDA);
@@ -105,8 +97,8 @@ describe("3. Deposit Creation", () => {
     const metaPDA = findMetaPDA(depositPDA);
 
     // Find the treasury's token account PDA
-    const [treasuryTokenAccount] = PublicKey.findProgramAddressSync(
-      [Buffer.from("token_account"), treasuryPDA.toBuffer(), mint.toBuffer()],
+    const [jarTokenAccount] = PublicKey.findProgramAddressSync(
+      [Buffer.from("token_account"), jarPDA.toBuffer(), mint.toBuffer()],
       program.programId
     );
 
@@ -160,11 +152,11 @@ describe("3. Deposit Creation", () => {
     expect(Number(index.totalDeposits)).toEqual(2); // 1 for the initial deposit and 1 for the SPL token deposit
 
     // Verify token balances
-    const treasuryTokenAccountInfo = await getAccount(
+    const jarTokenAccountInfo = await getAccount(
       // @ts-expect-error - Type mismatch in spl-token-bankrun and solana banks client
       banksClient,
-      treasuryTokenAccount
+      jarTokenAccount
     );
-    expect(Number(treasuryTokenAccountInfo.amount)).toEqual(100000000);
+    expect(Number(jarTokenAccountInfo.amount)).toEqual(100000000);
   });
 });

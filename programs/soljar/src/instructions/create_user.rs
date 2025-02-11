@@ -32,12 +32,10 @@ pub fn create_user(ctx: Context<CreateUser>, username: String) -> Result<()> {
     index.jar = ctx.accounts.jar.key();
     index.deposit_index_page = 0;
     index.withdrawl_index_page = 0;
-    index.meta_index_page = 0;
-    index.tip_link_index_page = 0;
+    index.supporter_index_page = 0;
     index.total_deposits = 0;
     index.total_withdrawls = 0;
-    index.total_metas = 0;
-    index.total_tip_links = 0;
+    index.total_supporters = 0;
     index.created_at = Clock::get()?.unix_timestamp;
     index.updated_at = Clock::get()?.unix_timestamp;
 

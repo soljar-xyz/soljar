@@ -8,22 +8,17 @@ pub fn init_tip_link(
     _index_page: u32,
 ) -> Result<()> {
     let tip_link = &mut ctx.accounts.tip_link;
-    let tip_link_index = &mut ctx.accounts.tip_link_index;
-    let index = &mut ctx.accounts.index;
+    let user_info = &mut ctx.accounts.user_info;
     // Initialize tip link
     tip_link.user = ctx.accounts.user.key();
     tip_link.jar = ctx.accounts.jar.key();
     tip_link.id = id;
     tip_link.description = description;
-    tip_link.created_at = Clock::get()?.unix_timestamp;
-    tip_link.updated_at = Clock::get()?.unix_timestamp;
 
-    // Update index
-    index.total_tip_links += 1;
-    tip_link_index.total_items += 1;
-    tip_link_index.updated_at = Clock::get()?.unix_timestamp;
-    tip_link_index.tip_links.push(tip_link.key());
-    
+    // Update user info
+    user_info.tip_link_count += 1;
+    user_info.tip_links.push(tip_link.key());
+
     Ok(())
 }
 
@@ -48,18 +43,14 @@ pub struct InitTipLink<'info> {
     pub user: Box<Account<'info, User>>,
 
     #[account(
-        mut,
-        seeds = [b"index", jar.key().as_ref()],
+        init,
+        payer = signer,
+        space = 8 + UserInfo::INIT_SPACE,
+        seeds = [b"user_info", user.key().as_ref()],
         bump
     )]
-    pub index: Box<Account<'info, Index>>,
+    pub user_info: Box<Account<'info, UserInfo>>,
 
-    #[account(
-        mut,
-        seeds = [b"tip_link_index", index.key().as_ref(), &index_page.to_le_bytes()],
-        bump
-    )]
-    pub tip_link_index: Box<Account<'info, TipLinkIndex>>,
 
     #[account(
         init,

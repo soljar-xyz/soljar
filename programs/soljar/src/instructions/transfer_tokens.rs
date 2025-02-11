@@ -45,14 +45,9 @@ pub struct TransferTokens<'info> {
 
     #[account(
         mut,
-        has_one = treasury
     )]
     pub jar: Account<'info, Jar>,
 
-    #[account(
-        mut,
-    )]
-    pub treasury: Account<'info, Treasury>,
 
     pub mint: InterfaceAccount<'info, Mint>,
 
@@ -60,8 +55,8 @@ pub struct TransferTokens<'info> {
         init_if_needed,
         payer = signer,
         token::mint = mint,
-        token::authority = treasury,
-        seeds = [b"token_account", treasury.key().as_ref(), mint.key().as_ref()],
+        token::authority = jar,
+        seeds = [b"token_account", jar.key().as_ref(), mint.key().as_ref()],
         bump,
     )]
     pub token_account: InterfaceAccount<'info, TokenAccount>,

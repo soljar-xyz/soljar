@@ -1,12 +1,11 @@
 use anchor_lang::prelude::*;
 
-
 #[account]
-#[derive(InitSpace)]
-pub struct Jar {
+pub struct Supporter {
     pub user: Pubkey,
-    pub index: Pubkey,
+    pub jar: Pubkey,
+    pub amount: u64,
     pub created_at: i64,
     pub updated_at: i64,
-    pub bump: u8,
 }
+    

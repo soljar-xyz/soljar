@@ -64,13 +64,6 @@ export type Soljar = {
           ]
         },
         {
-          "name": "treasury",
-          "writable": true,
-          "relations": [
-            "jar"
-          ]
-        },
-        {
           "name": "index",
           "writable": true,
           "relations": [
@@ -481,52 +474,22 @@ export type Soljar = {
           }
         },
         {
-          "name": "metaIndex",
+          "name": "supporterIndex",
           "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "const",
                 "value": [
-                  109,
-                  101,
-                  116,
-                  97,
-                  95,
-                  105,
-                  110,
-                  100,
-                  101,
-                  120
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "index"
-              },
-              {
-                "kind": "arg",
-                "path": "indexPage"
-              }
-            ]
-          }
-        },
-        {
-          "name": "tipLinkIndex",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  116,
-                  105,
+                  115,
+                  117,
                   112,
-                  95,
-                  108,
-                  105,
-                  110,
-                  107,
+                  112,
+                  111,
+                  114,
+                  116,
+                  101,
+                  114,
                   95,
                   105,
                   110,
@@ -664,58 +627,27 @@ export type Soljar = {
           }
         },
         {
-          "name": "index",
+          "name": "userInfo",
           "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "const",
                 "value": [
+                  117,
+                  115,
+                  101,
+                  114,
+                  95,
                   105,
                   110,
-                  100,
-                  101,
-                  120
+                  102,
+                  111
                 ]
               },
               {
                 "kind": "account",
-                "path": "jar"
-              }
-            ]
-          }
-        },
-        {
-          "name": "tipLinkIndex",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  116,
-                  105,
-                  112,
-                  95,
-                  108,
-                  105,
-                  110,
-                  107,
-                  95,
-                  105,
-                  110,
-                  100,
-                  101,
-                  120
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "index"
-              },
-              {
-                "kind": "arg",
-                "path": "indexPage"
+                "path": "user"
               }
             ]
           }
@@ -764,97 +696,6 @@ export type Soljar = {
           "type": "u32"
         }
       ]
-    },
-    {
-      "name": "initTreasury",
-      "discriminator": [
-        105,
-        152,
-        173,
-        51,
-        158,
-        151,
-        49,
-        14
-      ],
-      "accounts": [
-        {
-          "name": "signer",
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "treasury",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  116,
-                  114,
-                  101,
-                  97,
-                  115,
-                  117,
-                  114,
-                  121
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "jar"
-              }
-            ]
-          }
-        },
-        {
-          "name": "jar",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  106,
-                  97,
-                  114
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "user"
-              }
-            ]
-          }
-        },
-        {
-          "name": "user",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  117,
-                  115,
-                  101,
-                  114
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "signer"
-              }
-            ]
-          }
-        },
-        {
-          "name": "systemProgram",
-          "address": "11111111111111111111111111111111"
-        }
-      ],
-      "args": []
     },
     {
       "name": "transferTokens",
@@ -907,13 +748,6 @@ export type Soljar = {
           ]
         },
         {
-          "name": "treasury",
-          "writable": true,
-          "relations": [
-            "jar"
-          ]
-        },
-        {
           "name": "mint"
         },
         {
@@ -941,7 +775,7 @@ export type Soljar = {
               },
               {
                 "kind": "account",
-                "path": "treasury"
+                "path": "jar"
               },
               {
                 "kind": "account",
@@ -1041,19 +875,6 @@ export type Soljar = {
       ]
     },
     {
-      "name": "metaIndex",
-      "discriminator": [
-        241,
-        40,
-        192,
-        50,
-        17,
-        120,
-        10,
-        53
-      ]
-    },
-    {
       "name": "platform",
       "discriminator": [
         77,
@@ -1067,6 +888,19 @@ export type Soljar = {
       ]
     },
     {
+      "name": "supporterIndex",
+      "discriminator": [
+        89,
+        202,
+        10,
+        80,
+        80,
+        123,
+        176,
+        198
+      ]
+    },
+    {
       "name": "tipLink",
       "discriminator": [
         197,
@@ -1077,32 +911,6 @@ export type Soljar = {
         11,
         146,
         202
-      ]
-    },
-    {
-      "name": "tipLinkIndex",
-      "discriminator": [
-        254,
-        119,
-        238,
-        213,
-        125,
-        13,
-        253,
-        15
-      ]
-    },
-    {
-      "name": "treasury",
-      "discriminator": [
-        238,
-        239,
-        123,
-        238,
-        89,
-        1,
-        168,
-        253
       ]
     },
     {
@@ -1129,6 +937,19 @@ export type Soljar = {
         235,
         143,
         10
+      ]
+    },
+    {
+      "name": "userInfo",
+      "discriminator": [
+        83,
+        134,
+        200,
+        56,
+        144,
+        56,
+        10,
+        62
       ]
     },
     {
@@ -1222,14 +1043,6 @@ export type Soljar = {
             "type": "u32"
           },
           {
-            "name": "createdAt",
-            "type": "i64"
-          },
-          {
-            "name": "updatedAt",
-            "type": "i64"
-          },
-          {
             "name": "totalItems",
             "type": "u8"
           },
@@ -1264,11 +1077,7 @@ export type Soljar = {
             "type": "u32"
           },
           {
-            "name": "metaIndexPage",
-            "type": "u32"
-          },
-          {
-            "name": "tipLinkIndexPage",
+            "name": "supporterIndexPage",
             "type": "u32"
           },
           {
@@ -1280,11 +1089,7 @@ export type Soljar = {
             "type": "u32"
           },
           {
-            "name": "totalMetas",
-            "type": "u32"
-          },
-          {
-            "name": "totalTipLinks",
+            "name": "totalSupporters",
             "type": "u32"
           },
           {
@@ -1312,16 +1117,16 @@ export type Soljar = {
             "type": "pubkey"
           },
           {
-            "name": "treasury",
-            "type": "pubkey"
-          },
-          {
             "name": "createdAt",
             "type": "i64"
           },
           {
             "name": "updatedAt",
             "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
           }
         ]
       }
@@ -1354,40 +1159,6 @@ export type Soljar = {
           {
             "name": "updatedAt",
             "type": "i64"
-          }
-        ]
-      }
-    },
-    {
-      "name": "metaIndex",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "index",
-            "type": "pubkey"
-          },
-          {
-            "name": "indexPage",
-            "type": "u32"
-          },
-          {
-            "name": "createdAt",
-            "type": "i64"
-          },
-          {
-            "name": "updatedAt",
-            "type": "i64"
-          },
-          {
-            "name": "totalItems",
-            "type": "u8"
-          },
-          {
-            "name": "metas",
-            "type": {
-              "vec": "pubkey"
-            }
           }
         ]
       }
@@ -1429,6 +1200,32 @@ export type Soljar = {
       }
     },
     {
+      "name": "supporterIndex",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "index",
+            "type": "pubkey"
+          },
+          {
+            "name": "indexPage",
+            "type": "u32"
+          },
+          {
+            "name": "totalItems",
+            "type": "u8"
+          },
+          {
+            "name": "supporters",
+            "type": {
+              "vec": "pubkey"
+            }
+          }
+        ]
+      }
+    },
+    {
       "name": "tipLink",
       "type": {
         "kind": "struct",
@@ -1465,64 +1262,6 @@ export type Soljar = {
       }
     },
     {
-      "name": "tipLinkIndex",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "index",
-            "type": "pubkey"
-          },
-          {
-            "name": "indexPage",
-            "type": "u32"
-          },
-          {
-            "name": "createdAt",
-            "type": "i64"
-          },
-          {
-            "name": "updatedAt",
-            "type": "i64"
-          },
-          {
-            "name": "totalItems",
-            "type": "u8"
-          },
-          {
-            "name": "tipLinks",
-            "type": {
-              "vec": "pubkey"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "name": "treasury",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "jar",
-            "type": "pubkey"
-          },
-          {
-            "name": "createdAt",
-            "type": "i64"
-          },
-          {
-            "name": "updatedAt",
-            "type": "i64"
-          },
-          {
-            "name": "bump",
-            "type": "u8"
-          }
-        ]
-      }
-    },
-    {
       "name": "user",
       "type": {
         "kind": "struct",
@@ -1532,20 +1271,16 @@ export type Soljar = {
             "type": "pubkey"
           },
           {
-            "name": "platform",
-            "type": "pubkey"
-          },
-          {
-            "name": "username",
-            "type": "string"
-          },
-          {
             "name": "receiverWallet",
             "type": "pubkey"
           },
           {
             "name": "jar",
             "type": "pubkey"
+          },
+          {
+            "name": "username",
+            "type": "string"
           },
           {
             "name": "createdAt",
@@ -1571,6 +1306,28 @@ export type Soljar = {
       }
     },
     {
+      "name": "userInfo",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "tipLinkCount",
+            "type": "u32"
+          },
+          {
+            "name": "tipLinks",
+            "type": {
+              "vec": "pubkey"
+            }
+          }
+        ]
+      }
+    },
+    {
       "name": "withdrawlIndex",
       "type": {
         "kind": "struct",
@@ -1582,14 +1339,6 @@ export type Soljar = {
           {
             "name": "indexPage",
             "type": "u32"
-          },
-          {
-            "name": "createdAt",
-            "type": "i64"
-          },
-          {
-            "name": "updatedAt",
-            "type": "i64"
           },
           {
             "name": "totalItems",

@@ -8,12 +8,12 @@ pub fn create_deposit(ctx: Context<CreateDeposit>, _tip_link_id: String, currenc
 
     if currency_mint == Pubkey::default() {
         msg!("TRANSFERING SOL");
-        let treasury = &mut ctx.accounts.treasury;
+        let jar = &mut ctx.accounts.jar;
 
     //  Transfer SOL from signer to treasury
      let transfer_seed_ix = transfer(
         &ctx.accounts.signer.key(),
-        treasury.to_account_info().key,
+        jar.to_account_info().key,
         amount,
     );
 
@@ -21,7 +21,7 @@ pub fn create_deposit(ctx: Context<CreateDeposit>, _tip_link_id: String, currenc
         &transfer_seed_ix,
         &[
             ctx.accounts.signer.to_account_info(),
-            treasury.to_account_info(),
+            jar.to_account_info(),
                 ctx.accounts.system_program.to_account_info(),
             ],
         )?;
@@ -82,14 +82,9 @@ pub struct CreateDeposit<'info> {
     #[account(
         mut,
         has_one = index,
-        has_one = treasury
     )]
     pub jar: Account<'info, Jar>,
 
-    #[account(
-        mut,
-    )]
-    pub treasury: Account<'info, Treasury>,
 
     #[account(
         mut,
