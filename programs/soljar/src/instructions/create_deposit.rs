@@ -41,7 +41,6 @@ pub fn create_deposit(ctx: Context<CreateDeposit>, _tip_link_id: String, currenc
     meta.referrer = referrer;
     meta.memo = memo;
     meta.created_at = Clock::get()?.unix_timestamp;
-    meta.updated_at = Clock::get()?.unix_timestamp;
 
     let deposit = &mut ctx.accounts.deposit;
     deposit.signer = ctx.accounts.signer.key();
@@ -51,7 +50,6 @@ pub fn create_deposit(ctx: Context<CreateDeposit>, _tip_link_id: String, currenc
     deposit.currency_mint = currency_mint;
     deposit.amount = amount;
     deposit.created_at = Clock::get()?.unix_timestamp;
-    deposit.updated_at = Clock::get()?.unix_timestamp;
 
     let deposit_index = &mut ctx.accounts.deposit_index;
     

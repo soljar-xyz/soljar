@@ -12,4 +12,5 @@ describe("Soljar Program Tests", () => {
   require("./specs/platform.init.spec");
   require("./specs/user.create.spec");
   require("./specs/deposit.create.spec");
+  require("./specs/withdrawl.create.spec");
 });

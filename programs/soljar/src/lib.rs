@@ -8,6 +8,8 @@ use instructions::init_tip_link::*;
 use instructions::create_deposit::*;
 use instructions::transfer_tokens::*;
 use instructions::add_supporter::*;
+use instructions::create_withdrawl::*;
+use instructions::withdraw_tokens::*;
 
 
 declare_id!("GpY6HvGukU7zzDkkPLP4UTUVcJJsSdPfrGq1PV1Xain7");
@@ -48,4 +50,13 @@ pub mod soljar {
     pub fn add_supporter(ctx: Context<AddSupporter>, tip_link_id: String, currency_mint: Pubkey, amount: u64) -> Result<()> {
         instructions::add_supporter::add_supporter(ctx, tip_link_id, currency_mint, amount)
     }
+
+    pub fn create_withdrawl(ctx: Context<CreateWithdrawl>, currency_mint: Pubkey, amount: u64) -> Result<()> {
+        instructions::create_withdrawl::create_withdrawl(ctx, currency_mint, amount)
+    }
+
+    pub fn withdraw_tokens(ctx: Context<WithdrawTokens>, amount: u64) -> Result<()> {
+        instructions::withdraw_tokens::withdraw_tokens(ctx, amount)
+    }
+    
 }

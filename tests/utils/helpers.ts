@@ -140,3 +140,28 @@ export const findSupporterPDA = (
   );
   return pda;
 };
+
+export const findWithdrawlPDA = (
+  withdrawlIndexPDA: PublicKey,
+  index: number
+) => {
+  const { program } = getTestContext();
+  const [pda] = PublicKey.findProgramAddressSync(
+    [
+      Buffer.from("withdrawl"),
+      withdrawlIndexPDA.toBuffer(),
+      Buffer.from(new Uint8Array([index]).buffer),
+    ],
+    program.programId
+  );
+  return pda;
+};
+
+export const findTokenAccountPDA = (jarPDA: PublicKey, mint: PublicKey) => {
+  const { program } = getTestContext();
+  const [pda] = PublicKey.findProgramAddressSync(
+    [Buffer.from("token_account"), jarPDA.toBuffer(), mint.toBuffer()],
+    program.programId
+  );
+  return pda;
+};

@@ -26,6 +26,7 @@ pub fn create_user(ctx: Context<CreateUser>, username: String) -> Result<()> {
     jar.index = ctx.accounts.index.key();
     jar.created_at = Clock::get()?.unix_timestamp;
     jar.updated_at = Clock::get()?.unix_timestamp;
+    jar.bump = ctx.bumps.jar;
 
     let index = &mut ctx.accounts.index;
     index.user = ctx.accounts.user.key();
@@ -36,8 +37,6 @@ pub fn create_user(ctx: Context<CreateUser>, username: String) -> Result<()> {
     index.total_deposits = 0;
     index.total_withdrawls = 0;
     index.total_supporters = 0;
-    index.created_at = Clock::get()?.unix_timestamp;
-    index.updated_at = Clock::get()?.unix_timestamp;
 
     // Set the username as taken in the username tracker account
     let username_tracker = &mut ctx.accounts.user_by_name;

@@ -10,5 +10,4 @@ pub struct Deposit {
     pub currency_mint: Pubkey,
     pub amount: u64,
     pub created_at: i64,
-    pub updated_at: i64,
 }

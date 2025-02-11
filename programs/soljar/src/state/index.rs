@@ -13,7 +13,4 @@ pub struct Index {
     pub total_deposits: u32,
     pub total_withdrawls: u32,
     pub total_supporters: u32,
-
-    pub created_at: i64,
-    pub updated_at: i64,
 }

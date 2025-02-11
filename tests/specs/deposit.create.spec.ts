@@ -38,13 +38,19 @@ describe("3. Deposit Creation", () => {
     console.log("SOL_MINT: ", SOL_MINT);
 
     await program.methods
-      .createDeposit(username, SOL_MINT, "referrer", "memo", new BN(1000000000))
+      .createDeposit(
+        username,
+        SOL_MINT,
+        "referrer",
+        "memo",
+        new BN(10000000000)
+      )
       .accounts({
         signer: creator.publicKey,
       })
       .postInstructions([
         await program.methods
-          .addSupporter(username, SOL_MINT, new BN(1000000000))
+          .addSupporter(username, SOL_MINT, new BN(10000000000))
           .accounts({})
           .instruction(),
       ])
@@ -72,7 +78,7 @@ describe("3. Deposit Creation", () => {
     expect(deposit.jar).toEqual(jarPDA);
     expect(deposit.meta).toEqual(metaPDA);
     expect(deposit.tipLink).toEqual(tipLinkPDA);
-    expect(Number(deposit.amount)).toEqual(1000000000);
+    expect(Number(deposit.amount)).toEqual(10000000000);
 
     expect(meta.jar).toEqual(jarPDA);
     expect(meta.deposit).toEqual(depositPDA);
@@ -90,12 +96,12 @@ describe("3. Deposit Creation", () => {
     // Fetch the SOL balance of the treasury
     const jarBalance = await banksClient.getBalance(jarPDA);
     console.log("Jar SOL Balance: ", Number(jarBalance));
-    expect(Number(jarBalance)).toEqual(1001510320); // 1 SOL = 1,000,000,000 lamports
+    expect(Number(jarBalance)).toEqual(10001510320); // 1 SOL = 1,000,000,000 lamports
 
     const supporter = await program.account.supporter.fetch(supporterPDA);
     expect(supporter.signer).toEqual(creator.publicKey);
     expect(supporter.jar).toEqual(jarPDA);
-    expect(Number(supporter.amount)).toEqual(1000000000);
+    expect(Number(supporter.amount)).toEqual(10000000000);
     expect(Number(supporter.tipCount)).toEqual(1);
 
     const supporterIndex = await program.account.supporterIndex.fetch(
@@ -218,7 +224,7 @@ describe("3. Deposit Creation", () => {
     const supporterIndexPDA = findSupporterIndexPDA(indexPDA, 0);
     const supporterPDA = findSupporterPDA(jarPDA, creator.publicKey, SOL_MINT);
 
-    const amount = new BN(1000000000);
+    const amount = new BN(10000000000);
 
     await program.methods
       .createDeposit(username, SOL_MINT, "referrer", "memo", amount)
@@ -249,7 +255,7 @@ describe("3. Deposit Creation", () => {
     const supporter = await program.account.supporter.fetch(supporterPDA);
     expect(supporter.signer).toEqual(creator.publicKey);
     expect(supporter.jar).toEqual(jarPDA);
-    expect(Number(supporter.amount)).toEqual(2000000000);
+    expect(Number(supporter.amount)).toEqual(20000000000);
     expect(Number(supporter.tipCount)).toEqual(2);
 
     const depositPDA2 = findDepositPDA(depositIndexPDA, 3);
