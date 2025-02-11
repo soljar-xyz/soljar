@@ -4,8 +4,6 @@ import {
   findJarPDA,
   findDepositIndexPDA,
   findWithdrawlIndexPDA,
-  findMetaIndexPDA,
-  findTipLinkIndexPDA,
   findTipLinkPDA,
   findUserNamePDA,
   findPlatformPDA,

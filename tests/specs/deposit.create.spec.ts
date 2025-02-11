@@ -5,6 +5,8 @@ import {
   findIndexPDA,
   findJarPDA,
   findMetaPDA,
+  findSupporterIndexPDA,
+  findSupporterPDA,
   findTipLinkPDA,
   findUserPDA,
 } from "../utils/helpers";
@@ -16,6 +18,8 @@ import { getAccount } from "spl-token-bankrun";
 describe("3. Deposit Creation", () => {
   it("should create a deposit", async () => {
     const { program, creator, banksClient } = getTestContext();
+    const SOL_MINT = PublicKey.default;
+
     const username = "satoshi";
 
     const userPDA = findUserPDA(creator.publicKey);
@@ -26,9 +30,10 @@ describe("3. Deposit Creation", () => {
     const depositIndexPDA = findDepositIndexPDA(indexPDA, 0);
     const depositPDA = findDepositPDA(depositIndexPDA, 0);
 
-    const metaPDA = findMetaPDA(depositPDA);
+    const supporterIndexPDA = findSupporterIndexPDA(indexPDA, 0);
+    const supporterPDA = findSupporterPDA(jarPDA, creator.publicKey, SOL_MINT);
 
-    const SOL_MINT = PublicKey.default;
+    const metaPDA = findMetaPDA(depositPDA);
 
     console.log("SOL_MINT: ", SOL_MINT);
 
@@ -37,6 +42,12 @@ describe("3. Deposit Creation", () => {
       .accounts({
         signer: creator.publicKey,
       })
+      .postInstructions([
+        await program.methods
+          .addSupporter(username, SOL_MINT, new BN(1000000000))
+          .accounts({})
+          .instruction(),
+      ])
       .signers([creator])
       .rpc();
 
@@ -80,6 +91,18 @@ describe("3. Deposit Creation", () => {
     const jarBalance = await banksClient.getBalance(jarPDA);
     console.log("Jar SOL Balance: ", Number(jarBalance));
     expect(Number(jarBalance)).toEqual(1001510320); // 1 SOL = 1,000,000,000 lamports
+
+    const supporter = await program.account.supporter.fetch(supporterPDA);
+    expect(supporter.signer).toEqual(creator.publicKey);
+    expect(supporter.jar).toEqual(jarPDA);
+    expect(Number(supporter.amount)).toEqual(1000000000);
+    expect(Number(supporter.tipCount)).toEqual(1);
+
+    const supporterIndex = await program.account.supporterIndex.fetch(
+      supporterIndexPDA
+    );
+    expect(Number(supporterIndex.totalItems)).toEqual(1);
+    expect(supporterIndex.supporters[0]).toEqual(supporterPDA);
   });
 
   it("should create an SPL token deposit", async () => {
@@ -92,8 +115,10 @@ describe("3. Deposit Creation", () => {
 
     const tipLinkPDA = findTipLinkPDA(username);
     const indexPDA = findIndexPDA(jarPDA);
+    const supporterIndexPDA = findSupporterIndexPDA(indexPDA, 0);
+    const supporterPDA = findSupporterPDA(jarPDA, creator.publicKey, mint);
     const depositIndexPDA = findDepositIndexPDA(indexPDA, 0);
-    const depositPDA = findDepositPDA(depositIndexPDA, 0);
+    const depositPDA = findDepositPDA(depositIndexPDA, 1);
     const metaPDA = findMetaPDA(depositPDA);
 
     // Find the treasury's token account PDA
@@ -110,6 +135,10 @@ describe("3. Deposit Creation", () => {
         // signer: creator.publicKey,
       })
       .postInstructions([
+        await program.methods
+          .addSupporter(username, mint, amount)
+          .accounts({})
+          .instruction(),
         await program.methods
           .transferTokens(username, amount)
           .accounts({
@@ -136,7 +165,7 @@ describe("3. Deposit Creation", () => {
     expect(deposit.jar).toEqual(jarPDA);
     expect(deposit.meta).toEqual(metaPDA);
     expect(deposit.tipLink).toEqual(tipLinkPDA);
-    expect(Number(deposit.amount)).toEqual(1000000000);
+    expect(Number(deposit.amount)).toEqual(amount.toNumber());
 
     // // Verify meta details
     expect(meta.jar).toEqual(jarPDA);
@@ -147,7 +176,7 @@ describe("3. Deposit Creation", () => {
     // Verify tip link and index updates
     expect(Number(tipLink.depositCount)).toEqual(2); // 1 for the initial deposit and 1 for the SPL token deposit
     expect(Number(depositIndex.totalItems)).toEqual(2); // 1 for the initial deposit and 1 for the SPL token deposit
-    expect(depositIndex.deposits[0]).toEqual(depositPDA);
+    expect(depositIndex.deposits[1]).toEqual(depositPDA);
     expect(Number(index.depositIndexPage)).toEqual(0);
     expect(Number(index.totalDeposits)).toEqual(2); // 1 for the initial deposit and 1 for the SPL token deposit
 
@@ -157,6 +186,116 @@ describe("3. Deposit Creation", () => {
       banksClient,
       jarTokenAccount
     );
-    expect(Number(jarTokenAccountInfo.amount)).toEqual(100000000);
+    expect(Number(jarTokenAccountInfo.amount)).toEqual(amount.toNumber());
+
+    const supporterIndex = await program.account.supporterIndex.fetch(
+      supporterIndexPDA
+    );
+    expect(Number(supporterIndex.totalItems)).toEqual(2);
+    expect(supporterIndex.supporters[1]).toEqual(supporterPDA);
+
+    const supporter = await program.account.supporter.fetch(supporterPDA);
+    expect(supporter.signer).toEqual(creator.publicKey);
+    expect(supporter.jar).toEqual(jarPDA);
+    expect(Number(supporter.amount)).toEqual(amount.toNumber());
+    expect(Number(supporter.tipCount)).toEqual(1);
+    expect(supporter.mint).toEqual(mint);
+  });
+
+  it("should create two deposits one with SOL and one with SPL token", async () => {
+    const { program, creator, mint, creatorTokenAccount, banksClient } =
+      getTestContext();
+    const SOL_MINT = PublicKey.default;
+    const username = "satoshi";
+
+    const userPDA = findUserPDA(creator.publicKey);
+    const jarPDA = findJarPDA(userPDA);
+
+    const tipLinkPDA = findTipLinkPDA(username);
+    const indexPDA = findIndexPDA(jarPDA);
+    const depositIndexPDA = findDepositIndexPDA(indexPDA, 0);
+    const depositPDA = findDepositPDA(depositIndexPDA, 2);
+    const supporterIndexPDA = findSupporterIndexPDA(indexPDA, 0);
+    const supporterPDA = findSupporterPDA(jarPDA, creator.publicKey, SOL_MINT);
+
+    const amount = new BN(1000000000);
+
+    await program.methods
+      .createDeposit(username, SOL_MINT, "referrer", "memo", amount)
+      .accounts({})
+      .postInstructions([
+        await program.methods
+          .addSupporter(username, SOL_MINT, amount)
+          .accounts({})
+          .instruction(),
+      ])
+      .signers([creator])
+      .rpc();
+
+    const index = await program.account.index.fetch(indexPDA);
+    const depositIndex = await program.account.depositIndex.fetch(
+      depositIndexPDA
+    );
+
+    expect(Number(index.depositIndexPage)).toEqual(0);
+    expect(Number(index.totalDeposits)).toEqual(3);
+    expect(depositIndex.deposits[2]).toEqual(depositPDA);
+
+    const supporterIndex = await program.account.supporterIndex.fetch(
+      supporterIndexPDA
+    );
+    expect(Number(supporterIndex.totalItems)).toEqual(2);
+
+    const supporter = await program.account.supporter.fetch(supporterPDA);
+    expect(supporter.signer).toEqual(creator.publicKey);
+    expect(supporter.jar).toEqual(jarPDA);
+    expect(Number(supporter.amount)).toEqual(2000000000);
+    expect(Number(supporter.tipCount)).toEqual(2);
+
+    const depositPDA2 = findDepositPDA(depositIndexPDA, 3);
+    const metaPDA2 = findMetaPDA(depositPDA2);
+    const supporterPDA2 = findSupporterPDA(jarPDA, creator.publicKey, mint);
+    const amount2 = new BN(100000000);
+
+    await program.methods
+      .createDeposit(username, mint, "referrer", "memo", amount2)
+      .accounts({})
+      .postInstructions([
+        await program.methods
+          .addSupporter(username, mint, amount2)
+          .accounts({})
+          .instruction(),
+        await program.methods
+          .transferTokens(username, amount2)
+          .accounts({
+            mint,
+            sourceTokenAccount: creatorTokenAccount,
+            tokenProgram: TOKEN_PROGRAM_ID,
+          })
+          .instruction(),
+      ])
+      .signers([creator])
+      .rpc();
+
+    const index2 = await program.account.index.fetch(indexPDA);
+    const depositIndex2 = await program.account.depositIndex.fetch(
+      depositIndexPDA
+    );
+
+    expect(Number(index2.depositIndexPage)).toEqual(0);
+    expect(Number(index2.totalDeposits)).toEqual(4);
+    expect(depositIndex2.deposits[3]).toEqual(depositPDA2);
+
+    const supporterIndex2 = await program.account.supporterIndex.fetch(
+      supporterIndexPDA
+    );
+    expect(Number(supporterIndex2.totalItems)).toEqual(2);
+
+    const supporter2 = await program.account.supporter.fetch(supporterPDA2);
+    expect(supporter2.signer).toEqual(creator.publicKey);
+    expect(supporter2.jar).toEqual(jarPDA);
+    expect(Number(supporter2.amount)).toEqual(200000000);
+    expect(Number(supporter2.tipCount)).toEqual(2);
+    expect(supporter2.mint).toEqual(mint);
   });
 });

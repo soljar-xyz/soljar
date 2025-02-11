@@ -7,6 +7,8 @@ use instructions::init_indexes::*;
 use instructions::init_tip_link::*;
 use instructions::create_deposit::*;
 use instructions::transfer_tokens::*;
+use instructions::add_supporter::*;
+
 
 declare_id!("GpY6HvGukU7zzDkkPLP4UTUVcJJsSdPfrGq1PV1Xain7");
 
@@ -41,5 +43,9 @@ pub mod soljar {
 
     pub fn transfer_tokens(ctx: Context<TransferTokens>, tip_link_id: String, amount: u64) -> Result<()> {
         instructions::transfer_tokens::transfer_tokens(ctx, tip_link_id, amount)
+    }
+
+    pub fn add_supporter(ctx: Context<AddSupporter>, tip_link_id: String, currency_mint: Pubkey, amount: u64) -> Result<()> {
+        instructions::add_supporter::add_supporter(ctx, tip_link_id, currency_mint, amount)
     }
 }

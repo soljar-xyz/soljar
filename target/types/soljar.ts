@@ -14,6 +14,154 @@ export type Soljar = {
   },
   "instructions": [
     {
+      "name": "addSupporter",
+      "discriminator": [
+        37,
+        136,
+        43,
+        131,
+        3,
+        221,
+        114,
+        11
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "tipLink",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  105,
+                  112,
+                  95,
+                  108,
+                  105,
+                  110,
+                  107
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "tipLinkId"
+              }
+            ]
+          }
+        },
+        {
+          "name": "jar",
+          "writable": true,
+          "relations": [
+            "tipLink"
+          ]
+        },
+        {
+          "name": "index",
+          "writable": true,
+          "relations": [
+            "jar"
+          ]
+        },
+        {
+          "name": "supporterIndex",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  117,
+                  112,
+                  112,
+                  111,
+                  114,
+                  116,
+                  101,
+                  114,
+                  95,
+                  105,
+                  110,
+                  100,
+                  101,
+                  120
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "index"
+              },
+              {
+                "kind": "account",
+                "path": "index.supporter_index_page",
+                "account": "index"
+              }
+            ]
+          }
+        },
+        {
+          "name": "supporter",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  117,
+                  112,
+                  112,
+                  111,
+                  114,
+                  116,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "jar"
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              },
+              {
+                "kind": "arg",
+                "path": "currencyMint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "tipLinkId",
+          "type": "string"
+        },
+        {
+          "name": "currencyMint",
+          "type": "pubkey"
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
       "name": "createDeposit",
       "discriminator": [
         157,
@@ -888,6 +1036,19 @@ export type Soljar = {
       ]
     },
     {
+      "name": "supporter",
+      "discriminator": [
+        198,
+        125,
+        73,
+        94,
+        72,
+        40,
+        233,
+        159
+      ]
+    },
+    {
       "name": "supporterIndex",
       "discriminator": [
         89,
@@ -1195,6 +1356,46 @@ export type Soljar = {
           {
             "name": "updatedAt",
             "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "supporter",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "signer",
+            "type": "pubkey"
+          },
+          {
+            "name": "jar",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "tipLink",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "createdAt",
+            "type": "i64"
+          },
+          {
+            "name": "updatedAt",
+            "type": "i64"
+          },
+          {
+            "name": "tipCount",
+            "type": "u32"
           }
         ]
       }

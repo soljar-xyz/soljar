@@ -17,6 +17,7 @@ pub fn create_deposit(ctx: Context<CreateDeposit>, _tip_link_id: String, currenc
         amount,
     );
 
+
     invoke(
         &transfer_seed_ix,
         &[
@@ -57,8 +58,17 @@ pub fn create_deposit(ctx: Context<CreateDeposit>, _tip_link_id: String, currenc
     deposit_index.total_items += 1;
     deposit_index.deposits.push(deposit.key());
 
+
+
+
     let index = &mut ctx.accounts.index;
     index.total_deposits += 1;
+
+
+
+    if deposit_index.total_items == 49 {
+        index.deposit_index_page += 1;
+    }
 
     Ok(())
 }
@@ -92,7 +102,9 @@ pub struct CreateDeposit<'info> {
     pub index: Account<'info, Index>,
 
     #[account(
-        mut,
+        init_if_needed,
+        payer = signer,
+        space = 8 + DepositIndex::INIT_SPACE,
         seeds = [b"deposit_index", index.key().as_ref(), &index.deposit_index_page.to_le_bytes()],
         bump,
     )]
@@ -106,6 +118,8 @@ pub struct CreateDeposit<'info> {
         bump,
     )]
     pub deposit: Account<'info,Deposit>,
+
+
 
     #[account(
         init,
