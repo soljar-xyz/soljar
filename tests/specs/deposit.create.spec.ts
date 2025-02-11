@@ -115,7 +115,7 @@ describe("3. Deposit Creation", () => {
     await program.methods
       .createDeposit(username, mint, "referrer", "memo", amount)
       .accounts({
-        signer: creator.publicKey,
+        // signer: creator.publicKey,
       })
       .postInstructions([
         await program.methods

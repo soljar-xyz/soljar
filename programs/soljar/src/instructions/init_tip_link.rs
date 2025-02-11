@@ -22,7 +22,8 @@ pub fn init_tip_link(
     index.total_tip_links += 1;
     tip_link_index.total_items += 1;
     tip_link_index.updated_at = Clock::get()?.unix_timestamp;
-
+    tip_link_index.tip_links.push(tip_link.key());
+    
     Ok(())
 }
 
