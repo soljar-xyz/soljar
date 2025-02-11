@@ -6,7 +6,7 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-soljar = "APfu475CVFEop5CJbpRW9c2sbpbvvQmtixsTfe27pN7g"
+soljar = "GpY6HvGukU7zzDkkPLP4UTUVcJJsSdPfrGq1PV1Xain7"
 
 [registry]
 url = "https://api.apr.dev"

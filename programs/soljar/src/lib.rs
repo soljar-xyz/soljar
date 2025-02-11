@@ -8,7 +8,7 @@ use instructions::init_tip_link::*;
 use instructions::create_deposit::*;
 use instructions::transfer_tokens::*;
 
-declare_id!("APfu475CVFEop5CJbpRW9c2sbpbvvQmtixsTfe27pN7g");
+declare_id!("GpY6HvGukU7zzDkkPLP4UTUVcJJsSdPfrGq1PV1Xain7");
 
 pub mod error;
 pub mod instructions;
