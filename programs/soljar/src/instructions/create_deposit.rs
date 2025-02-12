@@ -35,21 +35,18 @@ pub fn create_deposit(ctx: Context<CreateDeposit>, _tip_link_id: String, currenc
 
     
 
-    let meta = &mut ctx.accounts.meta;
-    meta.jar = ctx.accounts.jar.key();
-    meta.deposit = ctx.accounts.deposit.key();
-    meta.referrer = referrer;
-    meta.memo = memo;
-    meta.created_at = Clock::get()?.unix_timestamp;
+
+
 
     let deposit = &mut ctx.accounts.deposit;
     deposit.signer = ctx.accounts.signer.key();
     deposit.jar = ctx.accounts.jar.key();
-    deposit.meta = meta.key();
     deposit.tip_link = tip_link.key();
     deposit.currency_mint = currency_mint;
     deposit.amount = amount;
     deposit.created_at = Clock::get()?.unix_timestamp;
+    deposit.referrer = referrer;
+    deposit.memo = memo;
 
     let deposit_index = &mut ctx.accounts.deposit_index;
     
@@ -118,16 +115,6 @@ pub struct CreateDeposit<'info> {
     pub deposit: Account<'info,Deposit>,
 
 
-
-    #[account(
-        init,
-        payer = signer,
-        space = 8 + Meta::INIT_SPACE,
-        seeds = [b"meta", deposit.key().as_ref()],
-        bump,
-    )]
-    pub meta: Account<'info, Meta>,
-    
 
     system_program: Program<'info, System>,
 }

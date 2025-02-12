@@ -33,8 +33,6 @@ describe("3. Deposit Creation", () => {
     const supporterIndexPDA = findSupporterIndexPDA(indexPDA, 0);
     const supporterPDA = findSupporterPDA(jarPDA, creator.publicKey, SOL_MINT);
 
-    const metaPDA = findMetaPDA(depositPDA);
-
     console.log("SOL_MINT: ", SOL_MINT);
 
     await program.methods
@@ -69,21 +67,16 @@ describe("3. Deposit Creation", () => {
 
     const deposit = await program.account.deposit.fetch(depositPDA);
 
-    const meta = await program.account.meta.fetch(metaPDA);
-
     const tipLink = await program.account.tipLink.fetch(tipLinkPDA);
 
     // let's right all expected values
     expect(deposit.signer).toEqual(creator.publicKey);
     expect(deposit.jar).toEqual(jarPDA);
-    expect(deposit.meta).toEqual(metaPDA);
     expect(deposit.tipLink).toEqual(tipLinkPDA);
     expect(Number(deposit.amount)).toEqual(10000000000);
 
-    expect(meta.jar).toEqual(jarPDA);
-    expect(meta.deposit).toEqual(depositPDA);
-    expect(meta.referrer).toEqual("referrer");
-    expect(meta.memo).toEqual("memo");
+    expect(deposit.referrer).toEqual("referrer");
+    expect(deposit.memo).toEqual("memo");
 
     expect(Number(tipLink.depositCount)).toEqual(1);
 
@@ -159,7 +152,6 @@ describe("3. Deposit Creation", () => {
 
     // Verify deposit account data
     const deposit = await program.account.deposit.fetch(depositPDA);
-    const meta = await program.account.meta.fetch(metaPDA);
     const tipLink = await program.account.tipLink.fetch(tipLinkPDA);
     const depositIndex = await program.account.depositIndex.fetch(
       depositIndexPDA
@@ -169,15 +161,11 @@ describe("3. Deposit Creation", () => {
     // Verify deposit details
     expect(deposit.signer).toEqual(creator.publicKey);
     expect(deposit.jar).toEqual(jarPDA);
-    expect(deposit.meta).toEqual(metaPDA);
     expect(deposit.tipLink).toEqual(tipLinkPDA);
     expect(Number(deposit.amount)).toEqual(amount.toNumber());
 
-    // // Verify meta details
-    expect(meta.jar).toEqual(jarPDA);
-    expect(meta.deposit).toEqual(depositPDA);
-    expect(meta.referrer).toEqual("referrer");
-    expect(meta.memo).toEqual("memo");
+    expect(deposit.referrer).toEqual("referrer");
+    expect(deposit.memo).toEqual("memo");
 
     // Verify tip link and index updates
     expect(Number(tipLink.depositCount)).toEqual(2); // 1 for the initial deposit and 1 for the SPL token deposit

@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/soljar.json`.
  */
 export type Soljar = {
-  "address": "GpY6HvGukU7zzDkkPLP4UTUVcJJsSdPfrGq1PV1Xain7",
+  "address": "EMNn3aFJoiGDQ8Aurc2a6XF1ziPMVk42Qi4uGHPczWYR",
   "metadata": {
     "name": "soljar",
     "version": "0.1.0",
@@ -278,27 +278,6 @@ export type Soljar = {
                 "kind": "account",
                 "path": "deposit_index.total_items",
                 "account": "depositIndex"
-              }
-            ]
-          }
-        },
-        {
-          "name": "meta",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  109,
-                  101,
-                  116,
-                  97
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "deposit"
               }
             ]
           }
@@ -1353,19 +1332,6 @@ export type Soljar = {
       ]
     },
     {
-      "name": "meta",
-      "discriminator": [
-        7,
-        115,
-        152,
-        83,
-        222,
-        207,
-        126,
-        180
-      ]
-    },
-    {
       "name": "platform",
       "discriminator": [
         77,
@@ -1520,10 +1486,6 @@ export type Soljar = {
             "type": "pubkey"
           },
           {
-            "name": "meta",
-            "type": "pubkey"
-          },
-          {
             "name": "tipLink",
             "type": "pubkey"
           },
@@ -1538,6 +1500,14 @@ export type Soljar = {
           {
             "name": "createdAt",
             "type": "i64"
+          },
+          {
+            "name": "referrer",
+            "type": "string"
+          },
+          {
+            "name": "memo",
+            "type": "string"
           }
         ]
       }
@@ -1632,34 +1602,6 @@ export type Soljar = {
           {
             "name": "bump",
             "type": "u8"
-          }
-        ]
-      }
-    },
-    {
-      "name": "meta",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "jar",
-            "type": "pubkey"
-          },
-          {
-            "name": "deposit",
-            "type": "pubkey"
-          },
-          {
-            "name": "referrer",
-            "type": "string"
-          },
-          {
-            "name": "memo",
-            "type": "string"
-          },
-          {
-            "name": "createdAt",
-            "type": "i64"
           }
         ]
       }

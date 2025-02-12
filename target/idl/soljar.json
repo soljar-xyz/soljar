@@ -1,5 +1,5 @@
 {
-  "address": "GpY6HvGukU7zzDkkPLP4UTUVcJJsSdPfrGq1PV1Xain7",
+  "address": "EMNn3aFJoiGDQ8Aurc2a6XF1ziPMVk42Qi4uGHPczWYR",
   "metadata": {
     "name": "soljar",
     "version": "0.1.0",
@@ -272,27 +272,6 @@
                 "kind": "account",
                 "path": "deposit_index.total_items",
                 "account": "DepositIndex"
-              }
-            ]
-          }
-        },
-        {
-          "name": "meta",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  109,
-                  101,
-                  116,
-                  97
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "deposit"
               }
             ]
           }
@@ -1347,19 +1326,6 @@
       ]
     },
     {
-      "name": "Meta",
-      "discriminator": [
-        7,
-        115,
-        152,
-        83,
-        222,
-        207,
-        126,
-        180
-      ]
-    },
-    {
       "name": "Platform",
       "discriminator": [
         77,
@@ -1514,10 +1480,6 @@
             "type": "pubkey"
           },
           {
-            "name": "meta",
-            "type": "pubkey"
-          },
-          {
             "name": "tip_link",
             "type": "pubkey"
           },
@@ -1532,6 +1494,14 @@
           {
             "name": "created_at",
             "type": "i64"
+          },
+          {
+            "name": "referrer",
+            "type": "string"
+          },
+          {
+            "name": "memo",
+            "type": "string"
           }
         ]
       }
@@ -1626,34 +1596,6 @@
           {
             "name": "bump",
             "type": "u8"
-          }
-        ]
-      }
-    },
-    {
-      "name": "Meta",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "jar",
-            "type": "pubkey"
-          },
-          {
-            "name": "deposit",
-            "type": "pubkey"
-          },
-          {
-            "name": "referrer",
-            "type": "string"
-          },
-          {
-            "name": "memo",
-            "type": "string"
-          },
-          {
-            "name": "created_at",
-            "type": "i64"
           }
         ]
       }
