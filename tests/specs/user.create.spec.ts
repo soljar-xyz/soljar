@@ -50,7 +50,7 @@ describe("1. User Creation", () => {
     expect(user.receiverWallet.equals(creator.publicKey)).toBe(true);
 
     const userInfo = await program.account.userInfo.fetch(userInfoPDA);
-    expect(Number(userInfo.tipLinkCount)).toBe(1);
+    expect(userInfo.tipLinks.length).toBe(1);
 
     // Verify username tracker account
     const userByName = await program.account.userByName.fetch(userByNamePDA);

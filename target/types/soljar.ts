@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/soljar.json`.
  */
 export type Soljar = {
-  "address": "EMNn3aFJoiGDQ8Aurc2a6XF1ziPMVk42Qi4uGHPczWYR",
+  "address": "71VPUgE3KQCDoscZuppizk3fpb4fHi4B6JAXR2RRXSb4",
   "metadata": {
     "name": "soljar",
     "version": "0.1.0",
@@ -133,10 +133,6 @@ export type Soljar = {
               {
                 "kind": "account",
                 "path": "signer"
-              },
-              {
-                "kind": "arg",
-                "path": "currencyMint"
               }
             ]
           }
@@ -276,8 +272,8 @@ export type Soljar = {
               },
               {
                 "kind": "account",
-                "path": "deposit_index.total_items",
-                "account": "depositIndex"
+                "path": "index.total_deposits",
+                "account": "index"
               }
             ]
           }
@@ -595,8 +591,8 @@ export type Soljar = {
               },
               {
                 "kind": "account",
-                "path": "withdrawl_index.total_items",
-                "account": "withdrawlIndex"
+                "path": "index.total_withdrawls",
+                "account": "index"
               }
             ]
           }
@@ -1469,6 +1465,121 @@ export type Soljar = {
       "code": 6003,
       "name": "usernameAlreadyTaken",
       "msg": "usernameAlreadyTaken"
+    },
+    {
+      "code": 6004,
+      "name": "amountOverflow",
+      "msg": "Amount overflow occurred"
+    },
+    {
+      "code": 6005,
+      "name": "tipCountOverflow",
+      "msg": "Tip count overflow occurred"
+    },
+    {
+      "code": 6006,
+      "name": "indexOverflow",
+      "msg": "Index overflow occurred"
+    },
+    {
+      "code": 6007,
+      "name": "totalSupportersOverflow",
+      "msg": "Total supporters overflow occurred"
+    },
+    {
+      "code": 6008,
+      "name": "pageOverflow",
+      "msg": "Page number overflow occurred"
+    },
+    {
+      "code": 6009,
+      "name": "supporterIndexFull",
+      "msg": "Supporter index is full"
+    },
+    {
+      "code": 6010,
+      "name": "invalidAmount",
+      "msg": "Amount must be greater than 0"
+    },
+    {
+      "code": 6011,
+      "name": "userCountOverflow",
+      "msg": "User count overflow occurred"
+    },
+    {
+      "code": 6012,
+      "name": "invalidIndexPage",
+      "msg": "Invalid index page"
+    },
+    {
+      "code": 6013,
+      "name": "tooManyTipLinks",
+      "msg": "Too many tip links"
+    },
+    {
+      "code": 6014,
+      "name": "invalidIdLength",
+      "msg": "Invalid ID length"
+    },
+    {
+      "code": 6015,
+      "name": "invalidDescriptionLength",
+      "msg": "Invalid description length"
+    },
+    {
+      "code": 6016,
+      "name": "tipLinkCountOverflow",
+      "msg": "Tip link count overflow"
+    },
+    {
+      "code": 6017,
+      "name": "referrerTooLong",
+      "msg": "Referrer string too long"
+    },
+    {
+      "code": 6018,
+      "name": "memoTooLong",
+      "msg": "Memo string too long"
+    },
+    {
+      "code": 6019,
+      "name": "insufficientFunds",
+      "msg": "Insufficient funds"
+    },
+    {
+      "code": 6020,
+      "name": "tooManyDeposits",
+      "msg": "Too many deposits in index"
+    },
+    {
+      "code": 6021,
+      "name": "insufficientFundsInJar",
+      "msg": "Insufficient funds in jar"
+    },
+    {
+      "code": 6022,
+      "name": "tooManyWithdrawls",
+      "msg": "Too many withdrawls in index"
+    },
+    {
+      "code": 6023,
+      "name": "arithmeticOverflow",
+      "msg": "Arithmetic overflow"
+    },
+    {
+      "code": 6024,
+      "name": "insufficientTokenBalance",
+      "msg": "Insufficient token balance"
+    },
+    {
+      "code": 6025,
+      "name": "invalidTokenMint",
+      "msg": "Invalid token mint"
+    },
+    {
+      "code": 6026,
+      "name": "maxCurrenciesReached",
+      "msg": "Max currencies reached"
     }
   ],
   "types": [
@@ -1656,18 +1767,6 @@ export type Soljar = {
             "type": "pubkey"
           },
           {
-            "name": "mint",
-            "type": "pubkey"
-          },
-          {
-            "name": "tipLink",
-            "type": "pubkey"
-          },
-          {
-            "name": "amount",
-            "type": "u64"
-          },
-          {
             "name": "createdAt",
             "type": "i64"
           },
@@ -1676,8 +1775,14 @@ export type Soljar = {
             "type": "i64"
           },
           {
-            "name": "tipCount",
-            "type": "u32"
+            "name": "tips",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "tipInfo"
+                }
+              }
+            }
           }
         ]
       }
@@ -1704,6 +1809,30 @@ export type Soljar = {
             "type": {
               "vec": "pubkey"
             }
+          }
+        ]
+      }
+    },
+    {
+      "name": "tipInfo",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "tipLink",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "tipCount",
+            "type": "u32"
           }
         ]
       }
@@ -1796,10 +1925,6 @@ export type Soljar = {
           {
             "name": "user",
             "type": "pubkey"
-          },
-          {
-            "name": "tipLinkCount",
-            "type": "u32"
           },
           {
             "name": "tipLinks",

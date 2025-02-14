@@ -9,3 +9,7 @@ pub struct WithdrawlIndex {
     #[max_len(50)]
     pub withdrawls: Vec<Pubkey>,
 }
+
+impl WithdrawlIndex {
+    pub const MAX_WITHDRAWLS: usize = 50; // matches your current logic
+}

@@ -1,5 +1,5 @@
 {
-  "address": "EMNn3aFJoiGDQ8Aurc2a6XF1ziPMVk42Qi4uGHPczWYR",
+  "address": "71VPUgE3KQCDoscZuppizk3fpb4fHi4B6JAXR2RRXSb4",
   "metadata": {
     "name": "soljar",
     "version": "0.1.0",
@@ -127,10 +127,6 @@
               {
                 "kind": "account",
                 "path": "signer"
-              },
-              {
-                "kind": "arg",
-                "path": "currency_mint"
               }
             ]
           }
@@ -270,8 +266,8 @@
               },
               {
                 "kind": "account",
-                "path": "deposit_index.total_items",
-                "account": "DepositIndex"
+                "path": "index.total_deposits",
+                "account": "Index"
               }
             ]
           }
@@ -589,8 +585,8 @@
               },
               {
                 "kind": "account",
-                "path": "withdrawl_index.total_items",
-                "account": "WithdrawlIndex"
+                "path": "index.total_withdrawls",
+                "account": "Index"
               }
             ]
           }
@@ -1463,6 +1459,121 @@
       "code": 6003,
       "name": "UsernameAlreadyTaken",
       "msg": "USERNAME_ALREADY_TAKEN"
+    },
+    {
+      "code": 6004,
+      "name": "AmountOverflow",
+      "msg": "Amount overflow occurred"
+    },
+    {
+      "code": 6005,
+      "name": "TipCountOverflow",
+      "msg": "Tip count overflow occurred"
+    },
+    {
+      "code": 6006,
+      "name": "IndexOverflow",
+      "msg": "Index overflow occurred"
+    },
+    {
+      "code": 6007,
+      "name": "TotalSupportersOverflow",
+      "msg": "Total supporters overflow occurred"
+    },
+    {
+      "code": 6008,
+      "name": "PageOverflow",
+      "msg": "Page number overflow occurred"
+    },
+    {
+      "code": 6009,
+      "name": "SupporterIndexFull",
+      "msg": "Supporter index is full"
+    },
+    {
+      "code": 6010,
+      "name": "InvalidAmount",
+      "msg": "Amount must be greater than 0"
+    },
+    {
+      "code": 6011,
+      "name": "UserCountOverflow",
+      "msg": "User count overflow occurred"
+    },
+    {
+      "code": 6012,
+      "name": "InvalidIndexPage",
+      "msg": "Invalid index page"
+    },
+    {
+      "code": 6013,
+      "name": "TooManyTipLinks",
+      "msg": "Too many tip links"
+    },
+    {
+      "code": 6014,
+      "name": "InvalidIdLength",
+      "msg": "Invalid ID length"
+    },
+    {
+      "code": 6015,
+      "name": "InvalidDescriptionLength",
+      "msg": "Invalid description length"
+    },
+    {
+      "code": 6016,
+      "name": "TipLinkCountOverflow",
+      "msg": "Tip link count overflow"
+    },
+    {
+      "code": 6017,
+      "name": "ReferrerTooLong",
+      "msg": "Referrer string too long"
+    },
+    {
+      "code": 6018,
+      "name": "MemoTooLong",
+      "msg": "Memo string too long"
+    },
+    {
+      "code": 6019,
+      "name": "InsufficientFunds",
+      "msg": "Insufficient funds"
+    },
+    {
+      "code": 6020,
+      "name": "TooManyDeposits",
+      "msg": "Too many deposits in index"
+    },
+    {
+      "code": 6021,
+      "name": "InsufficientFundsInJar",
+      "msg": "Insufficient funds in jar"
+    },
+    {
+      "code": 6022,
+      "name": "TooManyWithdrawls",
+      "msg": "Too many withdrawls in index"
+    },
+    {
+      "code": 6023,
+      "name": "ArithmeticOverflow",
+      "msg": "Arithmetic overflow"
+    },
+    {
+      "code": 6024,
+      "name": "InsufficientTokenBalance",
+      "msg": "Insufficient token balance"
+    },
+    {
+      "code": 6025,
+      "name": "InvalidTokenMint",
+      "msg": "Invalid token mint"
+    },
+    {
+      "code": 6026,
+      "name": "MaxCurrenciesReached",
+      "msg": "Max currencies reached"
     }
   ],
   "types": [
@@ -1650,18 +1761,6 @@
             "type": "pubkey"
           },
           {
-            "name": "mint",
-            "type": "pubkey"
-          },
-          {
-            "name": "tip_link",
-            "type": "pubkey"
-          },
-          {
-            "name": "amount",
-            "type": "u64"
-          },
-          {
             "name": "created_at",
             "type": "i64"
           },
@@ -1670,8 +1769,14 @@
             "type": "i64"
           },
           {
-            "name": "tip_count",
-            "type": "u32"
+            "name": "tips",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "TipInfo"
+                }
+              }
+            }
           }
         ]
       }
@@ -1698,6 +1803,30 @@
             "type": {
               "vec": "pubkey"
             }
+          }
+        ]
+      }
+    },
+    {
+      "name": "TipInfo",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "tip_link",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "tip_count",
+            "type": "u32"
           }
         ]
       }
@@ -1790,10 +1919,6 @@
           {
             "name": "user",
             "type": "pubkey"
-          },
-          {
-            "name": "tip_link_count",
-            "type": "u32"
           },
           {
             "name": "tip_links",

@@ -1,17 +1,19 @@
 use anchor_lang::prelude::*;
 
 use crate::state::*;
-use crate::error::ErrorCode;
+use crate::error::SoljarError;
 
 pub fn create_user(ctx: Context<CreateUser>, username: String) -> Result<()> {
-    require!(username.len() <= 15, ErrorCode::UsernameTooLong);
+    require!(username.len() <= 15, SoljarError::UsernameTooLong);
     require!(
         !ctx.accounts.user_by_name.username_taken,
-        ErrorCode::UsernameAlreadyTaken
+        SoljarError::UsernameAlreadyTaken
     );
 
     let platform = &mut ctx.accounts.platform;
-    platform.user_count += 1;
+    platform.user_count = platform.user_count
+        .checked_add(1)
+        .ok_or(SoljarError::UserCountOverflow)?;
     platform.updated_at = Clock::get()?.unix_timestamp;
     
     let user = &mut ctx.accounts.user;

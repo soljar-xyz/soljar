@@ -3,40 +3,59 @@ use anchor_lang::solana_program::program::invoke;
 use anchor_lang::solana_program::system_instruction::transfer;
 
 use crate::state::*;
-
-pub fn create_deposit(ctx: Context<CreateDeposit>, _tip_link_id: String, currency_mint: Pubkey, referrer: String, memo: String, amount: u64) -> Result<()> {
+use crate::error::SoljarError;
+pub fn create_deposit(
+    ctx: Context<CreateDeposit>, 
+    _tip_link_id: String, 
+    currency_mint: Pubkey, 
+    referrer: String, 
+    memo: String, 
+    amount: u64
+) -> Result<()> {
+    // Validate input lengths
+    require!(
+        referrer.len() <= Deposit::MAX_REFERRER_LENGTH,
+        SoljarError::ReferrerTooLong
+    );
+    require!(
+        memo.len() <= Deposit::MAX_MEMO_LENGTH,
+        SoljarError::MemoTooLong
+    );
+    require!(amount > 0, SoljarError::InvalidAmount);
 
     if currency_mint == Pubkey::default() {
         msg!("TRANSFERING SOL");
         let jar = &mut ctx.accounts.jar;
 
-    //  Transfer SOL from signer to treasury
-     let transfer_seed_ix = transfer(
-        &ctx.accounts.signer.key(),
-        jar.to_account_info().key,
-        amount,
-    );
+        // Verify signer has enough SOL
+        require!(
+            ctx.accounts.signer.lamports() >= amount,
+            SoljarError::InsufficientFunds
+        );
 
+        // Transfer SOL from signer to treasury
+        let transfer_seed_ix = transfer(
+            &ctx.accounts.signer.key(),
+            jar.to_account_info().key,
+            amount,
+        );
 
-    invoke(
-        &transfer_seed_ix,
-        &[
-            ctx.accounts.signer.to_account_info(),
-            jar.to_account_info(),
+        invoke(
+            &transfer_seed_ix,
+            &[
+                ctx.accounts.signer.to_account_info(),
+                jar.to_account_info(),
                 ctx.accounts.system_program.to_account_info(),
             ],
         )?;
     }
 
-
-    let tip_link: &mut Account<'_, TipLink> = &mut ctx.accounts.tip_link;
-    tip_link.deposit_count += 1;
+    let tip_link = &mut ctx.accounts.tip_link;
+    // Check for overflow before incrementing
+    tip_link.deposit_count = tip_link.deposit_count
+        .checked_add(1)
+        .ok_or(SoljarError::Overflow)?;
     tip_link.updated_at = Clock::get()?.unix_timestamp;
-
-    
-
-
-
 
     let deposit = &mut ctx.accounts.deposit;
     deposit.signer = ctx.accounts.signer.key();
@@ -50,25 +69,36 @@ pub fn create_deposit(ctx: Context<CreateDeposit>, _tip_link_id: String, currenc
 
     let deposit_index = &mut ctx.accounts.deposit_index;
     
-    deposit_index.total_items += 1;
+    // Check if we're about to hit the limit (one before MAX_DEPOSITS)
+    if deposit_index.total_items >= (DepositIndex::MAX_DEPOSITS - 1) as u8 {
+        ctx.accounts.index.deposit_index_page = ctx.accounts.index.deposit_index_page
+            .checked_add(1)
+            .ok_or(SoljarError::Overflow)?;
+    }
+
+    // Check for overflow before incrementing
+    deposit_index.total_items = deposit_index.total_items
+        .checked_add(1)
+        .ok_or(SoljarError::Overflow)?;
+
+    // Verify we're not exceeding vector capacity
+    require!(
+        deposit_index.deposits.len() < DepositIndex::MAX_DEPOSITS,
+        SoljarError::TooManyDeposits
+    );
     deposit_index.deposits.push(deposit.key());
 
-
-
-
     let index = &mut ctx.accounts.index;
-    index.total_deposits += 1;
-
-
-
-    if deposit_index.total_items == 49 {
-        index.deposit_index_page += 1;
-    }
+    // Check for overflow before incrementing
+    index.total_deposits = index.total_deposits
+        .checked_add(1)
+        .ok_or(SoljarError::Overflow)?;
 
     Ok(())
 }
 
 // const TOTAL_ITEMS: u32 = 0;
+
 
 #[derive(Accounts)]
 #[instruction(tip_link_id: String, currency_mint: Pubkey)]
@@ -100,7 +130,11 @@ pub struct CreateDeposit<'info> {
         init_if_needed,
         payer = signer,
         space = 8 + DepositIndex::INIT_SPACE,
-        seeds = [b"deposit_index", index.key().as_ref(), &index.deposit_index_page.to_le_bytes()],
+        seeds = [
+            b"deposit_index", 
+            index.key().as_ref(), 
+            &index.deposit_index_page.to_le_bytes()
+        ],
         bump,
     )]
     pub deposit_index: Account<'info, DepositIndex>,
@@ -109,7 +143,7 @@ pub struct CreateDeposit<'info> {
         init,
         payer = signer,
         space = 8 + Deposit::INIT_SPACE,
-        seeds = [b"deposit", deposit_index.key().as_ref(), &deposit_index.total_items.to_le_bytes()],
+        seeds = [b"deposit", deposit_index.key().as_ref(), &index.total_deposits.to_le_bytes()],
         bump,
     )]
     pub deposit: Account<'info,Deposit>,

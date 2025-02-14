@@ -4,16 +4,33 @@ use anchor_spl::{
     token_interface::{transfer_checked, Mint, TokenAccount, TokenInterface, TransferChecked},
 };
 use crate::state::*;
-
+use crate::error::SoljarError;
 
 pub fn withdraw_tokens(ctx: Context<WithdrawTokens>, amount: u64) -> Result<()> {
-
+    // Validate amount
+    require!(amount > 0, SoljarError::InvalidAmount);
 
     let mint = ctx.accounts.mint.key();
     msg!("Mint: {}", mint);
     if mint == Pubkey::default() {
         return Ok(());
     }
+
+    // Verify source account has sufficient balance
+    require!(
+        ctx.accounts.token_account.amount >= amount,
+        SoljarError::InsufficientTokenBalance
+    );
+
+    // Verify token accounts belong to the correct mint
+    require!(
+        ctx.accounts.token_account.mint == ctx.accounts.mint.key(),
+        SoljarError::InvalidTokenMint
+    );
+    require!(
+        ctx.accounts.associated_token_account.mint == ctx.accounts.mint.key(),
+        SoljarError::InvalidTokenMint
+    );
 
     let transfer_cpi_accounts = TransferChecked {
         from: ctx.accounts.token_account.to_account_info(),
@@ -37,9 +54,10 @@ pub fn withdraw_tokens(ctx: Context<WithdrawTokens>, amount: u64) -> Result<()> 
         &[jar_bump],
     ]];
 
-    let cpi_context =
-        CpiContext::new(cpi_program, transfer_cpi_accounts).with_signer(signer_seeds);
+    let cpi_context = CpiContext::new(cpi_program, transfer_cpi_accounts)
+        .with_signer(signer_seeds);
 
+    // transfer_checked already handles decimal place validation
     transfer_checked(cpi_context, amount, ctx.accounts.mint.decimals)?;
 
     Ok(())

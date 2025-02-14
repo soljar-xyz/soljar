@@ -9,3 +9,7 @@ pub struct DepositIndex {
     #[max_len(50)]
     pub deposits: Vec<Pubkey>,
 }
+
+impl DepositIndex {
+    pub const MAX_DEPOSITS: usize = 50; // Changed from 49 to match the Vec max_len
+}

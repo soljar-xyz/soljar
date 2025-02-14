@@ -13,3 +13,8 @@ pub struct TipLink {
     #[max_len(100)]
     pub description: String,
 }
+
+impl TipLink {
+    pub const MAX_ID_LENGTH: usize = 25; // adjust as needed
+    pub const MAX_DESCRIPTION_LENGTH: usize = 100; // adjust as needed
+}

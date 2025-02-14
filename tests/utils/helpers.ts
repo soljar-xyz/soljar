@@ -116,26 +116,17 @@ export const findDepositPDA = (depositIndexPDA: PublicKey, index: number) => {
     [
       Buffer.from("deposit"),
       depositIndexPDA.toBuffer(),
-      Buffer.from(new Uint8Array([index]).buffer),
+      Buffer.from(new Uint32Array([index]).buffer),
     ],
     program.programId
   );
   return pda;
 };
 
-export const findSupporterPDA = (
-  jarPDA: PublicKey,
-  signer: PublicKey,
-  mint: PublicKey
-) => {
+export const findSupporterPDA = (jar: PublicKey, signer: PublicKey) => {
   const { program } = getTestContext();
   const [pda] = PublicKey.findProgramAddressSync(
-    [
-      Buffer.from("supporter"),
-      jarPDA.toBuffer(),
-      signer.toBuffer(),
-      mint.toBuffer(),
-    ],
+    [Buffer.from("supporter"), jar.toBuffer(), signer.toBuffer()],
     program.programId
   );
   return pda;
@@ -150,7 +141,7 @@ export const findWithdrawlPDA = (
     [
       Buffer.from("withdrawl"),
       withdrawlIndexPDA.toBuffer(),
-      Buffer.from(new Uint8Array([index]).buffer),
+      Buffer.from(new Uint32Array([index]).buffer),
     ],
     program.programId
   );

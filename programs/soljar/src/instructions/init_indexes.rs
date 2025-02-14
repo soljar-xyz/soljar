@@ -1,8 +1,25 @@
 use anchor_lang::prelude::*;
 use crate::state::*;
-
+use crate::error::SoljarError;
 pub fn init_indexes(ctx: Context<InitIndexes>, index_page: u32) -> Result<()> {
+    // Validate index page
+    require!(index_page == 0, SoljarError::InvalidIndexPage);
+    
     let index = &mut ctx.accounts.index;
+    
+    // Validate that we're not exceeding maximum pages
+    require!(
+        index_page <= index.deposit_index_page.checked_add(1).ok_or(SoljarError::PageOverflow)?,
+        SoljarError::InvalidIndexPage
+    );
+    require!(
+        index_page <= index.withdrawl_index_page.checked_add(1).ok_or(SoljarError::PageOverflow)?,
+        SoljarError::InvalidIndexPage
+    );
+    require!(
+        index_page <= index.supporter_index_page.checked_add(1).ok_or(SoljarError::PageOverflow)?,
+        SoljarError::InvalidIndexPage
+    );
 
     // Initialize deposit index
     let deposit_index = &mut ctx.accounts.deposit_index;

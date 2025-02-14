@@ -1,41 +1,73 @@
 use anchor_lang::prelude::*;
 
 use crate::state::*;
+use crate::error::SoljarError;
 
 pub fn add_supporter(ctx: Context<AddSupporter>, _tip_link_id: String, currency_mint: Pubkey, amount: u64) -> Result<()> {
-   
     let tip_link: &mut Account<'_, TipLink> = &mut ctx.accounts.tip_link;
-
     let supporter = &mut ctx.accounts.supporter;
 
     if supporter.signer == ctx.accounts.signer.key() {
-        supporter.amount += amount;
-        supporter.tip_count += 1;
+        // Find existing tip info for the currency
+        if let Some(tip_info) = supporter.tips.iter_mut().find(|t| t.mint == currency_mint) {
+            // Update existing tip info
+            tip_info.amount = tip_info.amount.checked_add(amount)
+                .ok_or(SoljarError::AmountOverflow)?;
+            tip_info.tip_count = tip_info.tip_count.checked_add(1)
+                .ok_or(SoljarError::TipCountOverflow)?;
+        } else {
+            // Add new currency to tips vector
+            require!(
+                supporter.tips.len() < 10,
+                SoljarError::MaxCurrenciesReached
+            );
+            supporter.tips.push(TipInfo {
+                mint: currency_mint,
+                tip_link: tip_link.key(),
+                amount,
+                tip_count: 1,
+            });
+        }
         supporter.updated_at = Clock::get()?.unix_timestamp;
     } else {
+        // Initialize new supporter
+        require!(amount > 0, SoljarError::InvalidAmount);
+        
         supporter.signer = ctx.accounts.signer.key();
         supporter.jar = ctx.accounts.jar.key();
-        supporter.amount = amount;
-        supporter.tip_count = 1;
         supporter.created_at = Clock::get()?.unix_timestamp;
         supporter.updated_at = Clock::get()?.unix_timestamp;
-        supporter.mint = currency_mint;
-        supporter.tip_link = tip_link.key();
+        supporter.tips = vec![TipInfo {
+            mint: currency_mint,
+            tip_link: tip_link.key(),
+            amount,
+            tip_count: 1,
+        }];
 
         let supporter_index = &mut ctx.accounts.supporter_index;
 
-        supporter_index.total_items += 1;
+        // Check for overflow before incrementing total_items
+        supporter_index.total_items = supporter_index.total_items.checked_add(1)
+            .ok_or(SoljarError::IndexOverflow)?;
+            
+        require!(
+            supporter_index.total_items <= 49,
+            SoljarError::SupporterIndexFull
+        );
+        
         supporter_index.supporters.push(supporter.key());
 
         let index = &mut ctx.accounts.index;
 
-        index.total_supporters += 1;
+        // Check for overflow before incrementing total_supporters
+        index.total_supporters = index.total_supporters.checked_add(1)
+            .ok_or(SoljarError::TotalSupportersOverflow)?;
 
         if supporter_index.total_items == 49 {
-            index.supporter_index_page += 1;
+            index.supporter_index_page = index.supporter_index_page.checked_add(1)
+                .ok_or(SoljarError::PageOverflow)?;
         }
     }
-
 
     Ok(())
 }
@@ -78,7 +110,7 @@ pub struct AddSupporter<'info> {
         init_if_needed,
         payer = signer,
         space = 8 + Supporter::INIT_SPACE,
-        seeds = [b"supporter", jar.key().as_ref(), signer.key().as_ref(), currency_mint.as_ref()],
+        seeds = [b"supporter", jar.key().as_ref(), signer.key().as_ref()],
         bump,
     )]
     pub supporter: Account<'info, Supporter>,

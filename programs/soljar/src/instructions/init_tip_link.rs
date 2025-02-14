@@ -1,5 +1,6 @@
 use anchor_lang::prelude::*;
 use crate::state::*;
+use crate::error::SoljarError;
 
 pub fn init_tip_link(
     ctx: Context<InitTipLink>,
@@ -7,16 +8,31 @@ pub fn init_tip_link(
     description: String,
     _index_page: u32,
 ) -> Result<()> {
+    // Validate input lengths
+    require!(
+        id.len() <= TipLink::MAX_ID_LENGTH,
+        SoljarError::InvalidIdLength
+    );
+    require!(
+        description.len() <= TipLink::MAX_DESCRIPTION_LENGTH,
+        SoljarError::InvalidDescriptionLength
+    );
+
     let tip_link = &mut ctx.accounts.tip_link;
     let user_info = &mut ctx.accounts.user_info;
+
+
     // Initialize tip link
     tip_link.user = ctx.accounts.user.key();
     tip_link.jar = ctx.accounts.jar.key();
     tip_link.id = id;
     tip_link.description = description;
-
-    // Update user info
-    user_info.tip_link_count += 1;
+    
+    // Verify we're not exceeding vector capacity
+    require!(
+        user_info.tip_links.len() < UserInfo::MAX_TIP_LINKS as usize,
+        SoljarError::TooManyTipLinks
+    );
     user_info.tip_links.push(tip_link.key());
 
     Ok(())

@@ -12,7 +12,8 @@ use instructions::create_withdrawl::*;
 use instructions::withdraw_tokens::*;
 
 
-declare_id!("EMNn3aFJoiGDQ8Aurc2a6XF1ziPMVk42Qi4uGHPczWYR");
+
+declare_id!("71VPUgE3KQCDoscZuppizk3fpb4fHi4B6JAXR2RRXSb4");
 
 pub mod error;
 pub mod instructions;
@@ -58,5 +59,5 @@ pub mod soljar {
     pub fn withdraw_tokens(ctx: Context<WithdrawTokens>, amount: u64) -> Result<()> {
         instructions::withdraw_tokens::withdraw_tokens(ctx, amount)
     }
-    
+
 }

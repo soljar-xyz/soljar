@@ -14,3 +14,8 @@ pub struct Deposit {
     #[max_len(20)]
     pub memo: String,
 }
+
+impl Deposit {
+    pub const MAX_REFERRER_LENGTH: usize = 50; // adjust as needed
+    pub const MAX_MEMO_LENGTH: usize = 200; // adjust as needed
+}

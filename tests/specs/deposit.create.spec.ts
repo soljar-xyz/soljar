@@ -31,7 +31,7 @@ describe("3. Deposit Creation", () => {
     const depositPDA = findDepositPDA(depositIndexPDA, 0);
 
     const supporterIndexPDA = findSupporterIndexPDA(indexPDA, 0);
-    const supporterPDA = findSupporterPDA(jarPDA, creator.publicKey, SOL_MINT);
+    const supporterPDA = findSupporterPDA(jarPDA, creator.publicKey);
 
     console.log("SOL_MINT: ", SOL_MINT);
 
@@ -94,8 +94,10 @@ describe("3. Deposit Creation", () => {
     const supporter = await program.account.supporter.fetch(supporterPDA);
     expect(supporter.signer).toEqual(creator.publicKey);
     expect(supporter.jar).toEqual(jarPDA);
-    expect(Number(supporter.amount)).toEqual(10000000000);
-    expect(Number(supporter.tipCount)).toEqual(1);
+    expect(supporter.tips).toHaveLength(1);
+    expect(supporter.tips[0].mint).toEqual(SOL_MINT);
+    expect(Number(supporter.tips[0].amount)).toEqual(10000000000);
+    expect(Number(supporter.tips[0].tipCount)).toEqual(1);
 
     const supporterIndex = await program.account.supporterIndex.fetch(
       supporterIndexPDA
@@ -115,7 +117,7 @@ describe("3. Deposit Creation", () => {
     const tipLinkPDA = findTipLinkPDA(username);
     const indexPDA = findIndexPDA(jarPDA);
     const supporterIndexPDA = findSupporterIndexPDA(indexPDA, 0);
-    const supporterPDA = findSupporterPDA(jarPDA, creator.publicKey, mint);
+    const supporterPDA = findSupporterPDA(jarPDA, creator.publicKey);
     const depositIndexPDA = findDepositIndexPDA(indexPDA, 0);
     const depositPDA = findDepositPDA(depositIndexPDA, 1);
     const metaPDA = findMetaPDA(depositPDA);
@@ -185,15 +187,16 @@ describe("3. Deposit Creation", () => {
     const supporterIndex = await program.account.supporterIndex.fetch(
       supporterIndexPDA
     );
-    expect(Number(supporterIndex.totalItems)).toEqual(2);
-    expect(supporterIndex.supporters[1]).toEqual(supporterPDA);
+    expect(Number(supporterIndex.totalItems)).toEqual(1);
+    expect(supporterIndex.supporters[0]).toEqual(supporterPDA);
 
     const supporter = await program.account.supporter.fetch(supporterPDA);
     expect(supporter.signer).toEqual(creator.publicKey);
     expect(supporter.jar).toEqual(jarPDA);
-    expect(Number(supporter.amount)).toEqual(amount.toNumber());
-    expect(Number(supporter.tipCount)).toEqual(1);
-    expect(supporter.mint).toEqual(mint);
+    expect(supporter.tips).toHaveLength(2);
+    expect(supporter.tips[1].mint).toEqual(mint);
+    expect(Number(supporter.tips[1].amount)).toEqual(amount.toNumber());
+    expect(Number(supporter.tips[1].tipCount)).toEqual(1);
   });
 
   it("should create two deposits one with SOL and one with SPL token", async () => {
@@ -210,7 +213,7 @@ describe("3. Deposit Creation", () => {
     const depositIndexPDA = findDepositIndexPDA(indexPDA, 0);
     const depositPDA = findDepositPDA(depositIndexPDA, 2);
     const supporterIndexPDA = findSupporterIndexPDA(indexPDA, 0);
-    const supporterPDA = findSupporterPDA(jarPDA, creator.publicKey, SOL_MINT);
+    const supporterPDA = findSupporterPDA(jarPDA, creator.publicKey);
 
     const amount = new BN(10000000000);
 
@@ -238,17 +241,19 @@ describe("3. Deposit Creation", () => {
     const supporterIndex = await program.account.supporterIndex.fetch(
       supporterIndexPDA
     );
-    expect(Number(supporterIndex.totalItems)).toEqual(2);
+    expect(Number(supporterIndex.totalItems)).toEqual(1);
 
     const supporter = await program.account.supporter.fetch(supporterPDA);
     expect(supporter.signer).toEqual(creator.publicKey);
     expect(supporter.jar).toEqual(jarPDA);
-    expect(Number(supporter.amount)).toEqual(20000000000);
-    expect(Number(supporter.tipCount)).toEqual(2);
+    expect(supporter.tips).toHaveLength(2);
+    expect(supporter.tips[0].mint).toEqual(SOL_MINT);
+    expect(Number(supporter.tips[0].amount)).toEqual(20000000000);
+    expect(Number(supporter.tips[0].tipCount)).toEqual(2);
 
     const depositPDA2 = findDepositPDA(depositIndexPDA, 3);
     const metaPDA2 = findMetaPDA(depositPDA2);
-    const supporterPDA2 = findSupporterPDA(jarPDA, creator.publicKey, mint);
+    const supporterPDA2 = findSupporterPDA(jarPDA, creator.publicKey);
     const amount2 = new BN(100000000);
 
     await program.methods
@@ -283,13 +288,14 @@ describe("3. Deposit Creation", () => {
     const supporterIndex2 = await program.account.supporterIndex.fetch(
       supporterIndexPDA
     );
-    expect(Number(supporterIndex2.totalItems)).toEqual(2);
+    expect(Number(supporterIndex2.totalItems)).toEqual(1);
 
     const supporter2 = await program.account.supporter.fetch(supporterPDA2);
     expect(supporter2.signer).toEqual(creator.publicKey);
     expect(supporter2.jar).toEqual(jarPDA);
-    expect(Number(supporter2.amount)).toEqual(200000000);
-    expect(Number(supporter2.tipCount)).toEqual(2);
-    expect(supporter2.mint).toEqual(mint);
+    expect(supporter2.tips).toHaveLength(2);
+    expect(supporter2.tips[1].mint).toEqual(mint);
+    expect(Number(supporter2.tips[1].amount)).toEqual(200000000);
+    expect(Number(supporter2.tips[1].tipCount)).toEqual(2);
   });
 });
