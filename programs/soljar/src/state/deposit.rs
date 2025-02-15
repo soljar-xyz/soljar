@@ -4,11 +4,12 @@ use anchor_lang::prelude::*;
 #[derive(InitSpace)]
 pub struct Deposit {
     pub signer: Pubkey,
-    pub tip_link: Pubkey,
+    pub created_at: i64,
+    pub amount: u64,
+    #[max_len(15)]
+    pub tip_link: String,
     #[max_len(4)]
     pub currency: String,
-    pub amount: u64,
-    pub created_at: i64,
     #[max_len(25)]
     pub referrer: String,
     #[max_len(20)]

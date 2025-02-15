@@ -72,7 +72,7 @@ describe("3. Deposit Creation", () => {
 
     // let's right all expected values
     expect(deposit.signer).toEqual(creator.publicKey);
-    expect(deposit.tipLink).toEqual(tipLinkPDA);
+    expect(deposit.tipLink).toEqual(tipLink.id);
     expect(Number(deposit.amount)).toEqual(10000000000);
 
     expect(deposit.referrer).toEqual("referrer");
@@ -162,7 +162,7 @@ describe("3. Deposit Creation", () => {
 
     // Verify deposit details
     expect(deposit.signer).toEqual(creator.publicKey);
-    expect(deposit.tipLink).toEqual(tipLinkPDA);
+    expect(deposit.tipLink).toEqual(tipLink.id);
     expect(Number(deposit.amount)).toEqual(amount.toNumber());
 
     expect(deposit.referrer).toEqual("referrer");

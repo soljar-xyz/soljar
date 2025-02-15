@@ -1,5 +1,5 @@
 {
-  "address": "71VPUgE3KQCDoscZuppizk3fpb4fHi4B6JAXR2RRXSb4",
+  "address": "6kYzuEmgVUn8bmsyCDz8XuyTMVvDDVjxJj5yVSTSNo8z",
   "metadata": {
     "name": "soljar",
     "version": "0.1.0",
@@ -1592,20 +1592,20 @@
             "type": "pubkey"
           },
           {
-            "name": "tip_link",
-            "type": "pubkey"
-          },
-          {
-            "name": "currency",
-            "type": "string"
+            "name": "created_at",
+            "type": "i64"
           },
           {
             "name": "amount",
             "type": "u64"
           },
           {
-            "name": "created_at",
-            "type": "i64"
+            "name": "tip_link",
+            "type": "string"
+          },
+          {
+            "name": "currency",
+            "type": "string"
           },
           {
             "name": "referrer",

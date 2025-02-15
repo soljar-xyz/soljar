@@ -52,28 +52,32 @@ pub fn add_supporter(ctx: Context<AddSupporter>, _tip_link_id: String, currency_
         }];
 
         let supporter_index = &mut ctx.accounts.supporter_index;
-
-        // Check for overflow before incrementing total_items
-        supporter_index.total_items = supporter_index.total_items.checked_add(1)
-            .ok_or(SoljarError::IndexOverflow)?;
-            
-        require!(
-            supporter_index.total_items <= 49,
-            SoljarError::SupporterIndexFull
-        );
-        
-        supporter_index.supporters.push(supporter.key());
-
         let index = &mut ctx.accounts.index;
 
-        // Check for overflow before incrementing total_supporters
-        index.total_supporters = index.total_supporters.checked_add(1)
-            .ok_or(SoljarError::TotalSupportersOverflow)?;
-
-        if supporter_index.total_items == 49 {
-            index.supporter_index_page = index.supporter_index_page.checked_add(1)
+        // Check if we're about to hit the limit (one before MAX_SUPPORTERS)
+        if supporter_index.total_items >= (SupporterIndex::MAX_SUPPORTERS - 1) as u8 {
+            index.supporter_index_page = index.supporter_index_page
+                .checked_add(1)
                 .ok_or(SoljarError::PageOverflow)?;
         }
+
+        // Check for overflow before incrementing total_items
+        supporter_index.total_items = supporter_index.total_items
+            .checked_add(1)
+            .ok_or(SoljarError::IndexOverflow)?;
+            
+        // Verify we're not exceeding vector capacity
+        require!(
+            supporter_index.supporters.len() < SupporterIndex::MAX_SUPPORTERS as usize,
+            SoljarError::SupporterIndexFull
+        );
+
+        supporter_index.supporters.push(supporter.key());
+
+        // Check for overflow before incrementing total_supporters
+        index.total_supporters = index.total_supporters
+            .checked_add(1)
+            .ok_or(SoljarError::TotalSupportersOverflow)?;
     }
 
     Ok(())

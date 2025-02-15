@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/soljar.json`.
  */
 export type Soljar = {
-  "address": "71VPUgE3KQCDoscZuppizk3fpb4fHi4B6JAXR2RRXSb4",
+  "address": "6kYzuEmgVUn8bmsyCDz8XuyTMVvDDVjxJj5yVSTSNo8z",
   "metadata": {
     "name": "soljar",
     "version": "0.1.0",
@@ -1598,20 +1598,20 @@ export type Soljar = {
             "type": "pubkey"
           },
           {
-            "name": "tipLink",
-            "type": "pubkey"
-          },
-          {
-            "name": "currency",
-            "type": "string"
+            "name": "createdAt",
+            "type": "i64"
           },
           {
             "name": "amount",
             "type": "u64"
           },
           {
-            "name": "createdAt",
-            "type": "i64"
+            "name": "tipLink",
+            "type": "string"
+          },
+          {
+            "name": "currency",
+            "type": "string"
           },
           {
             "name": "referrer",

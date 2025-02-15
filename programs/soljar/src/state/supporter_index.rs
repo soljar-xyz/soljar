@@ -9,3 +9,7 @@ pub struct SupporterIndex {
     #[max_len(50)]
     pub supporters: Vec<Pubkey>,
 }
+
+impl SupporterIndex {
+    pub const MAX_SUPPORTERS: u8 = 50;
+}

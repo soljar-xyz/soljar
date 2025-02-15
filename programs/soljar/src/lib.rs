@@ -13,7 +13,7 @@ use instructions::withdraw_tokens::*;
 
 
 
-declare_id!("71VPUgE3KQCDoscZuppizk3fpb4fHi4B6JAXR2RRXSb4");
+declare_id!("6kYzuEmgVUn8bmsyCDz8XuyTMVvDDVjxJj5yVSTSNo8z");
 
 pub mod error;
 pub mod instructions;

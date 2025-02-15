@@ -30,7 +30,7 @@ export function getSoljarProgramId(cluster: Cluster) {
     case "devnet":
     case "testnet":
       // This is the program ID for the Soljar program on devnet and testnet.
-      return new PublicKey("71VPUgE3KQCDoscZuppizk3fpb4fHi4B6JAXR2RRXSb4");
+      return new PublicKey("6kYzuEmgVUn8bmsyCDz8XuyTMVvDDVjxJj5yVSTSNo8z");
     case "mainnet-beta":
     default:
       return SOLJAR_PROGRAM_ID;

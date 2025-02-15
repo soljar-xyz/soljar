@@ -7,9 +7,17 @@ import {
   findUserPDA,
   findWithdrawlIndexPDA,
   findWithdrawlPDA,
+  findTipLinkPDA,
+  findSupporterIndexPDA,
 } from "../utils/helpers";
 import { BN } from "@coral-xyz/anchor";
 import { PublicKey } from "@solana/web3.js";
+import { BankrunProvider } from "anchor-bankrun";
+import IDL from "../../target/idl/soljar.json";
+import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
+import * as anchor from "@coral-xyz/anchor";
+import { Soljar } from "@project/anchor";
+import { SystemProgram } from "@solana/web3.js";
 
 describe("5. Stress Testing", () => {
   it("should handle multiple deposits across index pages", async () => {
@@ -166,5 +174,96 @@ describe("5. Stress Testing", () => {
       findWithdrawlIndexPDA(indexPDA, 0)
     );
     expect(Number(withdrawlIndex.totalItems)).toEqual(WITHDRAWALS_PER_PAGE);
+  });
+
+  it("should handle multiple supporters across index pages", async () => {
+    const { program, creator, context, newMember } = getTestContext();
+    const SOL_MINT = PublicKey.default;
+    const username = "satoshi";
+
+    // Create multiple supporters with different wallets
+    const EXISTING_SUPPORTERS = 1; // Assuming no existing supporters
+    const NEW_SUPPORTERS = 200; // This will span multiple pages
+    const SUPPORTERS_PER_PAGE = 50; // Match this with supporter_index.rs
+
+    const userPDA = findUserPDA(creator.publicKey);
+    const jarPDA = findJarPDA(userPDA);
+    const indexPDA = findIndexPDA(jarPDA);
+    const tipLinkPDA = findTipLinkPDA(username);
+
+    // Create supporters in smaller chunks
+    const CHUNK_SIZE = 5;
+    const supporters = Array(NEW_SUPPORTERS)
+      .fill(null)
+      .map(() => anchor.web3.Keypair.generate());
+
+    for (
+      let chunk = 0;
+      chunk < Math.ceil(NEW_SUPPORTERS / CHUNK_SIZE);
+      chunk++
+    ) {
+      const startIdx = chunk * CHUNK_SIZE;
+      const endIdx = Math.min(startIdx + CHUNK_SIZE, NEW_SUPPORTERS);
+
+      // Process supporters in this chunk
+      for (let i = startIdx; i < endIdx; i++) {
+        const totalSupporters = EXISTING_SUPPORTERS + i;
+        const currentPage = Math.floor(totalSupporters / SUPPORTERS_PER_PAGE);
+
+        // Create new provider and program instance for this supporter
+        const supporterProvider = new BankrunProvider(context);
+        supporterProvider.wallet = new NodeWallet(supporters[i]);
+        const supporterProgram = new anchor.Program(
+          IDL as Soljar,
+          supporterProvider
+        );
+
+        // Airdrop some SOL to the supporter
+        // await context.warpToSlot(BigInt(100));
+        await context.setAccount(supporters[i].publicKey, {
+          lamports: 1_000_000_000,
+          owner: SystemProgram.programId,
+          executable: false,
+          data: Buffer.from([]),
+        });
+
+        await supporterProgram.methods
+          .addSupporter(username, SOL_MINT, new BN(100000000))
+          .accounts({})
+          .signers([supporters[i]])
+          .rpc();
+
+        // Add small delay between transactions
+        await new Promise((resolve) => setTimeout(resolve, 10));
+      }
+
+      // Verify after each chunk
+      const supporterIndex = await program.account.supporterIndex.fetch(
+        findSupporterIndexPDA(indexPDA, 0)
+      );
+
+      const expectedTotal = Math.min(
+        EXISTING_SUPPORTERS + endIdx,
+        SUPPORTERS_PER_PAGE
+      );
+      expect(Number(supporterIndex.totalItems)).toEqual(expectedTotal);
+    }
+
+    // Verify final state
+    const finalIndex = await program.account.index.fetch(indexPDA);
+    const expectedPage = Math.floor(
+      (EXISTING_SUPPORTERS + NEW_SUPPORTERS - 1) / SUPPORTERS_PER_PAGE
+    );
+
+    expect(Number(finalIndex.supporterIndexPage)).toEqual(expectedPage);
+    expect(Number(finalIndex.totalSupporters)).toEqual(
+      EXISTING_SUPPORTERS + NEW_SUPPORTERS
+    );
+
+    // Verify supporter index content for first page
+    const supporterIndex = await program.account.supporterIndex.fetch(
+      findSupporterIndexPDA(indexPDA, 0)
+    );
+    expect(Number(supporterIndex.totalItems)).toEqual(SUPPORTERS_PER_PAGE);
   });
 });

@@ -67,7 +67,7 @@ pub fn create_deposit(
 
     let deposit = &mut ctx.accounts.deposit;
     deposit.signer = ctx.accounts.signer.key();
-    deposit.tip_link = tip_link.key();
+    deposit.tip_link = tip_link.id.clone();
     deposit.currency = currency;
     deposit.amount = amount;
     deposit.created_at = Clock::get()?.unix_timestamp;
@@ -117,10 +117,10 @@ pub struct CreateDeposit<'info> {
         mut,
         seeds = [b"tip_link", tip_link_id.as_bytes()],
         bump,
-        has_one = jar
+        has_one = jar,
+
     )]
     pub tip_link: Account<'info, TipLink>,
-
     #[account(
         mut,
         has_one = index,
