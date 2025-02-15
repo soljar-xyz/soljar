@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::program::invoke;
 use anchor_lang::solana_program::system_instruction::transfer;
-use crate::constants::*;
+use crate::utils::get_currency_from_mint;
 
 use crate::state::*;
 use crate::error::SoljarError;
@@ -14,12 +14,7 @@ pub fn create_deposit(
     amount: u64
 ) -> Result<()> {
 
-    let currency = match currency_mint {
-        mint if mint == Pubkey::default() => "SOL".to_string(),
-        mint if mint == USDC_MINT => "USDC".to_string(),
-        mint if mint == USDT_MINT => "USDT".to_string(),
-        _ => "USDC".to_string(),
-    };
+    let currency = get_currency_from_mint(currency_mint)?;
     // Validate input lengths
     require!(
         referrer.len() <= Deposit::MAX_REFERRER_LENGTH,

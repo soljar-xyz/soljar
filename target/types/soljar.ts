@@ -1585,6 +1585,11 @@ export type Soljar = {
       "code": 6027,
       "name": "unsupportedCurrency",
       "msg": "Unsupported currency"
+    },
+    {
+      "code": 6028,
+      "name": "invalidCurrencyMint",
+      "msg": "Invalid currency mint"
     }
   ],
   "types": [

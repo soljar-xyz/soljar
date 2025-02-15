@@ -1579,6 +1579,11 @@
       "code": 6027,
       "name": "UnsupportedCurrency",
       "msg": "Unsupported currency"
+    },
+    {
+      "code": 6028,
+      "name": "InvalidCurrencyMint",
+      "msg": "Invalid currency mint"
     }
   ],
   "types": [

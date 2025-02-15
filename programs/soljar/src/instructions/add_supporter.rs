@@ -2,18 +2,11 @@ use anchor_lang::prelude::*;
 
 use crate::state::*;
 use crate::error::SoljarError;
-use crate::constants::*;
+use crate::utils::get_currency_from_mint;
 
 pub fn add_supporter(ctx: Context<AddSupporter>, _tip_link_id: String, currency_mint: Pubkey, amount: u64) -> Result<()> {
     let supporter = &mut ctx.accounts.supporter;
-
-
-    let currency = match currency_mint {
-        mint if mint == Pubkey::default() => "SOL".to_string(),
-        mint if mint == USDC_MINT => "USDC".to_string(),
-        mint if mint == USDT_MINT => "USDT".to_string(),
-        _ => "USDC".to_string(),
-    };
+    let currency = get_currency_from_mint(currency_mint)?;
 
     if supporter.signer == ctx.accounts.signer.key() {
         // Find existing tip info for the currency

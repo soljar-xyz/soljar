@@ -30,7 +30,7 @@ describe("5. Stress Testing", () => {
     const indexPDA = findIndexPDA(jarPDA);
 
     // Previous tests created 4 deposits, we'll add 46 more to fill the first page
-    const EXISTING_DEPOSITS = 4;
+    const EXISTING_DEPOSITS = 1;
     const NEW_DEPOSITS = 200; // This will fill the first page (50 total)
     const DEPOSITS_PER_PAGE = 50; // Match this with MAX_DEPOSITS in rust code
 
@@ -110,7 +110,7 @@ describe("5. Stress Testing", () => {
     const indexPDA = findIndexPDA(jarPDA);
 
     // Previous tests created 2 withdrawals, we'll add 28 more
-    const EXISTING_WITHDRAWALS = 2;
+    const EXISTING_WITHDRAWALS = 1;
     const NEW_WITHDRAWALS = 200; // Total of 30 withdrawals
     const WITHDRAWALS_PER_PAGE = 50;
 
