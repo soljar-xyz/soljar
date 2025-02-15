@@ -1,5 +1,6 @@
 import { getTestContext } from "../utils/setup";
 import {
+  Currency,
   findDepositIndexPDA,
   findDepositPDA,
   findIndexPDA,
@@ -71,7 +72,6 @@ describe("3. Deposit Creation", () => {
 
     // let's right all expected values
     expect(deposit.signer).toEqual(creator.publicKey);
-    expect(deposit.jar).toEqual(jarPDA);
     expect(deposit.tipLink).toEqual(tipLinkPDA);
     expect(Number(deposit.amount)).toEqual(10000000000);
 
@@ -93,11 +93,11 @@ describe("3. Deposit Creation", () => {
 
     const supporter = await program.account.supporter.fetch(supporterPDA);
     expect(supporter.signer).toEqual(creator.publicKey);
-    expect(supporter.jar).toEqual(jarPDA);
+    // expect(supporter.jar).toEqual(jarPDA);
     expect(supporter.tips).toHaveLength(1);
-    expect(supporter.tips[0].mint).toEqual(SOL_MINT);
+    expect(supporter.tips[0].currency).toEqual(Currency.SOL);
     expect(Number(supporter.tips[0].amount)).toEqual(10000000000);
-    expect(Number(supporter.tips[0].tipCount)).toEqual(1);
+    expect(Number(supporter.tipCount)).toEqual(1);
 
     const supporterIndex = await program.account.supporterIndex.fetch(
       supporterIndexPDA
@@ -162,7 +162,6 @@ describe("3. Deposit Creation", () => {
 
     // Verify deposit details
     expect(deposit.signer).toEqual(creator.publicKey);
-    expect(deposit.jar).toEqual(jarPDA);
     expect(deposit.tipLink).toEqual(tipLinkPDA);
     expect(Number(deposit.amount)).toEqual(amount.toNumber());
 
@@ -192,11 +191,11 @@ describe("3. Deposit Creation", () => {
 
     const supporter = await program.account.supporter.fetch(supporterPDA);
     expect(supporter.signer).toEqual(creator.publicKey);
-    expect(supporter.jar).toEqual(jarPDA);
+    // expect(supporter.jar).toEqual(jarPDA);
     expect(supporter.tips).toHaveLength(2);
-    expect(supporter.tips[1].mint).toEqual(mint);
+    expect(supporter.tips[1].currency).toEqual(Currency.USDC);
     expect(Number(supporter.tips[1].amount)).toEqual(amount.toNumber());
-    expect(Number(supporter.tips[1].tipCount)).toEqual(1);
+    expect(Number(supporter.tipCount)).toEqual(2);
   });
 
   it("should create two deposits one with SOL and one with SPL token", async () => {
@@ -245,11 +244,11 @@ describe("3. Deposit Creation", () => {
 
     const supporter = await program.account.supporter.fetch(supporterPDA);
     expect(supporter.signer).toEqual(creator.publicKey);
-    expect(supporter.jar).toEqual(jarPDA);
+    // expect(supporter.jar).toEqual(jarPDA);
     expect(supporter.tips).toHaveLength(2);
-    expect(supporter.tips[0].mint).toEqual(SOL_MINT);
+    expect(supporter.tips[0].currency).toEqual(Currency.SOL);
     expect(Number(supporter.tips[0].amount)).toEqual(20000000000);
-    expect(Number(supporter.tips[0].tipCount)).toEqual(2);
+    expect(Number(supporter.tipCount)).toEqual(3);
 
     const depositPDA2 = findDepositPDA(depositIndexPDA, 3);
     const metaPDA2 = findMetaPDA(depositPDA2);
@@ -292,10 +291,10 @@ describe("3. Deposit Creation", () => {
 
     const supporter2 = await program.account.supporter.fetch(supporterPDA2);
     expect(supporter2.signer).toEqual(creator.publicKey);
-    expect(supporter2.jar).toEqual(jarPDA);
+    // expect(supporter2.jar).toEqual(jarPDA);
     expect(supporter2.tips).toHaveLength(2);
-    expect(supporter2.tips[1].mint).toEqual(mint);
+    expect(supporter2.tips[1].currency).toEqual(Currency.USDC);
     expect(Number(supporter2.tips[1].amount)).toEqual(200000000);
-    expect(Number(supporter2.tips[1].tipCount)).toEqual(2);
+    expect(Number(supporter2.tipCount)).toEqual(4);
   });
 });

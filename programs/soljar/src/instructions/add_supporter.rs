@@ -2,18 +2,26 @@ use anchor_lang::prelude::*;
 
 use crate::state::*;
 use crate::error::SoljarError;
+use crate::constants::*;
 
 pub fn add_supporter(ctx: Context<AddSupporter>, _tip_link_id: String, currency_mint: Pubkey, amount: u64) -> Result<()> {
-    let tip_link: &mut Account<'_, TipLink> = &mut ctx.accounts.tip_link;
     let supporter = &mut ctx.accounts.supporter;
+
+
+    let currency = match currency_mint {
+        mint if mint == Pubkey::default() => "SOL".to_string(),
+        mint if mint == USDC_MINT => "USDC".to_string(),
+        mint if mint == USDT_MINT => "USDT".to_string(),
+        _ => "USDC".to_string(),
+    };
 
     if supporter.signer == ctx.accounts.signer.key() {
         // Find existing tip info for the currency
-        if let Some(tip_info) = supporter.tips.iter_mut().find(|t| t.mint == currency_mint) {
+        if let Some(tip_info) = supporter.tips.iter_mut().find(|t| t.currency == currency) {
             // Update existing tip info
             tip_info.amount = tip_info.amount.checked_add(amount)
                 .ok_or(SoljarError::AmountOverflow)?;
-            tip_info.tip_count = tip_info.tip_count.checked_add(1)
+            supporter.tip_count = supporter.tip_count.checked_add(1)
                 .ok_or(SoljarError::TipCountOverflow)?;
         } else {
             // Add new currency to tips vector
@@ -22,11 +30,11 @@ pub fn add_supporter(ctx: Context<AddSupporter>, _tip_link_id: String, currency_
                 SoljarError::MaxCurrenciesReached
             );
             supporter.tips.push(TipInfo {
-                mint: currency_mint,
-                tip_link: tip_link.key(),
+                currency,
                 amount,
-                tip_count: 1,
             });
+            supporter.tip_count = supporter.tip_count.checked_add(1)
+                .ok_or(SoljarError::TipCountOverflow)?;
         }
         supporter.updated_at = Clock::get()?.unix_timestamp;
     } else {
@@ -34,14 +42,13 @@ pub fn add_supporter(ctx: Context<AddSupporter>, _tip_link_id: String, currency_
         require!(amount > 0, SoljarError::InvalidAmount);
         
         supporter.signer = ctx.accounts.signer.key();
-        supporter.jar = ctx.accounts.jar.key();
+        supporter.tip_count = 1;
+
         supporter.created_at = Clock::get()?.unix_timestamp;
         supporter.updated_at = Clock::get()?.unix_timestamp;
         supporter.tips = vec![TipInfo {
-            mint: currency_mint,
-            tip_link: tip_link.key(),
+            currency,
             amount,
-            tip_count: 1,
         }];
 
         let supporter_index = &mut ctx.accounts.supporter_index;

@@ -1580,6 +1580,11 @@ export type Soljar = {
       "code": 6026,
       "name": "maxCurrenciesReached",
       "msg": "Max currencies reached"
+    },
+    {
+      "code": 6027,
+      "name": "unsupportedCurrency",
+      "msg": "Unsupported currency"
     }
   ],
   "types": [
@@ -1593,16 +1598,12 @@ export type Soljar = {
             "type": "pubkey"
           },
           {
-            "name": "jar",
-            "type": "pubkey"
-          },
-          {
             "name": "tipLink",
             "type": "pubkey"
           },
           {
-            "name": "currencyMint",
-            "type": "pubkey"
+            "name": "currency",
+            "type": "string"
           },
           {
             "name": "amount",
@@ -1763,16 +1764,16 @@ export type Soljar = {
             "type": "pubkey"
           },
           {
-            "name": "jar",
-            "type": "pubkey"
-          },
-          {
             "name": "createdAt",
             "type": "i64"
           },
           {
             "name": "updatedAt",
             "type": "i64"
+          },
+          {
+            "name": "tipCount",
+            "type": "u16"
           },
           {
             "name": "tips",
@@ -1819,20 +1820,12 @@ export type Soljar = {
         "kind": "struct",
         "fields": [
           {
-            "name": "mint",
-            "type": "pubkey"
-          },
-          {
-            "name": "tipLink",
-            "type": "pubkey"
+            "name": "currency",
+            "type": "string"
           },
           {
             "name": "amount",
             "type": "u64"
-          },
-          {
-            "name": "tipCount",
-            "type": "u32"
           }
         ]
       }

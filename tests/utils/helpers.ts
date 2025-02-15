@@ -2,6 +2,13 @@ import { BN } from "@coral-xyz/anchor";
 import { getTestContext } from "../utils/setup";
 import { PublicKey } from "@solana/web3.js";
 
+export const Currency = {
+  SOL: "SOL",
+  USDC: "USDC",
+  USDT: "USDT",
+  JAR: "JAR",
+};
+
 export const findPlatformPDA = () => {
   const { program } = getTestContext();
   const [pda] = PublicKey.findProgramAddressSync(

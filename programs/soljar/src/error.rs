@@ -56,4 +56,6 @@ pub enum SoljarError {
     InvalidTokenMint,
     #[msg("Max currencies reached")]
     MaxCurrenciesReached,
+    #[msg("Unsupported currency")]
+    UnsupportedCurrency,
 }

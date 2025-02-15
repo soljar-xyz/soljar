@@ -18,6 +18,7 @@ declare_id!("71VPUgE3KQCDoscZuppizk3fpb4fHi4B6JAXR2RRXSb4");
 pub mod error;
 pub mod instructions;
 pub mod state;
+pub mod constants;
 
 #[program]
 pub mod soljar {

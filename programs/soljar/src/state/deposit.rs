@@ -4,9 +4,9 @@ use anchor_lang::prelude::*;
 #[derive(InitSpace)]
 pub struct Deposit {
     pub signer: Pubkey,
-    pub jar: Pubkey,
     pub tip_link: Pubkey,
-    pub currency_mint: Pubkey,
+    #[max_len(4)]
+    pub currency: String,
     pub amount: u64,
     pub created_at: i64,
     #[max_len(25)]

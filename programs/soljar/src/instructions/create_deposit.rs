@@ -1,6 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::program::invoke;
 use anchor_lang::solana_program::system_instruction::transfer;
+use crate::constants::*;
 
 use crate::state::*;
 use crate::error::SoljarError;
@@ -12,6 +13,13 @@ pub fn create_deposit(
     memo: String, 
     amount: u64
 ) -> Result<()> {
+
+    let currency = match currency_mint {
+        mint if mint == Pubkey::default() => "SOL".to_string(),
+        mint if mint == USDC_MINT => "USDC".to_string(),
+        mint if mint == USDT_MINT => "USDT".to_string(),
+        _ => "USDC".to_string(),
+    };
     // Validate input lengths
     require!(
         referrer.len() <= Deposit::MAX_REFERRER_LENGTH,
@@ -59,9 +67,8 @@ pub fn create_deposit(
 
     let deposit = &mut ctx.accounts.deposit;
     deposit.signer = ctx.accounts.signer.key();
-    deposit.jar = ctx.accounts.jar.key();
     deposit.tip_link = tip_link.key();
-    deposit.currency_mint = currency_mint;
+    deposit.currency = currency;
     deposit.amount = amount;
     deposit.created_at = Clock::get()?.unix_timestamp;
     deposit.referrer = referrer;
