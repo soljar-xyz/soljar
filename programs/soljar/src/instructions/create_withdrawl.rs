@@ -29,6 +29,7 @@ pub fn create_withdrawl(ctx: Context<CreateWithdrawl>, currency_mint: Pubkey, am
     withdrawl.jar = ctx.accounts.jar.key();
     withdrawl.amount = amount;
     withdrawl.created_at = Clock::get()?.unix_timestamp;
+    withdrawl.currency = "SOL".to_string();
 
     let jar = &mut ctx.accounts.jar;
     jar.withdrawl_count = jar.withdrawl_count.checked_add(1).unwrap();
