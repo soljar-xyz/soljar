@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/soljar.json`.
  */
 export type Soljar = {
-  "address": "3zXtRRRGaiPhTYCGa7qaohpdP2iRJof3tugsdNVsWNuJ",
+  "address": "4rZWUsgpyxYTGvjkiDvcb5Qz7E9YMzGkfV4e4Z8K8Eo4",
   "metadata": {
     "name": "soljar",
     "version": "0.1.0",
