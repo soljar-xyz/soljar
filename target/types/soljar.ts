@@ -1369,14 +1369,6 @@ export type Soljar = {
         "kind": "struct",
         "fields": [
           {
-            "name": "index",
-            "type": "pubkey"
-          },
-          {
-            "name": "indexPage",
-            "type": "u32"
-          },
-          {
             "name": "totalItems",
             "type": "u8"
           },

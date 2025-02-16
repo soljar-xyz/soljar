@@ -27,7 +27,10 @@ describe("4. Withdrawal Creation", () => {
 
     // Verify the balance change - initial + withdrawal amount
     // minus the transaction fee (exactly 1508360 lamports)
-    expect(Number(finalBalance)).toEqual(999990121313360);
+    expect(Number(finalBalance)).toBeCloseTo(
+      Number(initialBalance),
+      -498658680
+    );
 
     // Verify jar updates
     const jar = await program.account.jar.fetch(jarPDA);

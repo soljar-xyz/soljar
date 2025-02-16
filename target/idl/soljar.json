@@ -1363,14 +1363,6 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "index",
-            "type": "pubkey"
-          },
-          {
-            "name": "index_page",
-            "type": "u32"
-          },
-          {
             "name": "total_items",
             "type": "u8"
           },
