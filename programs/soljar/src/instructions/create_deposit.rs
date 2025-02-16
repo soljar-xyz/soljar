@@ -106,6 +106,30 @@ pub fn create_deposit(
         }];
 
         let jar = &mut ctx.accounts.jar;
+
+
+        let supporter_index = &mut ctx.accounts.supporter_index;
+
+        // Check if we're about to hit the limit (one before MAX_SUPPORTERS)
+        if supporter_index.total_items >= (SupporterIndex::MAX_SUPPORTERS - 1) as u8 {
+            jar.supporter_index = jar.supporter_index
+                .checked_add(1)
+                .ok_or(SoljarError::PageOverflow)?;
+        }
+
+        // Check for overflow before incrementing total_items
+        supporter_index.total_items = supporter_index.total_items
+            .checked_add(1)
+            .ok_or(SoljarError::IndexOverflow)?;
+            
+        // Verify we're not exceeding vector capacity
+        require!(
+            supporter_index.supporters.len() < SupporterIndex::MAX_SUPPORTERS as usize,
+            SoljarError::SupporterIndexFull
+        );
+
+        supporter_index.supporters.push(supporter.key());
+
         jar.supporter_count = jar.supporter_count.checked_add(1).unwrap();
         jar.updated_at = Clock::get()?.unix_timestamp;
     }
@@ -144,6 +168,15 @@ pub struct CreateDeposit<'info> {
         bump,
     )]
     pub deposit: Box<Account<'info,Deposit>>,
+
+    #[account(
+        init_if_needed,
+        payer = signer,
+        space = 8 + SupporterIndex::INIT_SPACE,
+        seeds = [b"supporter_index", jar.key().as_ref(), &jar.supporter_index.to_le_bytes()],
+        bump,
+    )]
+    pub supporter_index: Box<Account<'info, SupporterIndex>>,
 
     #[account(
         init_if_needed,

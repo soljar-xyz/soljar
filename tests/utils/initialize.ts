@@ -17,8 +17,12 @@ import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 
 export async function initializeTestContext(): Promise<TestContext> {
   const newMember = new anchor.web3.Keypair();
+  const members: Keypair[] = Array(169)
+    .fill(0)
+    .map(() => new anchor.web3.Keypair());
   let creatorTokenAccount: PublicKey;
   let newMemberTokenAccount: PublicKey;
+  let memberTokenAccounts: PublicKey[] = [];
   let mint: PublicKey;
 
   const context = await startAnchor(
@@ -39,6 +43,16 @@ export async function initializeTestContext(): Promise<TestContext> {
           owner: SYSTEM_PROGRAM_ID,
         },
       },
+      // Add initial lamports for all 50 members
+      ...members.map((member) => ({
+        address: member.publicKey,
+        info: {
+          lamports: 10_000_000_000,
+          data: Buffer.alloc(0),
+          executable: false,
+          owner: SYSTEM_PROGRAM_ID,
+        },
+      })),
     ]
   );
 
@@ -91,6 +105,30 @@ export async function initializeTestContext(): Promise<TestContext> {
     1000000000000
   );
 
+  // Create token accounts for all 50 members
+  for (const member of members) {
+    const tokenAccount = await createAssociatedTokenAccount(
+      // @ts-expect-error - Type mismatch in spl-token-bankrun and solana banks client
+      banksClient,
+      creator,
+      mint,
+      member.publicKey,
+      TOKEN_PROGRAM_ID
+    );
+    memberTokenAccounts.push(tokenAccount);
+
+    // Mint tokens to each member
+    await mintTo(
+      // @ts-expect-error - Type mismatch in spl-token-bankrun and solana banks client
+      banksClient,
+      creator,
+      mint,
+      tokenAccount,
+      creator,
+      1000000000000
+    );
+  }
+
   return {
     context,
     provider,
@@ -101,5 +139,7 @@ export async function initializeTestContext(): Promise<TestContext> {
     mint,
     creatorTokenAccount,
     newMemberTokenAccount,
+    members,
+    memberTokenAccounts,
   };
 }

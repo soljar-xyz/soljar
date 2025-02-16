@@ -22,6 +22,7 @@ pub fn create_user(ctx: Context<CreateUser>, username: String) -> Result<()> {
     jar.deposit_count = 1;
     jar.withdrawl_count = 1;
     jar.supporter_count = 1;
+    jar.supporter_index = 1;
     jar.created_at = Clock::get()?.unix_timestamp;
     jar.updated_at = Clock::get()?.unix_timestamp;
     jar.id = username.clone();

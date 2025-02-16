@@ -66,6 +66,22 @@ export const findDepositPDA = (depositIndexPDA: PublicKey, index: number) => {
   return pda;
 };
 
+export const findSupporterIndexPDA = (
+  jar: PublicKey,
+  supporterIndex: number
+) => {
+  const { program } = getTestContext();
+  const [pda] = PublicKey.findProgramAddressSync(
+    [
+      Buffer.from("supporter_index"),
+      jar.toBuffer(),
+      Buffer.from(new Uint32Array([supporterIndex]).buffer),
+    ],
+    program.programId
+  );
+  return pda;
+};
+
 export const findSupporterPDA = (jar: PublicKey, signer: PublicKey) => {
   const { program } = getTestContext();
   const [pda] = PublicKey.findProgramAddressSync(

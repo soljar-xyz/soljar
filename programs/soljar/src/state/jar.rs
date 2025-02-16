@@ -8,6 +8,7 @@ pub struct Jar {
     pub deposit_count: u32,
     pub withdrawl_count: u32,
     pub supporter_count: u32,
+    pub supporter_index: u32,
     pub created_at: i64,
     pub updated_at: i64,
     #[max_len(25)]

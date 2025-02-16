@@ -93,6 +93,43 @@ export type Soljar = {
           }
         },
         {
+          "name": "supporterIndex",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  117,
+                  112,
+                  112,
+                  111,
+                  114,
+                  116,
+                  101,
+                  114,
+                  95,
+                  105,
+                  110,
+                  100,
+                  101,
+                  120
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "jar"
+              },
+              {
+                "kind": "account",
+                "path": "jar.supporter_index",
+                "account": "jar"
+              }
+            ]
+          }
+        },
+        {
           "name": "supporter",
           "writable": true,
           "pda": {
@@ -216,6 +253,43 @@ export type Soljar = {
               {
                 "kind": "account",
                 "path": "jar.deposit_count",
+                "account": "jar"
+              }
+            ]
+          }
+        },
+        {
+          "name": "supporterIndex",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  117,
+                  112,
+                  112,
+                  111,
+                  114,
+                  116,
+                  101,
+                  114,
+                  95,
+                  105,
+                  110,
+                  100,
+                  101,
+                  120
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "jar"
+              },
+              {
+                "kind": "account",
+                "path": "jar.supporter_index",
                 "account": "jar"
               }
             ]
@@ -962,6 +1036,19 @@ export type Soljar = {
       ]
     },
     {
+      "name": "supporterIndex",
+      "discriminator": [
+        89,
+        202,
+        10,
+        80,
+        80,
+        123,
+        176,
+        198
+      ]
+    },
+    {
       "name": "tipLink",
       "discriminator": [
         197,
@@ -1220,6 +1307,10 @@ export type Soljar = {
             "type": "u32"
           },
           {
+            "name": "supporterIndex",
+            "type": "u32"
+          },
+          {
             "name": "createdAt",
             "type": "i64"
           },
@@ -1267,6 +1358,32 @@ export type Soljar = {
                   "name": "tipInfo"
                 }
               }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "supporterIndex",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "index",
+            "type": "pubkey"
+          },
+          {
+            "name": "indexPage",
+            "type": "u32"
+          },
+          {
+            "name": "totalItems",
+            "type": "u8"
+          },
+          {
+            "name": "supporters",
+            "type": {
+              "vec": "pubkey"
             }
           }
         ]

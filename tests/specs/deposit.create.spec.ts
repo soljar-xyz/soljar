@@ -2,6 +2,7 @@ import { getTestContext } from "../utils/setup";
 import {
   Currency,
   findJarPDA,
+  findSupporterIndexPDA,
   findSupporterPDA,
   findTipLinkPDA,
   findUserPDA,
@@ -26,7 +27,7 @@ describe("3. Deposit Creation", () => {
     const userPDA = findUserPDA(creator.publicKey);
     const jarPDA = findJarPDA(creator.publicKey);
     const supporterPDA = findSupporterPDA(jarPDA, creator.publicKey);
-
+    const supporterIndexPDA = findSupporterIndexPDA(jarPDA, 1);
     await program.methods
       .createDeposit(
         username,
@@ -44,7 +45,7 @@ describe("3. Deposit Creation", () => {
 
     // Fetch the SOL balance of the jar
     const jarBalance = await banksClient.getBalance(jarPDA);
-    expect(Number(jarBalance)).toEqual(10001572960); // 10 SOL + rent
+    expect(Number(jarBalance)).toEqual(10001600800); // 10 SOL + rent
 
     // Verify supporter account
     const supporter = await program.account.supporter.fetch(supporterPDA);
@@ -53,6 +54,13 @@ describe("3. Deposit Creation", () => {
     expect(supporter.tips[0].currency).toEqual(Currency.SOL);
     expect(Number(supporter.tips[0].amount)).toEqual(10000000000);
     expect(Number(supporter.tipCount)).toEqual(1);
+
+    // Verify supporter index
+    const supporterIndex = await program.account.supporterIndex.fetch(
+      supporterIndexPDA
+    );
+    expect(Number(supporterIndex.totalItems)).toEqual(1);
+    expect(supporterIndex.supporters).toEqual([supporterPDA]);
   });
 
   it("should create an SPL token deposit", async () => {
@@ -64,6 +72,7 @@ describe("3. Deposit Creation", () => {
     const jarPDA = findJarPDA(creator.publicKey);
     const tipLinkPDA = findTipLinkPDA(username);
     const supporterPDA = findSupporterPDA(jarPDA, creator.publicKey);
+    const supporterIndexPDA = findSupporterIndexPDA(jarPDA, 1);
 
     // Find the jar's token account PDA
     const [jarTokenAccount] = PublicKey.findProgramAddressSync(
@@ -106,6 +115,13 @@ describe("3. Deposit Creation", () => {
     expect(supporter.tips[1].currency).toEqual(Currency.USDC);
     expect(Number(supporter.tips[1].amount)).toEqual(amount.toNumber());
     expect(Number(supporter.tipCount)).toEqual(2);
+
+    // Verify supporter index
+    const supporterIndex = await program.account.supporterIndex.fetch(
+      supporterIndexPDA
+    );
+    expect(Number(supporterIndex.totalItems)).toEqual(1);
+    expect(supporterIndex.supporters).toEqual([supporterPDA]);
   });
 
   it("should create an SPL token deposit with newMember", async () => {
@@ -130,6 +146,7 @@ describe("3. Deposit Creation", () => {
     const jarPDA = findJarPDA(creator.publicKey);
     const tipLinkPDA = findTipLinkPDA(username);
     const supporterPDA = findSupporterPDA(jarPDA, newMember.publicKey);
+    const supporterIndexPDA = findSupporterIndexPDA(jarPDA, 1);
 
     // Find the jar's token account PDA
     const [jarTokenAccount] = PublicKey.findProgramAddressSync(
@@ -180,6 +197,13 @@ describe("3. Deposit Creation", () => {
     expect(supporter.tips[0].currency).toEqual(Currency.USDC);
     expect(Number(supporter.tips[0].amount)).toEqual(amount.toNumber());
     expect(Number(supporter.tipCount)).toEqual(1);
+
+    // Verify supporter index
+    const supporterIndex = await program2.account.supporterIndex.fetch(
+      supporterIndexPDA
+    );
+    expect(Number(supporterIndex.totalItems)).toEqual(2);
+    expect(supporterIndex.supporters[1]).toEqual(supporterPDA);
   });
 
   // it("should create two deposits one with SOL and one with SPL token", async () => {

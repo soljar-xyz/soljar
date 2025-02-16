@@ -87,6 +87,43 @@
           }
         },
         {
+          "name": "supporter_index",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  117,
+                  112,
+                  112,
+                  111,
+                  114,
+                  116,
+                  101,
+                  114,
+                  95,
+                  105,
+                  110,
+                  100,
+                  101,
+                  120
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "jar"
+              },
+              {
+                "kind": "account",
+                "path": "jar.supporter_index",
+                "account": "Jar"
+              }
+            ]
+          }
+        },
+        {
           "name": "supporter",
           "writable": true,
           "pda": {
@@ -210,6 +247,43 @@
               {
                 "kind": "account",
                 "path": "jar.deposit_count",
+                "account": "Jar"
+              }
+            ]
+          }
+        },
+        {
+          "name": "supporter_index",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  117,
+                  112,
+                  112,
+                  111,
+                  114,
+                  116,
+                  101,
+                  114,
+                  95,
+                  105,
+                  110,
+                  100,
+                  101,
+                  120
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "jar"
+              },
+              {
+                "kind": "account",
+                "path": "jar.supporter_index",
                 "account": "Jar"
               }
             ]
@@ -956,6 +1030,19 @@
       ]
     },
     {
+      "name": "SupporterIndex",
+      "discriminator": [
+        89,
+        202,
+        10,
+        80,
+        80,
+        123,
+        176,
+        198
+      ]
+    },
+    {
       "name": "TipLink",
       "discriminator": [
         197,
@@ -1214,6 +1301,10 @@
             "type": "u32"
           },
           {
+            "name": "supporter_index",
+            "type": "u32"
+          },
+          {
             "name": "created_at",
             "type": "i64"
           },
@@ -1261,6 +1352,32 @@
                   "name": "TipInfo"
                 }
               }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "SupporterIndex",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "index",
+            "type": "pubkey"
+          },
+          {
+            "name": "index_page",
+            "type": "u32"
+          },
+          {
+            "name": "total_items",
+            "type": "u8"
+          },
+          {
+            "name": "supporters",
+            "type": {
+              "vec": "pubkey"
             }
           }
         ]

@@ -24,9 +24,10 @@ describe("4. Withdrawal Creation", () => {
       .rpc();
 
     const finalBalance = await banksClient.getBalance(creator.publicKey);
+
     // Verify the balance change - initial + withdrawal amount
     // minus the transaction fee (exactly 1508360 lamports)
-    expect(Number(finalBalance)).toEqual(999990480037440);
+    expect(Number(finalBalance)).toEqual(999990121313360);
 
     // Verify jar updates
     const jar = await program.account.jar.fetch(jarPDA);
