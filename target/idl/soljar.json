@@ -600,7 +600,7 @@
               },
               {
                 "kind": "account",
-                "path": "jar.withdrawal_count",
+                "path": "jar.withdrawl_count",
                 "account": "Jar"
               }
             ]
@@ -795,7 +795,7 @@
               },
               {
                 "kind": "account",
-                "path": "jar.withdrawal_count",
+                "path": "jar.withdrawl_count",
                 "account": "Jar"
               }
             ]
@@ -1206,7 +1206,7 @@
             "type": "u32"
           },
           {
-            "name": "withdrawal_count",
+            "name": "withdrawl_count",
             "type": "u32"
           },
           {

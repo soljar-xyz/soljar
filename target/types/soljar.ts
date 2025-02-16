@@ -606,7 +606,7 @@ export type Soljar = {
               },
               {
                 "kind": "account",
-                "path": "jar.withdrawal_count",
+                "path": "jar.withdrawl_count",
                 "account": "jar"
               }
             ]
@@ -801,7 +801,7 @@ export type Soljar = {
               },
               {
                 "kind": "account",
-                "path": "jar.withdrawal_count",
+                "path": "jar.withdrawl_count",
                 "account": "jar"
               }
             ]
@@ -1212,7 +1212,7 @@ export type Soljar = {
             "type": "u32"
           },
           {
-            "name": "withdrawalCount",
+            "name": "withdrawlCount",
             "type": "u32"
           },
           {

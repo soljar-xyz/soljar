@@ -66,7 +66,7 @@ describe("5. Stress Testing", () => {
 
     // Verify final jar state
     const jar = await program.account.jar.fetch(jarPDA);
-    expect(Number(jar.withdrawalCount)).toEqual(
+    expect(Number(jar.withdrawlCount)).toEqual(
       WITHDRAWAL_COUNT + EXISTING_WITHDRAWAL_COUNT
     );
   });

@@ -31,7 +31,7 @@ pub fn create_withdrawl(ctx: Context<CreateWithdrawl>, currency_mint: Pubkey, am
     withdrawl.created_at = Clock::get()?.unix_timestamp;
 
     let jar = &mut ctx.accounts.jar;
-    jar.withdrawal_count = jar.withdrawal_count.checked_add(1).unwrap();
+    jar.withdrawl_count = jar.withdrawl_count.checked_add(1).unwrap();
     jar.updated_at = Clock::get()?.unix_timestamp;
 
 
@@ -52,7 +52,7 @@ pub struct CreateWithdrawl<'info> {
         init_if_needed,
         payer = signer,
         space = 8 + Withdrawl::INIT_SPACE,
-        seeds = [b"withdrawl", jar.key().as_ref(), &jar.withdrawal_count.to_le_bytes()],
+        seeds = [b"withdrawl", jar.key().as_ref(), &jar.withdrawl_count.to_le_bytes()],
         bump,
     )]
     pub withdrawl: Account<'info, Withdrawl>,

@@ -39,7 +39,7 @@ describe("1. User Creation", () => {
     const jar = await program.account.jar.fetch(jarPDA);
     expect(jar.user.equals(userPDA)).toBe(true);
     expect(Number(jar.depositCount)).toBe(1);
-    expect(Number(jar.withdrawalCount)).toBe(1);
+    expect(Number(jar.withdrawlCount)).toBe(1);
     expect(Number(jar.supporterCount)).toBe(1);
     expect(jar.id).toBe(username);
 

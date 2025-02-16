@@ -30,7 +30,7 @@ describe("4. Withdrawal Creation", () => {
 
     // Verify jar updates
     const jar = await program.account.jar.fetch(jarPDA);
-    expect(Number(jar.withdrawalCount)).toEqual(2);
+    expect(Number(jar.withdrawlCount)).toEqual(2);
   });
 
   it("should create an SPL token withdrawal", async () => {
