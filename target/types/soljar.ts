@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/soljar.json`.
  */
 export type Soljar = {
-  "address": "6kYzuEmgVUn8bmsyCDz8XuyTMVvDDVjxJj5yVSTSNo8z",
+  "address": "3zXtRRRGaiPhTYCGa7qaohpdP2iRJof3tugsdNVsWNuJ",
   "metadata": {
     "name": "soljar",
     "version": "0.1.0",
@@ -493,6 +493,92 @@ export type Soljar = {
         {
           "name": "amount",
           "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "createSupporterIndex",
+      "discriminator": [
+        29,
+        115,
+        162,
+        147,
+        43,
+        70,
+        81,
+        126
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "jar",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  106,
+                  97,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "supporterIndex",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  117,
+                  112,
+                  112,
+                  111,
+                  114,
+                  116,
+                  101,
+                  114,
+                  95,
+                  105,
+                  110,
+                  100,
+                  101,
+                  120
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "jar"
+              },
+              {
+                "kind": "arg",
+                "path": "index"
+              }
+            ]
+          }
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "index",
+          "type": "u32"
         }
       ]
     },

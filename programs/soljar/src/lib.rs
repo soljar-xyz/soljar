@@ -8,10 +8,10 @@ use instructions::add_supporter::*;
 use instructions::create_withdrawl::*;
 use instructions::withdraw_spl_tokens::*;
 use instructions::create_spl_deposit::*;
+use instructions::create_supporter_index::*;
 
 
-
-declare_id!("6kYzuEmgVUn8bmsyCDz8XuyTMVvDDVjxJj5yVSTSNo8z");
+declare_id!("3zXtRRRGaiPhTYCGa7qaohpdP2iRJof3tugsdNVsWNuJ");
 
 pub mod error;
 pub mod instructions;
@@ -50,5 +50,9 @@ pub mod soljar {
 
     pub fn create_spl_deposit(ctx: Context<CreateSplDeposit>, tip_link_id: String, referrer: String, memo: String, amount: u64) -> Result<()> {
         instructions::create_spl_deposit::create_spl_deposit(ctx, tip_link_id, referrer, memo, amount)
+    }
+
+    pub fn create_supporter_index(ctx: Context<CreateSupporterIndex>, index: u32) -> Result<()> {
+        instructions::create_supporter_index::create_supporter_index(ctx, index)
     }
 }

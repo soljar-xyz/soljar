@@ -23,6 +23,12 @@ describe("1. User Creation", () => {
     await program.methods
       .createUser(username)
       .accounts({})
+      .postInstructions([
+        await program.methods
+          .createSupporterIndex(1)
+          .accounts({})
+          .instruction(),
+      ])
       .signers([creator])
       .rpc();
 
