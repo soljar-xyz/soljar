@@ -58,45 +58,30 @@
           ]
         },
         {
-          "name": "index",
-          "writable": true,
-          "relations": [
-            "jar"
-          ]
-        },
-        {
-          "name": "supporter_index",
+          "name": "deposit",
           "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "const",
                 "value": [
-                  115,
-                  117,
-                  112,
-                  112,
-                  111,
-                  114,
-                  116,
-                  101,
-                  114,
-                  95,
-                  105,
-                  110,
                   100,
                   101,
-                  120
+                  112,
+                  111,
+                  115,
+                  105,
+                  116
                 ]
               },
               {
                 "kind": "account",
-                "path": "index"
+                "path": "jar"
               },
               {
                 "kind": "account",
-                "path": "index.supporter_index_page",
-                "account": "Index"
+                "path": "jar.deposit_count",
+                "account": "Jar"
               }
             ]
           }
@@ -202,14 +187,7 @@
           ]
         },
         {
-          "name": "index",
-          "writable": true,
-          "relations": [
-            "jar"
-          ]
-        },
-        {
-          "name": "deposit_index",
+          "name": "deposit",
           "writable": true,
           "pda": {
             "seeds": [
@@ -222,26 +200,124 @@
                   111,
                   115,
                   105,
-                  116,
-                  95,
-                  105,
-                  110,
-                  100,
-                  101,
-                  120
+                  116
                 ]
               },
               {
                 "kind": "account",
-                "path": "index"
+                "path": "jar"
               },
               {
                 "kind": "account",
-                "path": "index.deposit_index_page",
-                "account": "Index"
+                "path": "jar.deposit_count",
+                "account": "Jar"
               }
             ]
           }
+        },
+        {
+          "name": "supporter",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  117,
+                  112,
+                  112,
+                  111,
+                  114,
+                  116,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "jar"
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "tip_link_id",
+          "type": "string"
+        },
+        {
+          "name": "referrer",
+          "type": "string"
+        },
+        {
+          "name": "memo",
+          "type": "string"
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "create_spl_deposit",
+      "discriminator": [
+        101,
+        42,
+        125,
+        13,
+        104,
+        16,
+        50,
+        48
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "tip_link",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  105,
+                  112,
+                  95,
+                  108,
+                  105,
+                  110,
+                  107
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "tip_link_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "jar",
+          "writable": true,
+          "relations": [
+            "tip_link"
+          ]
         },
         {
           "name": "deposit",
@@ -262,29 +338,69 @@
               },
               {
                 "kind": "account",
-                "path": "deposit_index"
+                "path": "jar"
               },
               {
                 "kind": "account",
-                "path": "index.total_deposits",
-                "account": "Index"
+                "path": "jar.deposit_count",
+                "account": "Jar"
               }
             ]
           }
         },
         {
+          "name": "mint"
+        },
+        {
+          "name": "token_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  111,
+                  107,
+                  101,
+                  110,
+                  95,
+                  97,
+                  99,
+                  99,
+                  111,
+                  117,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "jar"
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "source_token_account",
+          "writable": true
+        },
+        {
           "name": "system_program",
           "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "token_program"
         }
       ],
       "args": [
         {
           "name": "tip_link_id",
           "type": "string"
-        },
-        {
-          "name": "currency_mint",
-          "type": "pubkey"
         },
         {
           "name": "referrer",
@@ -317,27 +433,6 @@
           "name": "signer",
           "writable": true,
           "signer": true
-        },
-        {
-          "name": "platform",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  112,
-                  108,
-                  97,
-                  116,
-                  102,
-                  111,
-                  114,
-                  109
-                ]
-              }
-            ]
-          }
         },
         {
           "name": "user",
@@ -400,29 +495,32 @@
               },
               {
                 "kind": "account",
-                "path": "user"
+                "path": "signer"
               }
             ]
           }
         },
         {
-          "name": "index",
+          "name": "tip_link",
           "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "const",
                 "value": [
+                  116,
+                  105,
+                  112,
+                  95,
+                  108,
                   105,
                   110,
-                  100,
-                  101,
-                  120
+                  107
                 ]
               },
               {
-                "kind": "account",
-                "path": "jar"
+                "kind": "arg",
+                "path": "username"
               }
             ]
           }
@@ -458,27 +556,6 @@
           "signer": true
         },
         {
-          "name": "user",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  117,
-                  115,
-                  101,
-                  114
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "signer"
-              }
-            ]
-          }
-        },
-        {
           "name": "jar",
           "writable": true,
           "pda": {
@@ -493,69 +570,7 @@
               },
               {
                 "kind": "account",
-                "path": "user"
-              }
-            ]
-          },
-          "relations": [
-            "user"
-          ]
-        },
-        {
-          "name": "index",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  105,
-                  110,
-                  100,
-                  101,
-                  120
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "jar"
-              }
-            ]
-          }
-        },
-        {
-          "name": "withdrawl_index",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  119,
-                  105,
-                  116,
-                  104,
-                  100,
-                  114,
-                  97,
-                  119,
-                  108,
-                  95,
-                  105,
-                  110,
-                  100,
-                  101,
-                  120
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "index"
-              },
-              {
-                "kind": "account",
-                "path": "index.withdrawl_index_page",
-                "account": "Index"
+                "path": "signer"
               }
             ]
           }
@@ -581,12 +596,12 @@
               },
               {
                 "kind": "account",
-                "path": "withdrawl_index"
+                "path": "jar"
               },
               {
                 "kind": "account",
-                "path": "index.total_withdrawls",
-                "account": "Index"
+                "path": "jar.withdrawal_count",
+                "account": "Jar"
               }
             ]
           }
@@ -604,381 +619,6 @@
         {
           "name": "amount",
           "type": "u64"
-        }
-      ]
-    },
-    {
-      "name": "init_indexes",
-      "discriminator": [
-        152,
-        206,
-        62,
-        243,
-        47,
-        2,
-        247,
-        246
-      ],
-      "accounts": [
-        {
-          "name": "signer",
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "jar",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  106,
-                  97,
-                  114
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "user"
-              }
-            ]
-          }
-        },
-        {
-          "name": "user",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  117,
-                  115,
-                  101,
-                  114
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "signer"
-              }
-            ]
-          }
-        },
-        {
-          "name": "index",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  105,
-                  110,
-                  100,
-                  101,
-                  120
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "jar"
-              }
-            ]
-          }
-        },
-        {
-          "name": "deposit_index",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  100,
-                  101,
-                  112,
-                  111,
-                  115,
-                  105,
-                  116,
-                  95,
-                  105,
-                  110,
-                  100,
-                  101,
-                  120
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "index"
-              },
-              {
-                "kind": "arg",
-                "path": "index_page"
-              }
-            ]
-          }
-        },
-        {
-          "name": "withdrawl_index",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  119,
-                  105,
-                  116,
-                  104,
-                  100,
-                  114,
-                  97,
-                  119,
-                  108,
-                  95,
-                  105,
-                  110,
-                  100,
-                  101,
-                  120
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "index"
-              },
-              {
-                "kind": "arg",
-                "path": "index_page"
-              }
-            ]
-          }
-        },
-        {
-          "name": "supporter_index",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  115,
-                  117,
-                  112,
-                  112,
-                  111,
-                  114,
-                  116,
-                  101,
-                  114,
-                  95,
-                  105,
-                  110,
-                  100,
-                  101,
-                  120
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "index"
-              },
-              {
-                "kind": "arg",
-                "path": "index_page"
-              }
-            ]
-          }
-        },
-        {
-          "name": "system_program",
-          "address": "11111111111111111111111111111111"
-        }
-      ],
-      "args": [
-        {
-          "name": "index_page",
-          "type": "u32"
-        }
-      ]
-    },
-    {
-      "name": "init_platform",
-      "discriminator": [
-        29,
-        22,
-        210,
-        225,
-        219,
-        114,
-        193,
-        169
-      ],
-      "accounts": [
-        {
-          "name": "signer",
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "platform",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  112,
-                  108,
-                  97,
-                  116,
-                  102,
-                  111,
-                  114,
-                  109
-                ]
-              }
-            ]
-          }
-        },
-        {
-          "name": "system_program",
-          "address": "11111111111111111111111111111111"
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "init_tip_link",
-      "discriminator": [
-        43,
-        221,
-        12,
-        232,
-        145,
-        122,
-        3,
-        74
-      ],
-      "accounts": [
-        {
-          "name": "signer",
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "jar",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  106,
-                  97,
-                  114
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "user"
-              }
-            ]
-          }
-        },
-        {
-          "name": "user",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  117,
-                  115,
-                  101,
-                  114
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "signer"
-              }
-            ]
-          }
-        },
-        {
-          "name": "user_info",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  117,
-                  115,
-                  101,
-                  114,
-                  95,
-                  105,
-                  110,
-                  102,
-                  111
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "user"
-              }
-            ]
-          }
-        },
-        {
-          "name": "tip_link",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  116,
-                  105,
-                  112,
-                  95,
-                  108,
-                  105,
-                  110,
-                  107
-                ]
-              },
-              {
-                "kind": "arg",
-                "path": "id"
-              }
-            ]
-          }
-        },
-        {
-          "name": "system_program",
-          "address": "11111111111111111111111111111111"
-        }
-      ],
-      "args": [
-        {
-          "name": "id",
-          "type": "string"
-        },
-        {
-          "name": "description",
-          "type": "string"
-        },
-        {
-          "name": "index_page",
-          "type": "u32"
         }
       ]
     },
@@ -1093,43 +733,22 @@
       ]
     },
     {
-      "name": "withdraw_tokens",
+      "name": "withdraw_spl_tokens",
       "discriminator": [
-        2,
-        4,
+        30,
+        150,
+        152,
+        52,
         225,
-        61,
-        19,
-        182,
-        106,
-        170
+        67,
+        73,
+        69
       ],
       "accounts": [
         {
           "name": "signer",
           "writable": true,
           "signer": true
-        },
-        {
-          "name": "user",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  117,
-                  115,
-                  101,
-                  114
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "signer"
-              }
-            ]
-          }
         },
         {
           "name": "jar",
@@ -1146,13 +765,41 @@
               },
               {
                 "kind": "account",
-                "path": "user"
+                "path": "signer"
               }
             ]
-          },
-          "relations": [
-            "user"
-          ]
+          }
+        },
+        {
+          "name": "withdrawl",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  119,
+                  105,
+                  116,
+                  104,
+                  100,
+                  114,
+                  97,
+                  119,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "jar"
+              },
+              {
+                "kind": "account",
+                "path": "jar.withdrawal_count",
+                "account": "Jar"
+              }
+            ]
+          }
         },
         {
           "name": "mint"
@@ -1283,32 +930,6 @@
       ]
     },
     {
-      "name": "DepositIndex",
-      "discriminator": [
-        56,
-        236,
-        229,
-        13,
-        113,
-        72,
-        90,
-        142
-      ]
-    },
-    {
-      "name": "Index",
-      "discriminator": [
-        140,
-        66,
-        194,
-        132,
-        78,
-        26,
-        135,
-        186
-      ]
-    },
-    {
       "name": "Jar",
       "discriminator": [
         197,
@@ -1322,19 +943,6 @@
       ]
     },
     {
-      "name": "Platform",
-      "discriminator": [
-        77,
-        92,
-        204,
-        58,
-        187,
-        98,
-        91,
-        12
-      ]
-    },
-    {
       "name": "Supporter",
       "discriminator": [
         198,
@@ -1345,19 +953,6 @@
         40,
         233,
         159
-      ]
-    },
-    {
-      "name": "SupporterIndex",
-      "discriminator": [
-        89,
-        202,
-        10,
-        80,
-        80,
-        123,
-        176,
-        198
       ]
     },
     {
@@ -1400,19 +995,6 @@
       ]
     },
     {
-      "name": "UserInfo",
-      "discriminator": [
-        83,
-        134,
-        200,
-        56,
-        144,
-        56,
-        10,
-        62
-      ]
-    },
-    {
       "name": "Withdrawl",
       "discriminator": [
         39,
@@ -1423,19 +1005,6 @@
         193,
         129,
         150
-      ]
-    },
-    {
-      "name": "WithdrawlIndex",
-      "discriminator": [
-        66,
-        186,
-        158,
-        34,
-        20,
-        214,
-        95,
-        50
       ]
     }
   ],
@@ -1605,7 +1174,7 @@
             "type": "u64"
           },
           {
-            "name": "tip_link",
+            "name": "link_id",
             "type": "string"
           },
           {
@@ -1624,72 +1193,6 @@
       }
     },
     {
-      "name": "DepositIndex",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "index",
-            "type": "pubkey"
-          },
-          {
-            "name": "index_page",
-            "type": "u32"
-          },
-          {
-            "name": "total_items",
-            "type": "u8"
-          },
-          {
-            "name": "deposits",
-            "type": {
-              "vec": "pubkey"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "name": "Index",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "user",
-            "type": "pubkey"
-          },
-          {
-            "name": "jar",
-            "type": "pubkey"
-          },
-          {
-            "name": "deposit_index_page",
-            "type": "u32"
-          },
-          {
-            "name": "withdrawl_index_page",
-            "type": "u32"
-          },
-          {
-            "name": "supporter_index_page",
-            "type": "u32"
-          },
-          {
-            "name": "total_deposits",
-            "type": "u32"
-          },
-          {
-            "name": "total_withdrawls",
-            "type": "u32"
-          },
-          {
-            "name": "total_supporters",
-            "type": "u32"
-          }
-        ]
-      }
-    },
-    {
       "name": "Jar",
       "type": {
         "kind": "struct",
@@ -1699,8 +1202,16 @@
             "type": "pubkey"
           },
           {
-            "name": "index",
-            "type": "pubkey"
+            "name": "deposit_count",
+            "type": "u32"
+          },
+          {
+            "name": "withdrawal_count",
+            "type": "u32"
+          },
+          {
+            "name": "supporter_count",
+            "type": "u32"
           },
           {
             "name": "created_at",
@@ -1709,46 +1220,14 @@
           {
             "name": "updated_at",
             "type": "i64"
+          },
+          {
+            "name": "id",
+            "type": "string"
           },
           {
             "name": "bump",
             "type": "u8"
-          }
-        ]
-      }
-    },
-    {
-      "name": "Platform",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "user_count",
-            "type": "u64"
-          },
-          {
-            "name": "jar_count",
-            "type": "u64"
-          },
-          {
-            "name": "tip_link_count",
-            "type": "u64"
-          },
-          {
-            "name": "deposit_count",
-            "type": "u64"
-          },
-          {
-            "name": "withdrawl_count",
-            "type": "u64"
-          },
-          {
-            "name": "created_at",
-            "type": "i64"
-          },
-          {
-            "name": "updated_at",
-            "type": "i64"
           }
         ]
       }
@@ -1788,32 +1267,6 @@
       }
     },
     {
-      "name": "SupporterIndex",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "index",
-            "type": "pubkey"
-          },
-          {
-            "name": "index_page",
-            "type": "u32"
-          },
-          {
-            "name": "total_items",
-            "type": "u8"
-          },
-          {
-            "name": "supporters",
-            "type": {
-              "vec": "pubkey"
-            }
-          }
-        ]
-      }
-    },
-    {
       "name": "TipInfo",
       "type": {
         "kind": "struct",
@@ -1841,26 +1294,6 @@
           {
             "name": "jar",
             "type": "pubkey"
-          },
-          {
-            "name": "deposit_count",
-            "type": "u64"
-          },
-          {
-            "name": "created_at",
-            "type": "i64"
-          },
-          {
-            "name": "updated_at",
-            "type": "i64"
-          },
-          {
-            "name": "id",
-            "type": "string"
-          },
-          {
-            "name": "description",
-            "type": "string"
           }
         ]
       }
@@ -1872,10 +1305,6 @@
         "fields": [
           {
             "name": "user",
-            "type": "pubkey"
-          },
-          {
-            "name": "receiver_wallet",
             "type": "pubkey"
           },
           {
@@ -1910,24 +1339,6 @@
       }
     },
     {
-      "name": "UserInfo",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "user",
-            "type": "pubkey"
-          },
-          {
-            "name": "tip_links",
-            "type": {
-              "vec": "pubkey"
-            }
-          }
-        ]
-      }
-    },
-    {
       "name": "Withdrawl",
       "type": {
         "kind": "struct",
@@ -1937,8 +1348,8 @@
             "type": "pubkey"
           },
           {
-            "name": "currency_mint",
-            "type": "pubkey"
+            "name": "currency",
+            "type": "string"
           },
           {
             "name": "amount",
@@ -1947,32 +1358,6 @@
           {
             "name": "created_at",
             "type": "i64"
-          }
-        ]
-      }
-    },
-    {
-      "name": "WithdrawlIndex",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "index",
-            "type": "pubkey"
-          },
-          {
-            "name": "index_page",
-            "type": "u32"
-          },
-          {
-            "name": "total_items",
-            "type": "u8"
-          },
-          {
-            "name": "withdrawls",
-            "type": {
-              "vec": "pubkey"
-            }
           }
         ]
       }

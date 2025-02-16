@@ -4,7 +4,8 @@ use anchor_lang::prelude::*;
 #[derive(InitSpace)]
 pub struct Withdrawl {
     pub jar: Pubkey,
-    pub currency_mint: Pubkey,
+    #[max_len(4)]
+    pub currency: String,
     pub amount: u64,
     pub created_at: i64,
 }

@@ -9,36 +9,27 @@ pub fn create_user(ctx: Context<CreateUser>, username: String) -> Result<()> {
         !ctx.accounts.user_by_name.username_taken,
         SoljarError::UsernameAlreadyTaken
     );
-
-    let platform = &mut ctx.accounts.platform;
-    platform.user_count = platform.user_count
-        .checked_add(1)
-        .ok_or(SoljarError::UserCountOverflow)?;
-    platform.updated_at = Clock::get()?.unix_timestamp;
     
     let user = &mut ctx.accounts.user;
-    user.username = username;
-    user.receiver_wallet = ctx.accounts.signer.key();
+    user.user = ctx.accounts.signer.key();
+    user.username = username.clone();
     user.jar = ctx.accounts.jar.key();
     user.created_at = Clock::get()?.unix_timestamp;
     user.updated_at = Clock::get()?.unix_timestamp;
 
     let jar = &mut ctx.accounts.jar;
     jar.user = ctx.accounts.user.key();
-    jar.index = ctx.accounts.index.key();
+    jar.deposit_count = 1;
+    jar.withdrawal_count = 1;
+    jar.supporter_count = 1;
     jar.created_at = Clock::get()?.unix_timestamp;
     jar.updated_at = Clock::get()?.unix_timestamp;
+    jar.id = username.clone();
     jar.bump = ctx.bumps.jar;
 
-    let index = &mut ctx.accounts.index;
-    index.user = ctx.accounts.user.key();
-    index.jar = ctx.accounts.jar.key();
-    index.deposit_index_page = 0;
-    index.withdrawl_index_page = 0;
-    index.supporter_index_page = 0;
-    index.total_deposits = 0;
-    index.total_withdrawls = 0;
-    index.total_supporters = 0;
+    let tip_link = &mut ctx.accounts.tip_link;
+    tip_link.user = ctx.accounts.user.key();
+    tip_link.jar = ctx.accounts.jar.key();
 
     // Set the username as taken in the username tracker account
     let username_tracker = &mut ctx.accounts.user_by_name;
@@ -53,13 +44,6 @@ pub struct CreateUser<'info> {
     #[account(mut)]
     pub signer: Signer<'info>,
 
-    #[account(
-        mut,
-        seeds = [b"platform"],
-        bump
-    )]
-    pub platform: Account<'info, Platform>,
-    
     #[account(
         init,
         payer = signer,
@@ -82,7 +66,7 @@ pub struct CreateUser<'info> {
         init,
         payer = signer,
         space = 8 + Jar::INIT_SPACE,
-        seeds = [b"jar", user.key().as_ref()],
+        seeds = [b"jar", signer.key().as_ref()],
         bump
     )]
     pub jar: Box<Account<'info, Jar>>,
@@ -90,12 +74,11 @@ pub struct CreateUser<'info> {
     #[account(
         init,
         payer = signer,
-        space = 8 + Index::INIT_SPACE,
-        seeds = [b"index", jar.key().as_ref()],
+        space = 8 + TipLink::INIT_SPACE,
+        seeds = [b"tip_link", username.as_bytes()],
         bump
     )]
-    pub index: Box<Account<'info, Index>>,
-
+    pub tip_link: Box<Account<'info, TipLink>>,
 
     system_program: Program<'info, System>,
 }

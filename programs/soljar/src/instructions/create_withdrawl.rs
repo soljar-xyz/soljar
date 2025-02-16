@@ -30,33 +30,10 @@ pub fn create_withdrawl(ctx: Context<CreateWithdrawl>, currency_mint: Pubkey, am
     withdrawl.amount = amount;
     withdrawl.created_at = Clock::get()?.unix_timestamp;
 
-    let withdrawl_index = &mut ctx.accounts.withdrawl_index;
-    
-    // Check if we're about to hit the limit (one before MAX_WITHDRAWLS)
-    if withdrawl_index.total_items >= (WithdrawlIndex::MAX_WITHDRAWLS - 1) as u8 {
-        let index = &mut ctx.accounts.index;
-        index.withdrawl_index_page = index.withdrawl_index_page
-            .checked_add(1)
-            .ok_or(SoljarError::Overflow)?;
-    }
+    let jar = &mut ctx.accounts.jar;
+    jar.withdrawal_count = jar.withdrawal_count.checked_add(1).unwrap();
+    jar.updated_at = Clock::get()?.unix_timestamp;
 
-    // Check for overflow before incrementing
-    withdrawl_index.total_items = withdrawl_index.total_items
-        .checked_add(1)
-        .ok_or(SoljarError::Overflow)?;
-
-    // Verify we're not exceeding vector capacity
-    require!(
-        withdrawl_index.withdrawls.len() < WithdrawlIndex::MAX_WITHDRAWLS,
-        SoljarError::TooManyWithdrawls
-    );
-    withdrawl_index.withdrawls.push(withdrawl.key());
-
-    let index = &mut ctx.accounts.index;
-    // Check for overflow before incrementing
-    index.total_withdrawls = index.total_withdrawls
-        .checked_add(1)
-        .ok_or(SoljarError::Overflow)?;
 
     Ok(())
 }
@@ -67,38 +44,15 @@ pub struct CreateWithdrawl<'info> {
     #[account(mut)]
     pub signer: Signer<'info>,
 
-    #[account(
-        mut,
-        seeds = [b"user", signer.key().as_ref()],
-        bump,
-        has_one = jar
-    )]
-    pub user: Account<'info, User>,
 
-    #[account(mut, seeds = [b"jar", user.key().as_ref()], bump)]
+    #[account(mut, seeds = [b"jar", signer.key().as_ref()], bump)]
     pub jar: Account<'info, Jar>,
-
-    #[account(
-        mut,
-        seeds = [b"index", jar.key().as_ref()],
-        bump,
-    )]
-    pub index: Account<'info, Index>,
-
-    #[account(
-        init_if_needed,
-        payer = signer,
-        space = 8 + WithdrawlIndex::INIT_SPACE,
-        seeds = [b"withdrawl_index", index.key().as_ref(), &index.withdrawl_index_page.to_le_bytes()],
-        bump,
-    )]
-    pub withdrawl_index: Account<'info, WithdrawlIndex>,
 
     #[account(
         init_if_needed,
         payer = signer,
         space = 8 + Withdrawl::INIT_SPACE,
-        seeds = [b"withdrawl", withdrawl_index.key().as_ref(), &index.total_withdrawls.to_le_bytes()],
+        seeds = [b"withdrawl", jar.key().as_ref(), &jar.withdrawal_count.to_le_bytes()],
         bump,
     )]
     pub withdrawl: Account<'info, Withdrawl>,

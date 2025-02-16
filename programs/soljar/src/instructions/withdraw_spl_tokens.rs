@@ -6,7 +6,7 @@ use anchor_spl::{
 use crate::state::*;
 use crate::error::SoljarError;
 
-pub fn withdraw_tokens(ctx: Context<WithdrawTokens>, amount: u64) -> Result<()> {
+pub fn withdraw_spl_tokens(ctx: Context<WithdrawSplTokens>, amount: u64) -> Result<()> {
     // Validate amount
     require!(amount > 0, SoljarError::InvalidAmount);
 
@@ -41,7 +41,7 @@ pub fn withdraw_tokens(ctx: Context<WithdrawTokens>, amount: u64) -> Result<()> 
 
     let cpi_program = ctx.accounts.token_program.to_account_info();
 
-    let user_key = ctx.accounts.user.key();
+    let user_key = ctx.accounts.signer.key();
     let jar_bump = ctx.accounts.jar.bump;
     
     msg!("User key: {}", user_key);
@@ -60,34 +60,45 @@ pub fn withdraw_tokens(ctx: Context<WithdrawTokens>, amount: u64) -> Result<()> 
     // transfer_checked already handles decimal place validation
     transfer_checked(cpi_context, amount, ctx.accounts.mint.decimals)?;
 
+
+    let withdrawl = &mut ctx.accounts.withdrawl;
+    withdrawl.jar = ctx.accounts.jar.key();
+    withdrawl.amount = amount;
+    withdrawl.created_at = Clock::get()?.unix_timestamp;
+
+    let jar = &mut ctx.accounts.jar;
+    jar.withdrawal_count = jar.withdrawal_count.checked_add(1).unwrap();
+    jar.updated_at = Clock::get()?.unix_timestamp;
     Ok(())
 }
 
 #[derive(Accounts)]
-pub struct WithdrawTokens<'info> {
+pub struct WithdrawSplTokens<'info> {
     #[account(mut)]
     pub signer: Signer<'info>,
 
     #[account(
-        mut, 
-        seeds = [b"user", signer.key().as_ref()],
-        bump,
-        has_one = jar)]
-    pub user: Box<Account<'info, User>>,
-
-    #[account(
         mut,
-        seeds = [b"jar", user.key().as_ref()],
+        seeds = [b"jar", signer.key().as_ref()],
         bump,
     )]
     pub jar: Box<Account<'info, Jar>>,
 
 
+    #[account(
+        init,
+        payer = signer,
+        space = 8 + Withdrawl::INIT_SPACE,
+        seeds = [b"withdrawl", jar.key().as_ref(), &jar.withdrawal_count.to_le_bytes()],
+        bump,
+    )]
+    pub withdrawl: Box<Account<'info, Withdrawl>>,
+
+
     pub mint: InterfaceAccount<'info, Mint>,
 
     #[account(
-        init_if_needed,
-        payer = signer,
+        mut,
         token::mint = mint,
         token::authority = jar,
         seeds = [b"token_account", jar.key().as_ref(), mint.key().as_ref()],

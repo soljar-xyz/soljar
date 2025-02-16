@@ -7,7 +7,7 @@ pub struct Deposit {
     pub created_at: i64,
     pub amount: u64,
     #[max_len(15)]
-    pub tip_link: String,
+    pub link_id: String,
     #[max_len(4)]
     pub currency: String,
     #[max_len(25)]

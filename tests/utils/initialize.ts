@@ -18,6 +18,7 @@ import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 export async function initializeTestContext(): Promise<TestContext> {
   const newMember = new anchor.web3.Keypair();
   let creatorTokenAccount: PublicKey;
+  let newMemberTokenAccount: PublicKey;
   let mint: PublicKey;
 
   const context = await startAnchor(
@@ -60,6 +61,15 @@ export async function initializeTestContext(): Promise<TestContext> {
     TOKEN_PROGRAM_ID
   );
 
+  newMemberTokenAccount = await createAssociatedTokenAccount(
+    // @ts-expect-error - Type mismatch in spl-token-bankrun and solana banks client
+    banksClient,
+    creator,
+    mint,
+    newMember.publicKey,
+    TOKEN_PROGRAM_ID
+  );
+
   // // Mint some tokens to the creator's account
   await mintTo(
     // @ts-expect-error - Type mismatch in spl-token-bankrun and solana banks client
@@ -67,6 +77,16 @@ export async function initializeTestContext(): Promise<TestContext> {
     creator,
     mint,
     creatorTokenAccount,
+    creator,
+    1000000000000
+  );
+
+  await mintTo(
+    // @ts-expect-error - Type mismatch in spl-token-bankrun and solana banks client
+    banksClient,
+    creator,
+    mint,
+    newMemberTokenAccount,
     creator,
     1000000000000
   );
@@ -80,5 +100,6 @@ export async function initializeTestContext(): Promise<TestContext> {
     creator,
     mint,
     creatorTokenAccount,
+    newMemberTokenAccount,
   };
 }

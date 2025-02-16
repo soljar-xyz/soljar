@@ -1,20 +1,20 @@
 import { getTestContext } from "../utils/setup";
 import {
   Currency,
-  findDepositIndexPDA,
-  findDepositPDA,
-  findIndexPDA,
   findJarPDA,
-  findMetaPDA,
-  findSupporterIndexPDA,
   findSupporterPDA,
   findTipLinkPDA,
   findUserPDA,
 } from "../utils/helpers";
-import { BN } from "@coral-xyz/anchor";
+import { BN, Program } from "@coral-xyz/anchor";
 import { PublicKey } from "@solana/web3.js";
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { getAccount } from "spl-token-bankrun";
+import * as anchor from "@coral-xyz/anchor";
+import { Soljar } from "anchor/target/types/soljar";
+import IDL from "../../target/idl/soljar.json";
+import { BankrunProvider } from "anchor-bankrun";
+import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
 
 describe("3. Deposit Creation", () => {
   it("should create a deposit", async () => {
@@ -24,179 +24,163 @@ describe("3. Deposit Creation", () => {
     const username = "satoshi";
 
     const userPDA = findUserPDA(creator.publicKey);
-    const jarPDA = findJarPDA(userPDA);
-
-    const tipLinkPDA = findTipLinkPDA(username);
-    const indexPDA = findIndexPDA(jarPDA);
-    const depositIndexPDA = findDepositIndexPDA(indexPDA, 0);
-    const depositPDA = findDepositPDA(depositIndexPDA, 0);
-
-    const supporterIndexPDA = findSupporterIndexPDA(indexPDA, 0);
+    const jarPDA = findJarPDA(creator.publicKey);
     const supporterPDA = findSupporterPDA(jarPDA, creator.publicKey);
-
-    console.log("SOL_MINT: ", SOL_MINT);
 
     await program.methods
       .createDeposit(
         username,
-        SOL_MINT,
-        "referrer",
-        "memo",
-        new BN(10000000000)
+        "", // referrer
+        "test memo",
+        new BN(10000000000) // 10 SOL
       )
+      .accounts({})
+      .signers([creator])
+      .rpc();
+
+    // Verify jar updates
+    const jar = await program.account.jar.fetch(jarPDA);
+    expect(Number(jar.depositCount)).toEqual(2);
+
+    // Fetch the SOL balance of the jar
+    const jarBalance = await banksClient.getBalance(jarPDA);
+    expect(Number(jarBalance)).toEqual(10001572960); // 10 SOL + rent
+
+    // Verify supporter account
+    const supporter = await program.account.supporter.fetch(supporterPDA);
+    expect(supporter.signer).toEqual(creator.publicKey);
+    expect(supporter.tips).toHaveLength(1);
+    expect(supporter.tips[0].currency).toEqual(Currency.SOL);
+    expect(Number(supporter.tips[0].amount)).toEqual(10000000000);
+    expect(Number(supporter.tipCount)).toEqual(1);
+  });
+
+  it("should create an SPL token deposit", async () => {
+    const { program, creator, mint, creatorTokenAccount, banksClient } =
+      getTestContext();
+    const username = "satoshi";
+
+    const userPDA = findUserPDA(creator.publicKey);
+    const jarPDA = findJarPDA(creator.publicKey);
+    const tipLinkPDA = findTipLinkPDA(username);
+    const supporterPDA = findSupporterPDA(jarPDA, creator.publicKey);
+
+    // Find the jar's token account PDA
+    const [jarTokenAccount] = PublicKey.findProgramAddressSync(
+      [Buffer.from("token_account"), jarPDA.toBuffer(), mint.toBuffer()],
+      program.programId
+    );
+
+    const amount = new BN(100000000); // 1 token with 8 decimals
+
+    await program.methods
+      .createSplDeposit(username, "referrer", "test memo", amount)
       .accounts({
         signer: creator.publicKey,
+        mint: mint,
+        sourceTokenAccount: creatorTokenAccount,
+        tokenProgram: TOKEN_PROGRAM_ID,
       })
       .postInstructions([
         await program.methods
-          .addSupporter(username, SOL_MINT, new BN(10000000000))
+          .addSupporter(username, mint, amount)
           .accounts({})
           .instruction(),
       ])
       .signers([creator])
       .rpc();
 
-    const index = await program.account.index.fetch(indexPDA);
+    // Verify jar updates
+    const jar = await program.account.jar.fetch(jarPDA);
+    expect(Number(jar.depositCount)).toEqual(3);
 
-    const depositIndex = await program.account.depositIndex.fetch(
-      depositIndexPDA
-    );
+    // Verify token balances
+    // @ts-ignore
+    const jarTokenAccountInfo = await getAccount(banksClient, jarTokenAccount);
+    expect(Number(jarTokenAccountInfo.amount)).toEqual(amount.toNumber());
 
-    console.log("Deposit Index: ", depositIndexPDA);
-
-    console.log("Deposit PDA: ", depositPDA);
-
-    const deposit = await program.account.deposit.fetch(depositPDA);
-
-    const tipLink = await program.account.tipLink.fetch(tipLinkPDA);
-
-    // let's right all expected values
-    expect(deposit.signer).toEqual(creator.publicKey);
-    expect(deposit.tipLink).toEqual(tipLink.id);
-    expect(Number(deposit.amount)).toEqual(10000000000);
-
-    expect(deposit.referrer).toEqual("referrer");
-    expect(deposit.memo).toEqual("memo");
-
-    expect(Number(tipLink.depositCount)).toEqual(1);
-
-    expect(Number(depositIndex.totalItems)).toEqual(1);
-    expect(depositIndex.deposits[0]).toEqual(depositPDA);
-
-    expect(Number(index.depositIndexPage)).toEqual(0);
-    expect(Number(index.totalDeposits)).toEqual(1);
-
-    // Fetch the SOL balance of the treasury
-    const jarBalance = await banksClient.getBalance(jarPDA);
-    console.log("Jar SOL Balance: ", Number(jarBalance));
-    expect(Number(jarBalance)).toEqual(10001510320); // 1 SOL = 1,000,000,000 lamports
-
+    // Verify supporter account
     const supporter = await program.account.supporter.fetch(supporterPDA);
     expect(supporter.signer).toEqual(creator.publicKey);
-    // expect(supporter.jar).toEqual(jarPDA);
-    expect(supporter.tips).toHaveLength(1);
-    expect(supporter.tips[0].currency).toEqual(Currency.SOL);
-    expect(Number(supporter.tips[0].amount)).toEqual(10000000000);
-    expect(Number(supporter.tipCount)).toEqual(1);
-
-    const supporterIndex = await program.account.supporterIndex.fetch(
-      supporterIndexPDA
-    );
-    expect(Number(supporterIndex.totalItems)).toEqual(1);
-    expect(supporterIndex.supporters[0]).toEqual(supporterPDA);
+    expect(supporter.tips).toHaveLength(2);
+    expect(supporter.tips[1].currency).toEqual(Currency.USDC);
+    expect(Number(supporter.tips[1].amount)).toEqual(amount.toNumber());
+    expect(Number(supporter.tipCount)).toEqual(2);
   });
 
-  // it("should create an SPL token deposit", async () => {
-  //   const { program, creator, mint, creatorTokenAccount, banksClient } =
-  //     getTestContext();
-  //   const username = "satoshi";
+  it("should create an SPL token deposit with newMember", async () => {
+    const {
+      context,
 
-  //   const userPDA = findUserPDA(creator.publicKey);
-  //   const jarPDA = findJarPDA(userPDA);
+      creator,
+      mint,
 
-  //   const tipLinkPDA = findTipLinkPDA(username);
-  //   const indexPDA = findIndexPDA(jarPDA);
-  //   const supporterIndexPDA = findSupporterIndexPDA(indexPDA, 0);
-  //   const supporterPDA = findSupporterPDA(jarPDA, creator.publicKey);
-  //   const depositIndexPDA = findDepositIndexPDA(indexPDA, 0);
-  //   const depositPDA = findDepositPDA(depositIndexPDA, 1);
-  //   const metaPDA = findMetaPDA(depositPDA);
+      banksClient,
+      newMember,
+      newMemberTokenAccount,
+    } = getTestContext();
+    const username = "satoshi";
 
-  //   // Find the treasury's token account PDA
-  //   const [jarTokenAccount] = PublicKey.findProgramAddressSync(
-  //     [Buffer.from("token_account"), jarPDA.toBuffer(), mint.toBuffer()],
-  //     program.programId
-  //   );
+    const newMemberProvider = new BankrunProvider(context);
+    newMemberProvider.wallet = new NodeWallet(newMember);
 
-  //   const amount = new BN(100000000); // 1 token with 2 decimals
+    const program2 = new Program<Soljar>(IDL as Soljar, newMemberProvider);
 
-  //   await program.methods
-  //     .createDeposit(username, mint, "referrer", "memo", amount)
-  //     .accounts({
-  //       // signer: creator.publicKey,
-  //     })
-  //     .postInstructions([
-  //       await program.methods
-  //         .addSupporter(username, mint, amount)
-  //         .accounts({})
-  //         .instruction(),
-  //       await program.methods
-  //         .transferTokens(username, amount)
-  //         .accounts({
-  //           mint,
-  //           sourceTokenAccount: creatorTokenAccount,
-  //           tokenProgram: TOKEN_PROGRAM_ID,
-  //         })
-  //         .instruction(),
-  //     ])
-  //     .signers([creator])
-  //     .rpc();
+    const userPDA = findUserPDA(creator.publicKey);
+    const jarPDA = findJarPDA(creator.publicKey);
+    const tipLinkPDA = findTipLinkPDA(username);
+    const supporterPDA = findSupporterPDA(jarPDA, newMember.publicKey);
 
-  //   // Verify deposit account data
-  //   const deposit = await program.account.deposit.fetch(depositPDA);
-  //   const tipLink = await program.account.tipLink.fetch(tipLinkPDA);
-  //   const depositIndex = await program.account.depositIndex.fetch(
-  //     depositIndexPDA
-  //   );
-  //   const index = await program.account.index.fetch(indexPDA);
+    // Find the jar's token account PDA
+    const [jarTokenAccount] = PublicKey.findProgramAddressSync(
+      [Buffer.from("token_account"), jarPDA.toBuffer(), mint.toBuffer()],
+      program2.programId
+    );
 
-  //   // Verify deposit details
-  //   expect(deposit.signer).toEqual(creator.publicKey);
-  //   expect(deposit.tipLink).toEqual(tipLink.id);
-  //   expect(Number(deposit.amount)).toEqual(amount.toNumber());
+    const amount = new BN(100000000); // 1 token with 8 decimals
 
-  //   expect(deposit.referrer).toEqual("referrer");
-  //   expect(deposit.memo).toEqual("memo");
+    const initialJarTokenAccountInfo = await getAccount(
+      // @ts-ignore
+      banksClient,
+      jarTokenAccount
+    );
 
-  //   // Verify tip link and index updates
-  //   expect(Number(tipLink.depositCount)).toEqual(2); // 1 for the initial deposit and 1 for the SPL token deposit
-  //   expect(Number(depositIndex.totalItems)).toEqual(2); // 1 for the initial deposit and 1 for the SPL token deposit
-  //   expect(depositIndex.deposits[1]).toEqual(depositPDA);
-  //   expect(Number(index.depositIndexPage)).toEqual(0);
-  //   expect(Number(index.totalDeposits)).toEqual(2); // 1 for the initial deposit and 1 for the SPL token deposit
+    await program2.methods
+      .createSplDeposit(username, "referrer", "test memo", amount)
+      .postInstructions([
+        await program2.methods
+          .addSupporter(username, mint, amount)
+          .accounts({})
+          .instruction(),
+      ])
+      .accounts({
+        signer: newMember.publicKey,
+        mint: mint,
+        sourceTokenAccount: newMemberTokenAccount,
+        tokenProgram: TOKEN_PROGRAM_ID,
+      })
+      .signers([newMember])
+      .rpc();
 
-  //   // Verify token balances
-  //   const jarTokenAccountInfo = await getAccount(
-  //     // @ts-expect-error - Type mismatch in spl-token-bankrun and solana banks client
-  //     banksClient,
-  //     jarTokenAccount
-  //   );
-  //   expect(Number(jarTokenAccountInfo.amount)).toEqual(amount.toNumber());
+    // Verify jar updates
+    const jar = await program2.account.jar.fetch(jarPDA);
+    expect(Number(jar.depositCount)).toEqual(4);
 
-  //   const supporterIndex = await program.account.supporterIndex.fetch(
-  //     supporterIndexPDA
-  //   );
-  //   expect(Number(supporterIndex.totalItems)).toEqual(1);
-  //   expect(supporterIndex.supporters[0]).toEqual(supporterPDA);
+    // Verify token balances
+    // @ts-ignore
+    const jarTokenAccountInfo = await getAccount(banksClient, jarTokenAccount);
+    expect(Number(jarTokenAccountInfo.amount)).toEqual(
+      Number(initialJarTokenAccountInfo.amount) + Number(amount)
+    );
 
-  //   const supporter = await program.account.supporter.fetch(supporterPDA);
-  //   expect(supporter.signer).toEqual(creator.publicKey);
-  //   // expect(supporter.jar).toEqual(jarPDA);
-  //   expect(supporter.tips).toHaveLength(2);
-  //   expect(supporter.tips[1].currency).toEqual(Currency.USDC);
-  //   expect(Number(supporter.tips[1].amount)).toEqual(amount.toNumber());
-  //   expect(Number(supporter.tipCount)).toEqual(2);
-  // });
+    // // // Verify supporter account
+    const supporter = await program2.account.supporter.fetch(supporterPDA);
+    expect(supporter.signer).toEqual(newMember.publicKey);
+    expect(supporter.tips).toHaveLength(1);
+    expect(supporter.tips[0].currency).toEqual(Currency.USDC);
+    expect(Number(supporter.tips[0].amount)).toEqual(amount.toNumber());
+    expect(Number(supporter.tipCount)).toEqual(1);
+  });
 
   // it("should create two deposits one with SOL and one with SPL token", async () => {
   //   const { program, creator, mint, creatorTokenAccount, banksClient } =

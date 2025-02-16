@@ -4,9 +4,19 @@ use crate::state::*;
 use crate::error::SoljarError;
 use crate::utils::get_currency_from_mint;
 
-pub fn add_supporter(ctx: Context<AddSupporter>, _tip_link_id: String, currency_mint: Pubkey, amount: u64) -> Result<()> {
+pub fn add_supporter(
+    ctx: Context<AddSupporter>,
+    _tip_link_id: String,
+    currency_mint: Pubkey,
+    amount: u64,
+) -> Result<()> {
     let supporter = &mut ctx.accounts.supporter;
     let currency = get_currency_from_mint(currency_mint)?;
+
+    let deposit = &mut ctx.accounts.deposit;
+    msg!("deposit: {:?}", deposit.amount);
+    let jar = &mut ctx.accounts.jar;
+
 
     if supporter.signer == ctx.accounts.signer.key() {
         // Find existing tip info for the currency
@@ -44,34 +54,12 @@ pub fn add_supporter(ctx: Context<AddSupporter>, _tip_link_id: String, currency_
             amount,
         }];
 
-        let supporter_index = &mut ctx.accounts.supporter_index;
-        let index = &mut ctx.accounts.index;
-
-        // Check if we're about to hit the limit (one before MAX_SUPPORTERS)
-        if supporter_index.total_items >= (SupporterIndex::MAX_SUPPORTERS - 1) as u8 {
-            index.supporter_index_page = index.supporter_index_page
-                .checked_add(1)
-                .ok_or(SoljarError::PageOverflow)?;
-        }
-
-        // Check for overflow before incrementing total_items
-        supporter_index.total_items = supporter_index.total_items
-            .checked_add(1)
-            .ok_or(SoljarError::IndexOverflow)?;
-            
-        // Verify we're not exceeding vector capacity
-        require!(
-            supporter_index.supporters.len() < SupporterIndex::MAX_SUPPORTERS as usize,
-            SoljarError::SupporterIndexFull
-        );
-
-        supporter_index.supporters.push(supporter.key());
-
-        // Check for overflow before incrementing total_supporters
-        index.total_supporters = index.total_supporters
-            .checked_add(1)
-            .ok_or(SoljarError::TotalSupportersOverflow)?;
+        jar.supporter_count = jar.supporter_count.checked_add(1).unwrap();
+        jar.updated_at = Clock::get()?.unix_timestamp;
     }
+
+    jar.deposit_count = jar.deposit_count.checked_add(1).unwrap();
+    jar.updated_at = Clock::get()?.unix_timestamp;
 
     Ok(())
 }
@@ -88,27 +76,19 @@ pub struct AddSupporter<'info> {
         bump,
         has_one = jar
     )]
-    pub tip_link: Account<'info, TipLink>,
-
-    #[account(
-        mut,
-        has_one = index,
-    )]
-    pub jar: Account<'info, Jar>,
+    tip_link: Account<'info, TipLink>,
 
     #[account(
         mut,
     )]
-    pub index: Account<'info, Index>,
+    jar: Account<'info, Jar>,
 
     #[account(
-        init_if_needed,
-        payer = signer,
-        space = 8 + SupporterIndex::INIT_SPACE,
-        seeds = [b"supporter_index", index.key().as_ref(), &index.supporter_index_page.to_le_bytes()],
+        mut,
+        seeds = [b"deposit", jar.key().as_ref(), &jar.deposit_count.to_le_bytes()],
         bump,
     )]
-    pub supporter_index: Account<'info, SupporterIndex>,
+    deposit: Account<'info, Deposit>,
 
     #[account(
         init_if_needed,
@@ -117,7 +97,7 @@ pub struct AddSupporter<'info> {
         seeds = [b"supporter", jar.key().as_ref(), signer.key().as_ref()],
         bump,
     )]
-    pub supporter: Account<'info, Supporter>,
+    supporter: Account<'info, Supporter>,
 
     system_program: Program<'info, System>,
 }
