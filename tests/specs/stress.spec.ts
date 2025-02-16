@@ -27,7 +27,7 @@ describe("5. Stress Testing", () => {
     // Create multiple deposits
     const EXISTING_DEPOSIT_COUNT = initialDepositCount;
     const EXISTING_SUPPORTER_COUNT = initialSupporterCount;
-    const ADJUSTED_SUPPORTER_COUNT = initialSupporterCount - 1; // Only for index calculations
+    const ADJUSTED_SUPPORTER_COUNT = initialSupporterCount; // Only for index calculations
     console.log("Initial deposit count:", EXISTING_DEPOSIT_COUNT);
     console.log("Initial supporter count:", EXISTING_SUPPORTER_COUNT);
     console.log(
@@ -98,11 +98,11 @@ describe("5. Stress Testing", () => {
     );
 
     // Verify all supporter index pages
-    for (let page = 1; page <= totalPages; page++) {
+    for (let page = 0; page < totalPages; page++) {
       const indexPDA = findSupporterIndexPDA(jarPDA, page);
       const index = await program.account.supporterIndex.fetch(indexPDA);
 
-      if (page < totalPages) {
+      if (page < totalPages - 1) {
         // All pages except the last should be full
         expect(index.totalItems).toEqual(PAGE_SIZE);
         expect(index.supporters.length).toEqual(PAGE_SIZE);
@@ -123,7 +123,7 @@ describe("5. Stress Testing", () => {
 
     // Verify total unique supporters across all pages
     let allSupporters: PublicKey[] = [];
-    for (let page = 1; page <= totalPages; page++) {
+    for (let page = 0; page < totalPages; page++) {
       const indexPDA = findSupporterIndexPDA(jarPDA, page);
       const index = await program.account.supporterIndex.fetch(indexPDA);
       allSupporters = [...allSupporters, ...index.supporters];
@@ -139,7 +139,7 @@ describe("5. Stress Testing", () => {
     expect(Number(jar.supporterCount)).toEqual(
       members.length + EXISTING_SUPPORTER_COUNT
     );
-    expect(Number(jar.supporterIndex)).toEqual(totalPages);
+    expect(Number(jar.supporterIndex)).toEqual(totalPages - 1);
   });
 
   it("should handle multiple withdrawals", async () => {
@@ -150,7 +150,7 @@ describe("5. Stress Testing", () => {
     const jarPDA = findJarPDA(creator.publicKey);
 
     // Create multiple withdrawals
-    const EXISTING_WITHDRAWAL_COUNT = 3;
+    const EXISTING_WITHDRAWAL_COUNT = 2;
     const WITHDRAWAL_COUNT = 25;
 
     for (let i = 0; i < WITHDRAWAL_COUNT; i++) {

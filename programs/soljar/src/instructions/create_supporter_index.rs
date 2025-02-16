@@ -3,7 +3,7 @@ use anchor_lang::prelude::*;
 use crate::state::*;
 
 
-pub fn create_supporter_index(_ctx: Context<CreateSupporterIndex>, index: u32) -> Result<()> {
+pub fn create_supporter_index(_ctx: Context<CreateSupporterIndex>, _index: u32) -> Result<()> {
     Ok(())
 }
 

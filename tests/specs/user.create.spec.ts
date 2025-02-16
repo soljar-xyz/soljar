@@ -25,7 +25,7 @@ describe("1. User Creation", () => {
       .accounts({})
       .postInstructions([
         await program.methods
-          .createSupporterIndex(1)
+          .createSupporterIndex(0)
           .accounts({})
           .instruction(),
       ])
@@ -44,9 +44,9 @@ describe("1. User Creation", () => {
     // Fetch and verify jar account
     const jar = await program.account.jar.fetch(jarPDA);
     expect(jar.user.equals(userPDA)).toBe(true);
-    expect(Number(jar.depositCount)).toBe(1);
-    expect(Number(jar.withdrawlCount)).toBe(1);
-    expect(Number(jar.supporterCount)).toBe(1);
+    expect(Number(jar.depositCount)).toBe(0);
+    expect(Number(jar.withdrawlCount)).toBe(0);
+    expect(Number(jar.supporterCount)).toBe(0);
     expect(jar.id).toBe(username);
 
     const tipLinkPDA = findTipLinkPDA(username);

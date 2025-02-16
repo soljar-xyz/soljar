@@ -27,7 +27,7 @@ describe("3. Deposit Creation", () => {
     const userPDA = findUserPDA(creator.publicKey);
     const jarPDA = findJarPDA(creator.publicKey);
     const supporterPDA = findSupporterPDA(jarPDA, creator.publicKey);
-    const supporterIndexPDA = findSupporterIndexPDA(jarPDA, 1);
+    const supporterIndexPDA = findSupporterIndexPDA(jarPDA, 0);
     await program.methods
       .createDeposit(
         username,
@@ -41,7 +41,7 @@ describe("3. Deposit Creation", () => {
 
     // Verify jar updates
     const jar = await program.account.jar.fetch(jarPDA);
-    expect(Number(jar.depositCount)).toEqual(2);
+    expect(Number(jar.depositCount)).toEqual(1);
 
     // Fetch the SOL balance of the jar
     const jarBalance = await banksClient.getBalance(jarPDA);
@@ -72,7 +72,7 @@ describe("3. Deposit Creation", () => {
     const jarPDA = findJarPDA(creator.publicKey);
     const tipLinkPDA = findTipLinkPDA(username);
     const supporterPDA = findSupporterPDA(jarPDA, creator.publicKey);
-    const supporterIndexPDA = findSupporterIndexPDA(jarPDA, 1);
+    const supporterIndexPDA = findSupporterIndexPDA(jarPDA, 0);
 
     // Find the jar's token account PDA
     const [jarTokenAccount] = PublicKey.findProgramAddressSync(
@@ -101,7 +101,7 @@ describe("3. Deposit Creation", () => {
 
     // Verify jar updates
     const jar = await program.account.jar.fetch(jarPDA);
-    expect(Number(jar.depositCount)).toEqual(3);
+    expect(Number(jar.depositCount)).toEqual(2);
 
     // Verify token balances
     // @ts-ignore
@@ -146,7 +146,7 @@ describe("3. Deposit Creation", () => {
     const jarPDA = findJarPDA(creator.publicKey);
     const tipLinkPDA = findTipLinkPDA(username);
     const supporterPDA = findSupporterPDA(jarPDA, newMember.publicKey);
-    const supporterIndexPDA = findSupporterIndexPDA(jarPDA, 1);
+    const supporterIndexPDA = findSupporterIndexPDA(jarPDA, 0);
 
     // Find the jar's token account PDA
     const [jarTokenAccount] = PublicKey.findProgramAddressSync(
@@ -181,7 +181,7 @@ describe("3. Deposit Creation", () => {
 
     // Verify jar updates
     const jar = await program2.account.jar.fetch(jarPDA);
-    expect(Number(jar.depositCount)).toEqual(4);
+    expect(Number(jar.depositCount)).toEqual(3);
 
     // Verify token balances
     // @ts-ignore
