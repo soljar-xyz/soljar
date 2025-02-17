@@ -1237,6 +1237,11 @@ export type Soljar = {
       "code": 6031,
       "name": "supporterCountOverflow",
       "msg": "Supporter count overflow"
+    },
+    {
+      "code": 6032,
+      "name": "usernameNotAllowed",
+      "msg": "This username is not allowed"
     }
   ],
   "types": [
@@ -1327,10 +1332,6 @@ export type Soljar = {
           },
           {
             "name": "createdAt",
-            "type": "i64"
-          },
-          {
-            "name": "updatedAt",
             "type": "i64"
           },
           {

@@ -2,6 +2,7 @@ use anchor_lang::prelude::*;
 
 use crate::state::*;
 use crate::error::SoljarError;
+use crate::utils::is_username_disallowed;
 
 pub fn create_user(ctx: Context<CreateUser>, username: String) -> Result<()> {
     require!(username.len() <= 15, SoljarError::UsernameTooLong);
@@ -9,6 +10,13 @@ pub fn create_user(ctx: Context<CreateUser>, username: String) -> Result<()> {
         !ctx.accounts.user_by_name.username_taken,
         SoljarError::UsernameAlreadyTaken
     );
+    
+    msg!("username: {}", username);
+    require!(
+        !is_username_disallowed(&username),
+        SoljarError::UsernameNotAllowed
+    );
+    msg!("username is allowed");
     
     let user = &mut ctx.accounts.user;
     user.user = ctx.accounts.signer.key();

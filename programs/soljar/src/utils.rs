@@ -13,7 +13,42 @@ pub fn get_currency_from_mint(currency_mint: Pubkey) -> Result<u8> {
         mint if mint == Pubkey::default() => Ok(0),
         mint if mint == USDC_MINT => Ok(1),
         mint if mint == USDT_MINT => Ok(2),
-        _ => Ok(1),
-        // _ => Err(SoljarError::InvalidCurrencyMint.into()),
+        _ => Err(SoljarError::InvalidCurrencyMint.into()),
     }
+}
+
+// These usernames are reserved for the official Soljar account and other official accounts
+pub fn is_username_disallowed(username: &str) -> bool {
+    let disallowed_usernames = [
+        "admin",
+        "moderator",
+        "mod",
+        "support",
+        "help",
+        "system",
+        "official",
+        "dogs",
+        "solana",
+        "sol",
+        "jar",
+        "tip",
+        "tips",
+        "phantom",
+        "solflare",
+        "squads",
+        "squad",
+        "fuse",
+        "cats",
+        "pudgypenguins",
+        "pudgypenguin",
+        "penguin",
+        "penguins",
+        "pudgy",
+        "pudgy",
+        "pudgy",
+        "bonk",
+        
+    ];
+    
+    disallowed_usernames.contains(&username.to_lowercase().as_str())
 } 

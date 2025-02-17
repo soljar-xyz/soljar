@@ -11,7 +11,6 @@ pub struct TipInfo {
 pub struct Supporter {
     pub signer: Pubkey,
     pub created_at: i64,
-    pub updated_at: i64,
     pub tip_count: u16,
     pub tips: [TipInfo; 4],
     pub active_tips: u8,

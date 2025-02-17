@@ -100,13 +100,11 @@ pub fn create_deposit(
                 .checked_add(1)
                 .ok_or(SoljarError::TipCountOverflow)?;
         }
-        supporter.updated_at = Clock::get()?.unix_timestamp;
     } else {
         supporter.signer = ctx.accounts.signer.key();
         supporter.tip_count = 1;
         supporter.active_tips = 1;
         supporter.created_at = Clock::get()?.unix_timestamp;
-        supporter.updated_at = Clock::get()?.unix_timestamp;
         
         supporter.tips[0] = TipInfo {
             currency,

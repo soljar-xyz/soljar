@@ -10,7 +10,6 @@ import { TestContext } from "./setup";
 import {
   createAssociatedTokenAccount,
   createMint,
-  getAccount,
   mintTo,
 } from "spl-token-bankrun";
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token";

@@ -66,4 +66,6 @@ pub enum SoljarError {
     WithdrawlCountOverflow,
     #[msg("Supporter count overflow")]
     SupporterCountOverflow,
+    #[msg("This username is not allowed")]
+    UsernameNotAllowed,
 }

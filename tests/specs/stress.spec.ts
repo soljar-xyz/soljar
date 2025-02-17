@@ -150,7 +150,7 @@ describe("5. Stress Testing", () => {
     const jarPDA = findJarPDA(creator.publicKey);
 
     // Create multiple withdrawals
-    const EXISTING_WITHDRAWAL_COUNT = 2;
+    const EXISTING_WITHDRAWAL_COUNT = 1;
     const WITHDRAWAL_COUNT = 25;
 
     for (let i = 0; i < WITHDRAWAL_COUNT; i++) {

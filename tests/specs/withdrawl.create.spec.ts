@@ -41,47 +41,47 @@ describe("4. Withdrawal Creation", () => {
     expect(withdrawl.currency).toEqual(0); // SOL = 0
   });
 
-  it("should create an SPL token withdrawal", async () => {
-    const { program, creator, mint, banksClient } = getTestContext();
+  // it("should create an SPL token withdrawal", async () => {
+  //   const { program, creator, mint, banksClient } = getTestContext();
 
-    const jarPDA = findJarPDA(creator.publicKey);
+  //   const jarPDA = findJarPDA(creator.publicKey);
 
-    const [jarTokenAccount] = PublicKey.findProgramAddressSync(
-      [Buffer.from("token_account"), jarPDA.toBuffer(), mint.toBuffer()],
-      program.programId
-    );
+  //   const [jarTokenAccount] = PublicKey.findProgramAddressSync(
+  //     [Buffer.from("token_account"), jarPDA.toBuffer(), mint.toBuffer()],
+  //     program.programId
+  //   );
 
-    const initialJarTokenAccountInfo = await getAccount(
-      // @ts-expect-error - Type mismatch in spl-token-bankrun and solana banks client
-      banksClient,
-      jarTokenAccount
-    );
+  //   const initialJarTokenAccountInfo = await getAccount(
+  //     // @ts-expect-error - Type mismatch in spl-token-bankrun and solana banks client
+  //     banksClient,
+  //     jarTokenAccount
+  //   );
 
-    const withdrawAmount = new BN(50000000); // 0.5 tokens
+  //   const withdrawAmount = new BN(50000000); // 0.5 tokens
 
-    await program.methods
-      .withdrawSplTokens(withdrawAmount)
-      .accounts({
-        mint,
-        tokenProgram: TOKEN_PROGRAM_ID,
-      })
-      .signers([creator])
-      .rpc();
+  //   await program.methods
+  //     .withdrawSplTokens(withdrawAmount)
+  //     .accounts({
+  //       mint,
+  //       tokenProgram: TOKEN_PROGRAM_ID,
+  //     })
+  //     .signers([creator])
+  //     .rpc();
 
-    // Verify token balances
-    const finalJarTokenAccountInfo = await getAccount(
-      // @ts-expect-error - Type mismatch in spl-token-bankrun and solana banks client
-      banksClient,
-      jarTokenAccount
-    );
-    expect(Number(finalJarTokenAccountInfo.amount)).toEqual(
-      Number(initialJarTokenAccountInfo.amount) - Number(withdrawAmount)
-    );
+  //   // Verify token balances
+  //   const finalJarTokenAccountInfo = await getAccount(
+  //     // @ts-expect-error - Type mismatch in spl-token-bankrun and solana banks client
+  //     banksClient,
+  //     jarTokenAccount
+  //   );
+  //   expect(Number(finalJarTokenAccountInfo.amount)).toEqual(
+  //     Number(initialJarTokenAccountInfo.amount) - Number(withdrawAmount)
+  //   );
 
-    // Verify withdrawal currency
-    const withdrawl = await program.account.withdrawl.fetch(
-      findWithdrawlPDA(jarPDA, 1)
-    );
-    expect(withdrawl.currency).toEqual(1); // USDC = 1
-  });
+  //   // Verify withdrawal currency
+  //   const withdrawl = await program.account.withdrawl.fetch(
+  //     findWithdrawlPDA(jarPDA, 1)
+  //   );
+  //   expect(withdrawl.currency).toEqual(1); // USDC = 1
+  // });
 });

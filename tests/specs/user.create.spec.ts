@@ -108,4 +108,25 @@ describe("1. User Creation", () => {
       expect(error.toString()).toContain("already in use");
     }
   });
+
+  it("should fail with disallowed username", async () => {
+    const { context, newMember } = getTestContext();
+    const username = "admin";
+
+    const newMemberProvider = new BankrunProvider(context);
+    newMemberProvider.wallet = new NodeWallet(newMember);
+
+    const newMemberProgram = new anchor.Program<Soljar>(
+      IDL as Soljar,
+      newMemberProvider
+    );
+
+    await expect(
+      newMemberProgram.methods
+        .createUser(username)
+        .accounts({})
+        .signers([newMember])
+        .rpc()
+    ).rejects.toThrow("UsernameNotAllowed");
+  });
 });
