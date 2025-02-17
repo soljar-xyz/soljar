@@ -18,6 +18,24 @@ pub mod state;
 pub mod constants;
 pub mod utils;
 
+
+#[cfg(not(feature = "no-entrypoint"))]
+use solana_security_txt::security_txt;
+
+#[cfg(not(feature = "no-entrypoint"))]
+security_txt! {
+    name: "Soljar",
+    project_url: "https://soljar.xyz",
+    contacts: "email:security@soljar.xyz",
+    policy: "https://soljar.xyz/security-policy",
+
+    // Optional Fields
+    preferred_languages: "en",
+    source_code: "https://github.com/soljar-xyz/soljar",
+    source_release: "",
+    encryption: ""
+}
+
 #[program]
 pub mod soljar {
 
