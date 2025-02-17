@@ -68,4 +68,10 @@ pub enum SoljarError {
     SupporterCountOverflow,
     #[msg("This username is not allowed")]
     UsernameNotAllowed,
+    #[msg("Username can only contain alphanumeric characters and underscores")]
+    InvalidUsernameFormat,
+    #[msg("Username must be lowercase")]
+    UsernameMustBeLowercase,
+    #[msg("Tip link ID must be lowercase")]
+    TipLinkIdMustBeLowercase,
 }

@@ -10,7 +10,7 @@ use instructions::create_spl_deposit::*;
 use instructions::create_supporter_index::*;
 
 
-declare_id!("2JW7BRttCgMmQEb8pmqjT9znpoi2YpbBSBDucxuJuz3i");
+declare_id!("JARSq9S9RgyynuAwcdWh2yEG6MbhfntWq7zjXjAo87uQ");
 
 pub mod error;
 pub mod instructions;

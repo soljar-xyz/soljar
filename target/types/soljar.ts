@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/soljar.json`.
  */
 export type Soljar = {
-  "address": "2JW7BRttCgMmQEb8pmqjT9znpoi2YpbBSBDucxuJuz3i",
+  "address": "JARSq9S9RgyynuAwcdWh2yEG6MbhfntWq7zjXjAo87uQ",
   "metadata": {
     "name": "soljar",
     "version": "0.1.0",
@@ -1242,6 +1242,21 @@ export type Soljar = {
       "code": 6032,
       "name": "usernameNotAllowed",
       "msg": "This username is not allowed"
+    },
+    {
+      "code": 6033,
+      "name": "invalidUsernameFormat",
+      "msg": "Username can only contain alphanumeric characters and underscores"
+    },
+    {
+      "code": 6034,
+      "name": "usernameMustBeLowercase",
+      "msg": "Username must be lowercase"
+    },
+    {
+      "code": 6035,
+      "name": "tipLinkIdMustBeLowercase",
+      "msg": "Tip link ID must be lowercase"
     }
   ],
   "types": [

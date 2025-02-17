@@ -129,4 +129,117 @@ describe("1. User Creation", () => {
         .rpc()
     ).rejects.toThrow("UsernameNotAllowed");
   });
+
+  it("should fail with invalid username formats and succeed with valid ones", async () => {
+    const { context, members } = getTestContext();
+
+    // Test uppercase/mixed case (should fail with UsernameMustBeLowercase)
+    const uppercaseUsernames = [
+      "UserName", // uppercase not allowed
+      "mixedCase", // mixed case not allowed
+      "UPPERCASE", // uppercase not allowed
+      "User_Name", // mixed case with underscore not allowed
+    ];
+
+    for (let i = 0; i < uppercaseUsernames.length; i++) {
+      const member = members[i];
+      const memberProvider = new BankrunProvider(context);
+      memberProvider.wallet = new NodeWallet(member);
+
+      const memberProgram = new anchor.Program<Soljar>(
+        IDL as Soljar,
+        memberProvider
+      );
+
+      await expect(
+        memberProgram.methods
+          .createUser(uppercaseUsernames[i])
+          .accounts({})
+          .signers([member])
+          .rpc()
+      ).rejects.toThrow("UsernameMustBeLowercase");
+    }
+
+    // Test invalid characters (should fail with InvalidUsernameFormat)
+    const invalidCharUsernames = [
+      "user name", // contains space
+      "user@name", // contains special character
+      "user#name", // contains special character
+      "user!123", // contains special character
+      "user-name", // contains hyphen
+      "user.name", // contains period
+    ];
+
+    for (let i = 0; i < invalidCharUsernames.length; i++) {
+      const member = members[i + uppercaseUsernames.length];
+      const memberProvider = new BankrunProvider(context);
+      memberProvider.wallet = new NodeWallet(member);
+
+      const memberProgram = new anchor.Program<Soljar>(
+        IDL as Soljar,
+        memberProvider
+      );
+
+      await expect(
+        memberProgram.methods
+          .createUser(invalidCharUsernames[i])
+          .accounts({})
+          .signers([member])
+          .rpc()
+      ).rejects.toThrow("InvalidUsernameFormat");
+    }
+
+    // Test valid usernames (lowercase only)
+    const validUsernames = [
+      "user_name", // underscore is allowed
+      "user123", // numbers are allowed
+      "username", // lowercase only
+      "_username_", // leading/trailing underscore
+    ];
+
+    for (let i = 0; i < validUsernames.length; i++) {
+      const member =
+        members[i + uppercaseUsernames.length + invalidCharUsernames.length];
+      const memberProvider = new BankrunProvider(context);
+      memberProvider.wallet = new NodeWallet(member);
+
+      const memberProgram = new anchor.Program<Soljar>(
+        IDL as Soljar,
+        memberProvider
+      );
+
+      await memberProgram.methods
+        .createUser(validUsernames[i])
+        .accounts({})
+        .signers([member])
+        .rpc();
+
+      const userPDA = findUserPDA(member.publicKey);
+      const user = await memberProgram.account.user.fetch(userPDA);
+      expect(user.username).toBe(validUsernames[i]);
+    }
+
+    // Test duplicate username
+    const duplicateMember =
+      members[
+        uppercaseUsernames.length +
+          invalidCharUsernames.length +
+          validUsernames.length
+      ];
+    const duplicateProvider = new BankrunProvider(context);
+    duplicateProvider.wallet = new NodeWallet(duplicateMember);
+
+    const duplicateProgram = new anchor.Program<Soljar>(
+      IDL as Soljar,
+      duplicateProvider
+    );
+
+    await expect(
+      duplicateProgram.methods
+        .createUser("user_name") // Try to create with existing username
+        .accounts({})
+        .signers([duplicateMember])
+        .rpc()
+    ).rejects.toThrow("already in use");
+  });
 });

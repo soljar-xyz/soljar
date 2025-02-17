@@ -8,7 +8,7 @@ use crate::error::SoljarError;
 
 pub fn create_deposit(
     ctx: Context<CreateDeposit>, 
-    _tip_link_id: String, 
+    tip_link_id: String, 
     referrer: String, 
     memo: String, 
     amount: u64
@@ -16,6 +16,10 @@ pub fn create_deposit(
 
 
     let currency: u8 = 0; // SOL = 0
+    
+    if tip_link_id != tip_link_id.to_lowercase() {
+        return Err(SoljarError::TipLinkIdMustBeLowercase.into());
+    }
 
     // Validate input lengths
     require!(

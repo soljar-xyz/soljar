@@ -16,7 +16,7 @@ import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 
 export async function initializeTestContext(): Promise<TestContext> {
   const newMember = new anchor.web3.Keypair();
-  const members: Keypair[] = Array(169)
+  const members: Keypair[] = Array(19)
     .fill(0)
     .map(() => new anchor.web3.Keypair());
   let creatorTokenAccount: PublicKey;

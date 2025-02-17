@@ -8,7 +8,7 @@ use crate::error::SoljarError;
 
 pub fn create_spl_deposit(
     ctx: Context<CreateSplDeposit>, 
-    _tip_link_id: String, 
+    tip_link_id: String, 
     referrer: String, 
     memo: String, 
     amount: u64
@@ -16,6 +16,11 @@ pub fn create_spl_deposit(
     let currency_mint = ctx.accounts.mint.key();
     let currency = get_currency_from_mint(currency_mint)?;
     // Validate input lengths
+
+    if tip_link_id != tip_link_id.to_lowercase() {
+        return Err(SoljarError::TipLinkIdMustBeLowercase.into());
+    }
+
     require!(
         referrer.len() <= Deposit::MAX_REFERRER_LENGTH,
         SoljarError::ReferrerTooLong

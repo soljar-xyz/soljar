@@ -10,6 +10,16 @@ pub fn create_user(ctx: Context<CreateUser>, username: String) -> Result<()> {
         !ctx.accounts.user_by_name.username_taken,
         SoljarError::UsernameAlreadyTaken
     );
+
+    require!(
+        username == username.to_lowercase(),
+        SoljarError::UsernameMustBeLowercase
+    );
+    
+    require!(
+        username.chars().all(|c| c.is_alphanumeric() || c == '_'),
+        SoljarError::InvalidUsernameFormat
+    );
     
     msg!("username: {}", username);
     require!(
