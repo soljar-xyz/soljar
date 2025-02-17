@@ -28,9 +28,11 @@ pub fn create_spl_deposit(
     );
     require!(amount > 0, SoljarError::InvalidAmount);
 
+
+    let jar = &mut ctx.accounts.jar;
+
     if currency_mint == Pubkey::default() {
         msg!("TRANSFERING SOL");
-        let jar = &mut ctx.accounts.jar;
 
         // Verify signer has enough SOL
         require!(
@@ -86,7 +88,6 @@ pub fn create_spl_deposit(
     transfer_checked(cpi_ctx, amount, ctx.accounts.mint.decimals)?;
     }
 
-    let jar = &mut ctx.accounts.jar;
 
 
     let deposit = &mut ctx.accounts.deposit;
