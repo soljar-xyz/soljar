@@ -31,6 +31,7 @@ pub fn create_spl_deposit(
 
     let jar = &mut ctx.accounts.jar;
 
+
     if currency_mint == Pubkey::default() {
         msg!("TRANSFERING SOL");
 
@@ -118,7 +119,6 @@ pub struct CreateSplDeposit<'info> {
         seeds = [b"tip_link", tip_link_id.as_bytes()],
         bump,
         has_one = jar,
-
     )]
     pub tip_link: Box<Account<'info, TipLink>>,
     #[account(

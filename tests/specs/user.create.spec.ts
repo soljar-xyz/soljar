@@ -63,50 +63,49 @@ describe("1. User Creation", () => {
     expect(supporterIndex.totalItems).toBe(0);
   });
 
-  // it("should fail with username too long", async () => {
-  //   const { context, newMember } = getTestContext();
+  it("should fail with username too long", async () => {
+    const { context, newMember } = getTestContext();
 
-  //   const newMemberProvider = new BankrunProvider(context);
-  //   newMemberProvider.wallet = new NodeWallet(newMember);
+    const newMemberProvider = new BankrunProvider(context);
+    newMemberProvider.wallet = new NodeWallet(newMember);
 
-  //   const newMemberProgram = new anchor.Program<Soljar>(
-  //     IDL as Soljar,
-  //     newMemberProvider
-  //   );
+    const newMemberProgram = new anchor.Program<Soljar>(
+      IDL as Soljar,
+      newMemberProvider
+    );
 
-  //   await expect(
-  //     newMemberProgram.methods
-  //       .createUser("thisusernameistoolong")
-  //       .accounts({
-  //         signer: newMember.publicKey,
-  //       })
-  //       .signers([newMember])
-  //       .rpc()
-  //   ).rejects.toThrow("UsernameTooLong");
+    await expect(
+      newMemberProgram.methods
+        .createUser("thisusernameistoolong")
+        .accounts({
+          signer: newMember.publicKey,
+        })
+        .signers([newMember])
+        .rpc()
+    ).rejects.toThrow("UsernameTooLong");
+  });
 
-  // });
+  it("should fail with duplicate username", async () => {
+    const { context, newMember } = getTestContext();
+    const username = "satoshi";
 
-  // it("should fail with duplicate username", async () => {
-  //   const { context, newMember } = getTestContext();
-  //   const username = "satoshi";
+    const newMemberProvider = new BankrunProvider(context);
+    newMemberProvider.wallet = new NodeWallet(newMember);
 
-  //   const newMemberProvider = new BankrunProvider(context);
-  //   newMemberProvider.wallet = new NodeWallet(newMember);
+    const newMemberProgram = new anchor.Program<Soljar>(
+      IDL as Soljar,
+      newMemberProvider
+    );
 
-  //   const newMemberProgram = new anchor.Program<Soljar>(
-  //     IDL as Soljar,
-  //     newMemberProvider
-  //   );
-
-  //   try {
-  //     await newMemberProgram.methods
-  //       .createUser(username)
-  //       .accounts({})
-  //       .signers([newMember])
-  //       .rpc();
-  //     throw new Error("Should have failed");
-  //   } catch (error: any) {
-  //     expect(error.toString()).toContain("already in use");
-  //   }
-  // });
+    try {
+      await newMemberProgram.methods
+        .createUser(username)
+        .accounts({})
+        .signers([newMember])
+        .rpc();
+      throw new Error("Should have failed");
+    } catch (error: any) {
+      expect(error.toString()).toContain("already in use");
+    }
+  });
 });
