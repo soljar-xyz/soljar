@@ -32,7 +32,7 @@ pub fn create_spl_deposit(
     require!(amount > 0, SoljarError::InvalidAmount);
 
 
-    let jar = &mut ctx.accounts.jar;
+    let jar = &ctx.accounts.jar;
 
 
 
