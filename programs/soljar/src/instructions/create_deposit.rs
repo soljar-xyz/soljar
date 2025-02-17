@@ -15,7 +15,7 @@ pub fn create_deposit(
 ) -> Result<()> {
 
 
-    let currency ="SOL";
+    let currency: u8 = 0; // SOL = 0
 
     // Validate input lengths
     require!(
@@ -56,7 +56,7 @@ pub fn create_deposit(
 
     let deposit = &mut ctx.accounts.deposit;
     deposit.signer = ctx.accounts.signer.key();
-    deposit.currency = currency.to_string();
+    deposit.currency = currency;
     deposit.link_id = jar.id.clone();
     deposit.amount = amount;
     deposit.created_at = Clock::get()?.unix_timestamp;
@@ -70,40 +70,56 @@ pub fn create_deposit(
     let supporter = &mut ctx.accounts.supporter;
 
     if supporter.signer == ctx.accounts.signer.key() {
-        // Find existing tip info for the currency
-        if let Some(tip_info) = supporter.tips.iter_mut().find(|t| t.currency == currency) {
-            // Update existing tip info
-            tip_info.amount = tip_info.amount.checked_add(amount)
-                .ok_or(SoljarError::AmountOverflow)?;
-            supporter.tip_count = supporter.tip_count.checked_add(1)
-                .ok_or(SoljarError::TipCountOverflow)?;
-        } else {
-            // Add new currency to tips vector
+        let mut found = false;
+        
+        for i in 0..supporter.active_tips as usize {
+            if supporter.tips[i].currency == currency {
+                supporter.tips[i].amount = supporter.tips[i].amount
+                    .checked_add(amount)
+                    .ok_or(SoljarError::AmountOverflow)?;
+                supporter.tip_count = supporter.tip_count
+                    .checked_add(1)
+                    .ok_or(SoljarError::TipCountOverflow)?;
+                found = true;
+                break;
+            }
+        }
+
+        if !found {
             require!(
-                supporter.tips.len() < 10,
+                supporter.active_tips < 4,
                 SoljarError::MaxCurrenciesReached
             );
-            supporter.tips.push(TipInfo {
-                currency: currency.to_string(),
+            
+            let idx = supporter.active_tips as usize;
+            supporter.tips[idx] = TipInfo {
+                currency,
                 amount,
-            });
-            supporter.tip_count = supporter.tip_count.checked_add(1)
+            };
+            supporter.active_tips += 1;
+            supporter.tip_count = supporter.tip_count
+                .checked_add(1)
                 .ok_or(SoljarError::TipCountOverflow)?;
         }
         supporter.updated_at = Clock::get()?.unix_timestamp;
     } else {
-        // Initialize new supporter
-        require!(amount > 0, SoljarError::InvalidAmount);
-        
         supporter.signer = ctx.accounts.signer.key();
         supporter.tip_count = 1;
-
+        supporter.active_tips = 1;
         supporter.created_at = Clock::get()?.unix_timestamp;
         supporter.updated_at = Clock::get()?.unix_timestamp;
-        supporter.tips = vec![TipInfo {
-            currency: currency.to_string(),
+        
+        supporter.tips[0] = TipInfo {
+            currency,
             amount,
-        }];
+        };
+        // Zero out the rest of the array
+        for i in 1..4 {
+            supporter.tips[i] = TipInfo {
+                currency: 0,
+                amount: 0,
+            };
+        }
 
         let jar = &mut ctx.accounts.jar;
 

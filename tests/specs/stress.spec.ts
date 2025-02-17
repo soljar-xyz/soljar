@@ -15,7 +15,7 @@ import IDL from "../../target/idl/soljar.json";
 describe("5. Stress Testing", () => {
   it("should handle multiple deposits", async () => {
     const { members, creator, context, program } = getTestContext();
-    const SOL_MINT = PublicKey.default;
+    const SOL_MINT = PublicKey.default; // SOL = 0
     const username = "satoshi";
 
     const userPDA = findUserPDA(creator.publicKey);
@@ -144,7 +144,7 @@ describe("5. Stress Testing", () => {
 
   it("should handle multiple withdrawals", async () => {
     const { program, creator } = getTestContext();
-    const SOL_MINT = PublicKey.default;
+    const SOL_MINT = PublicKey.default; // SOL = 0
 
     const userPDA = findUserPDA(creator.publicKey);
     const jarPDA = findJarPDA(creator.publicKey);

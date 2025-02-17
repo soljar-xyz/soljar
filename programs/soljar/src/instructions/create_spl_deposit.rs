@@ -16,7 +16,6 @@ pub fn create_spl_deposit(
     amount: u64
 ) -> Result<()> {
     let currency_mint = ctx.accounts.mint.key();
-
     let currency = get_currency_from_mint(currency_mint)?;
     // Validate input lengths
     require!(
@@ -93,7 +92,7 @@ pub fn create_spl_deposit(
     let deposit = &mut ctx.accounts.deposit;
     deposit.signer = ctx.accounts.signer.key();
     deposit.link_id = jar.id.clone();
-    deposit.currency = currency.clone();
+    deposit.currency = currency;
     deposit.amount = amount;
     deposit.created_at = Clock::get()?.unix_timestamp;
     deposit.referrer = referrer;

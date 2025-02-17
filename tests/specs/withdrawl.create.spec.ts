@@ -1,5 +1,5 @@
 import { getTestContext } from "../utils/setup";
-import { findJarPDA } from "../utils/helpers";
+import { findJarPDA, findWithdrawlPDA } from "../utils/helpers";
 import { BN } from "@coral-xyz/anchor";
 import { PublicKey } from "@solana/web3.js";
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
@@ -8,11 +8,10 @@ import { getAccount } from "spl-token-bankrun";
 describe("4. Withdrawal Creation", () => {
   it("should create a SOL withdrawal", async () => {
     const { program, creator, banksClient } = getTestContext();
-    const SOL_MINT = PublicKey.default;
+    const SOL_MINT = PublicKey.default; // SOL = 0
 
     const jarPDA = findJarPDA(creator.publicKey);
 
-    // Log balances for debugging
     const initialBalance = await banksClient.getBalance(creator.publicKey);
     const withdrawAmount = new BN(500000000); // 0.5 SOL
 
@@ -25,8 +24,7 @@ describe("4. Withdrawal Creation", () => {
 
     const finalBalance = await banksClient.getBalance(creator.publicKey);
 
-    // Verify the balance change - initial + withdrawal amount
-    // minus the transaction fee (exactly 1508360 lamports)
+    // Verify the balance change
     expect(Number(finalBalance)).toBeCloseTo(
       Number(initialBalance),
       -498658680
@@ -35,6 +33,12 @@ describe("4. Withdrawal Creation", () => {
     // Verify jar updates
     const jar = await program.account.jar.fetch(jarPDA);
     expect(Number(jar.withdrawlCount)).toEqual(1);
+
+    // Verify withdrawal currency
+    const withdrawl = await program.account.withdrawl.fetch(
+      findWithdrawlPDA(jarPDA, 0)
+    );
+    expect(withdrawl.currency).toEqual(0); // SOL = 0
   });
 
   it("should create an SPL token withdrawal", async () => {
@@ -42,7 +46,6 @@ describe("4. Withdrawal Creation", () => {
 
     const jarPDA = findJarPDA(creator.publicKey);
 
-    // Find the treasury's token account PDA
     const [jarTokenAccount] = PublicKey.findProgramAddressSync(
       [Buffer.from("token_account"), jarPDA.toBuffer(), mint.toBuffer()],
       program.programId
@@ -74,5 +77,11 @@ describe("4. Withdrawal Creation", () => {
     expect(Number(finalJarTokenAccountInfo.amount)).toEqual(
       Number(initialJarTokenAccountInfo.amount) - Number(withdrawAmount)
     );
+
+    // Verify withdrawal currency
+    const withdrawl = await program.account.withdrawl.fetch(
+      findWithdrawlPDA(jarPDA, 1)
+    );
+    expect(withdrawl.currency).toEqual(1); // USDC = 1
   });
 });

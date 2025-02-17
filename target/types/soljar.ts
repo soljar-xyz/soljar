@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/soljar.json`.
  */
 export type Soljar = {
-  "address": "4rZWUsgpyxYTGvjkiDvcb5Qz7E9YMzGkfV4e4Z8K8Eo4",
+  "address": "9PAZ216korYrGHbhhaBTn25BspUgu4C5ubFF3bFQaSAX",
   "metadata": {
     "name": "soljar",
     "version": "0.1.0",
@@ -1358,7 +1358,7 @@ export type Soljar = {
           },
           {
             "name": "currency",
-            "type": "string"
+            "type": "u8"
           },
           {
             "name": "referrer",
@@ -1439,12 +1439,19 @@ export type Soljar = {
           {
             "name": "tips",
             "type": {
-              "vec": {
-                "defined": {
-                  "name": "tipInfo"
-                }
-              }
+              "array": [
+                {
+                  "defined": {
+                    "name": "tipInfo"
+                  }
+                },
+                4
+              ]
             }
+          },
+          {
+            "name": "activeTips",
+            "type": "u8"
           }
         ]
       }
@@ -1474,7 +1481,7 @@ export type Soljar = {
         "fields": [
           {
             "name": "currency",
-            "type": "string"
+            "type": "u8"
           },
           {
             "name": "amount",
@@ -1550,7 +1557,7 @@ export type Soljar = {
           },
           {
             "name": "currency",
-            "type": "string"
+            "type": "u8"
           },
           {
             "name": "amount",

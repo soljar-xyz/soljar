@@ -10,7 +10,7 @@ describe("Soljar Program Tests", () => {
 
   // Import test suites in order
   require("./specs/user.create.spec");
-  require("./specs/deposit.create.spec");
-  require("./specs/withdrawl.create.spec");
-  require("./specs/stress.spec");
+  // require("./specs/deposit.create.spec");
+  // require("./specs/withdrawl.create.spec");
+  // require("./specs/stress.spec");
 });

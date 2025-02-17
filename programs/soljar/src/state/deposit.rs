@@ -8,8 +8,7 @@ pub struct Deposit {
     pub amount: u64,
     #[max_len(15)]
     pub link_id: String,
-    #[max_len(4)]
-    pub currency: String,
+    pub currency: u8,  // 0 = SOL, 1 = USDC, 2 = USDT
     #[max_len(25)]
     pub referrer: String,
     #[max_len(20)]

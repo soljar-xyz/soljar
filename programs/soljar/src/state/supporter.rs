@@ -2,8 +2,7 @@ use anchor_lang::prelude::*;
 
 #[derive(AnchorDeserialize, AnchorSerialize, Clone, InitSpace)]
 pub struct TipInfo {
-    #[max_len(4)]
-    pub currency: String,
+    pub currency: u8,  // 0 = SOL, 1 = USDC, 2 = USDT
     pub amount: u64,
 }
 
@@ -14,8 +13,7 @@ pub struct Supporter {
     pub created_at: i64,
     pub updated_at: i64,
     pub tip_count: u16,
-    // Vector to store multiple tip currencies and their info
-    #[max_len(4)] // Set a reasonable maximum number of different currencies
-    pub tips: Vec<TipInfo>,
+    pub tips: [TipInfo; 4],
+    pub active_tips: u8,
 }
     

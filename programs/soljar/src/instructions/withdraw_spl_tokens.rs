@@ -7,11 +7,8 @@ use crate::{state::*, utils::get_currency_from_mint};
 use crate::error::SoljarError;
 
 pub fn withdraw_spl_tokens(ctx: Context<WithdrawSplTokens>, amount: u64) -> Result<()> {
-    // Validate amount
     require!(amount > 0, SoljarError::InvalidAmount);
-
-
-    let currency = get_currency_from_mint(ctx.accounts.mint.key()).unwrap();
+    let currency = get_currency_from_mint(ctx.accounts.mint.key())?;
 
     let mint = ctx.accounts.mint.key();
     msg!("Mint: {}", mint);
@@ -63,11 +60,10 @@ pub fn withdraw_spl_tokens(ctx: Context<WithdrawSplTokens>, amount: u64) -> Resu
     // transfer_checked already handles decimal place validation
     transfer_checked(cpi_context, amount, ctx.accounts.mint.decimals)?;
 
-
     let withdrawl = &mut ctx.accounts.withdrawl;
     withdrawl.jar = ctx.accounts.jar.key();
     withdrawl.amount = amount;
-    withdrawl.currency = currency.to_string();
+    withdrawl.currency = currency;
     withdrawl.created_at = Clock::get()?.unix_timestamp;
 
     let jar = &mut ctx.accounts.jar;

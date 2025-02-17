@@ -1,18 +1,16 @@
 use anchor_lang::prelude::*;
 use crate::state::*;
 use crate::error::SoljarError;
+use crate::utils::get_currency_from_mint;
 pub fn create_withdrawl(ctx: Context<CreateWithdrawl>, currency_mint: Pubkey, amount: u64) -> Result<()> {
-    // Validate amount
     require!(amount > 0, SoljarError::InvalidAmount);
+    let currency = get_currency_from_mint(currency_mint)?;
 
     if currency_mint == Pubkey::default() {
         msg!("TRANSFERING SOL");
-        // Get the PDA's current balance
         let jar_balance = ctx.accounts.jar.to_account_info().lamports();
         require!(jar_balance >= amount, SoljarError::InsufficientFunds);
 
-        msg!("TRANSFERING SOL: {} lamports", amount);
-        // Transfer SOL using transfer_lamports with checked arithmetic
         **ctx.accounts.jar.to_account_info().try_borrow_mut_lamports()? = jar_balance
             .checked_sub(amount)
             .ok_or(SoljarError::Overflow)?;
@@ -21,20 +19,17 @@ pub fn create_withdrawl(ctx: Context<CreateWithdrawl>, currency_mint: Pubkey, am
         **ctx.accounts.signer.to_account_info().try_borrow_mut_lamports()? = recipient_balance
             .checked_add(amount)
             .ok_or(SoljarError::Overflow)?;
-        
-        msg!("TRANSFERED SOL: {} lamports", amount);
     }
 
     let withdrawl = &mut ctx.accounts.withdrawl;
     withdrawl.jar = ctx.accounts.jar.key();
     withdrawl.amount = amount;
     withdrawl.created_at = Clock::get()?.unix_timestamp;
-    withdrawl.currency = "SOL".to_string();
+    withdrawl.currency = currency;
 
     let jar = &mut ctx.accounts.jar;
     jar.withdrawl_count = jar.withdrawl_count.checked_add(1).unwrap();
     jar.updated_at = Clock::get()?.unix_timestamp;
-
 
     Ok(())
 }

@@ -1,5 +1,5 @@
 {
-  "address": "4rZWUsgpyxYTGvjkiDvcb5Qz7E9YMzGkfV4e4Z8K8Eo4",
+  "address": "9PAZ216korYrGHbhhaBTn25BspUgu4C5ubFF3bFQaSAX",
   "metadata": {
     "name": "soljar",
     "version": "0.1.0",
@@ -1352,7 +1352,7 @@
           },
           {
             "name": "currency",
-            "type": "string"
+            "type": "u8"
           },
           {
             "name": "referrer",
@@ -1433,12 +1433,19 @@
           {
             "name": "tips",
             "type": {
-              "vec": {
-                "defined": {
-                  "name": "TipInfo"
-                }
-              }
+              "array": [
+                {
+                  "defined": {
+                    "name": "TipInfo"
+                  }
+                },
+                4
+              ]
             }
+          },
+          {
+            "name": "active_tips",
+            "type": "u8"
           }
         ]
       }
@@ -1468,7 +1475,7 @@
         "fields": [
           {
             "name": "currency",
-            "type": "string"
+            "type": "u8"
           },
           {
             "name": "amount",
@@ -1544,7 +1551,7 @@
           },
           {
             "name": "currency",
-            "type": "string"
+            "type": "u8"
           },
           {
             "name": "amount",
