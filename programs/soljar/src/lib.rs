@@ -3,7 +3,6 @@
 use anchor_lang::prelude::*;
 use instructions::create_user::*;
 use instructions::create_deposit::*;
-use instructions::transfer_tokens::*;
 use instructions::add_supporter::*;
 use instructions::create_withdrawl::*;
 use instructions::withdraw_spl_tokens::*;
@@ -11,7 +10,7 @@ use instructions::create_spl_deposit::*;
 use instructions::create_supporter_index::*;
 
 
-declare_id!("9PAZ216korYrGHbhhaBTn25BspUgu4C5ubFF3bFQaSAX");
+declare_id!("2JW7BRttCgMmQEb8pmqjT9znpoi2YpbBSBDucxuJuz3i");
 
 pub mod error;
 pub mod instructions;
@@ -30,10 +29,6 @@ pub mod soljar {
 
     pub fn create_deposit(ctx: Context<CreateDeposit>, tip_link_id: String, referrer: String, memo: String, amount: u64) -> Result<()> {
         instructions::create_deposit::create_deposit(ctx, tip_link_id, referrer, memo, amount)
-    }
-
-    pub fn transfer_tokens(ctx: Context<TransferTokens>, tip_link_id: String, amount: u64) -> Result<()> {
-        instructions::transfer_tokens::transfer_tokens(ctx, tip_link_id, amount)
     }
 
     pub fn add_supporter(ctx: Context<AddSupporter>, tip_link_id: String, currency_mint: Pubkey, amount: u64) -> Result<()> {

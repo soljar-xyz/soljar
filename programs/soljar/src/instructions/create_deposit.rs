@@ -35,7 +35,7 @@ pub fn create_deposit(
         // Verify signer has enough SOL
         require!(
             ctx.accounts.signer.lamports() >= amount,
-            SoljarError::InsufficientFunds
+            SoljarError::InsufficientSolBalance
         );
 
         // Transfer SOL from signer to treasury
@@ -60,11 +60,10 @@ pub fn create_deposit(
     deposit.link_id = jar.id.clone();
     deposit.amount = amount;
     deposit.created_at = Clock::get()?.unix_timestamp;
-    deposit.referrer = referrer;
     deposit.memo = memo;
 
     let jar = &mut ctx.accounts.jar;
-    jar.deposit_count = jar.deposit_count.checked_add(1).unwrap();
+    jar.deposit_count = jar.deposit_count.checked_add(1).ok_or(SoljarError::DepositCountOverflow)?;
     jar.updated_at = Clock::get()?.unix_timestamp;
 
     let supporter = &mut ctx.accounts.supporter;
@@ -146,7 +145,7 @@ pub fn create_deposit(
 
         supporter_index.supporters.push(supporter.key());
 
-        jar.supporter_count = jar.supporter_count.checked_add(1).unwrap();
+        jar.supporter_count = jar.supporter_count.checked_add(1).ok_or(SoljarError::SupporterCountOverflow)?;
         jar.updated_at = Clock::get()?.unix_timestamp;
     }
 

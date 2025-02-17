@@ -91,11 +91,11 @@ pub fn add_supporter(
 
         supporter_index.supporters.push(supporter.key());
 
-        jar.supporter_count = jar.supporter_count.checked_add(1).unwrap();
+        jar.supporter_count = jar.supporter_count.checked_add(1).ok_or(SoljarError::SupporterCountOverflow)?;
         jar.updated_at = Clock::get()?.unix_timestamp;
     }
 
-    jar.deposit_count = jar.deposit_count.checked_add(1).unwrap();
+    jar.deposit_count = jar.deposit_count.checked_add(1).ok_or(SoljarError::DepositCountOverflow)?;
     jar.updated_at = Clock::get()?.unix_timestamp;
 
     Ok(())

@@ -40,8 +40,6 @@ pub enum SoljarError {
     ReferrerTooLong,
     #[msg("Memo string too long")]
     MemoTooLong,
-    #[msg("Insufficient funds")]
-    InsufficientFunds,
     #[msg("Too many deposits in index")]
     TooManyDeposits,
     #[msg("Insufficient funds in jar")]
@@ -50,6 +48,8 @@ pub enum SoljarError {
     TooManyWithdrawls,
     #[msg("Arithmetic overflow")]
     ArithmeticOverflow,
+    #[msg("Insufficient SOL balance")]
+    InsufficientSolBalance,
     #[msg("Insufficient token balance")]
     InsufficientTokenBalance,
     #[msg("Invalid token mint")]
@@ -60,4 +60,10 @@ pub enum SoljarError {
     UnsupportedCurrency,
     #[msg("Invalid currency mint")]
     InvalidCurrencyMint,
+    #[msg("Deposit count overflow")]
+    DepositCountOverflow,
+    #[msg("Withdrawl count overflow")]
+    WithdrawlCountOverflow,
+    #[msg("Supporter count overflow")]
+    SupporterCountOverflow,
 }

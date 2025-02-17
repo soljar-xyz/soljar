@@ -1,6 +1,4 @@
 use anchor_lang::prelude::*;
-use anchor_lang::solana_program::program::invoke;
-use anchor_lang::solana_program::system_instruction::transfer;
 use crate::utils::get_currency_from_mint;
 
 use anchor_spl::token_interface::{transfer_checked, Mint, TokenAccount, TokenInterface, TransferChecked};
@@ -32,32 +30,8 @@ pub fn create_spl_deposit(
     let jar = &mut ctx.accounts.jar;
 
 
-    if currency_mint == Pubkey::default() {
-        msg!("TRANSFERING SOL");
 
-        // Verify signer has enough SOL
-        require!(
-            ctx.accounts.signer.lamports() >= amount,
-            SoljarError::InsufficientFunds
-        );
-
-        // Transfer SOL from signer to treasury
-        let transfer_seed_ix = transfer(
-            &ctx.accounts.signer.key(),
-            jar.to_account_info().key,
-            amount,
-        );
-
-        invoke(
-            &transfer_seed_ix,
-            &[
-                ctx.accounts.signer.to_account_info(),
-                jar.to_account_info(),
-                ctx.accounts.system_program.to_account_info(),
-            ],
-        )?;
-    } else {
-        // Verify source account has sufficient balance
+    // Verify source account has sufficient balance
     require!(
         ctx.accounts.source_token_account.amount >= amount,
         SoljarError::InsufficientTokenBalance
@@ -87,7 +61,7 @@ pub fn create_spl_deposit(
 
     // transfer_checked already handles decimal place validation
     transfer_checked(cpi_ctx, amount, ctx.accounts.mint.decimals)?;
-    }
+
 
 
 
@@ -97,7 +71,6 @@ pub fn create_spl_deposit(
     deposit.currency = currency;
     deposit.amount = amount;
     deposit.created_at = Clock::get()?.unix_timestamp;
-    deposit.referrer = referrer;
     deposit.memo = memo;
 
 

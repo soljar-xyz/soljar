@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/soljar.json`.
  */
 export type Soljar = {
-  "address": "9PAZ216korYrGHbhhaBTn25BspUgu4C5ubFF3bFQaSAX",
+  "address": "2JW7BRttCgMmQEb8pmqjT9znpoi2YpbBSBDucxuJuz3i",
   "metadata": {
     "name": "soljar",
     "version": "0.1.0",
@@ -789,116 +789,6 @@ export type Soljar = {
       ]
     },
     {
-      "name": "transferTokens",
-      "discriminator": [
-        54,
-        180,
-        238,
-        175,
-        74,
-        85,
-        126,
-        188
-      ],
-      "accounts": [
-        {
-          "name": "signer",
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "tipLink",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  116,
-                  105,
-                  112,
-                  95,
-                  108,
-                  105,
-                  110,
-                  107
-                ]
-              },
-              {
-                "kind": "arg",
-                "path": "tipLinkId"
-              }
-            ]
-          }
-        },
-        {
-          "name": "jar",
-          "writable": true,
-          "relations": [
-            "tipLink"
-          ]
-        },
-        {
-          "name": "mint"
-        },
-        {
-          "name": "tokenAccount",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  116,
-                  111,
-                  107,
-                  101,
-                  110,
-                  95,
-                  97,
-                  99,
-                  99,
-                  111,
-                  117,
-                  110,
-                  116
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "jar"
-              },
-              {
-                "kind": "account",
-                "path": "mint"
-              }
-            ]
-          }
-        },
-        {
-          "name": "sourceTokenAccount",
-          "writable": true
-        },
-        {
-          "name": "systemProgram",
-          "address": "11111111111111111111111111111111"
-        },
-        {
-          "name": "tokenProgram"
-        }
-      ],
-      "args": [
-        {
-          "name": "tipLinkId",
-          "type": "string"
-        },
-        {
-          "name": "amount",
-          "type": "u64"
-        }
-      ]
-    },
-    {
       "name": "withdrawSplTokens",
       "discriminator": [
         30,
@@ -1285,28 +1175,28 @@ export type Soljar = {
     },
     {
       "code": 6019,
-      "name": "insufficientFunds",
-      "msg": "Insufficient funds"
-    },
-    {
-      "code": 6020,
       "name": "tooManyDeposits",
       "msg": "Too many deposits in index"
     },
     {
-      "code": 6021,
+      "code": 6020,
       "name": "insufficientFundsInJar",
       "msg": "Insufficient funds in jar"
     },
     {
-      "code": 6022,
+      "code": 6021,
       "name": "tooManyWithdrawls",
       "msg": "Too many withdrawls in index"
     },
     {
-      "code": 6023,
+      "code": 6022,
       "name": "arithmeticOverflow",
       "msg": "Arithmetic overflow"
+    },
+    {
+      "code": 6023,
+      "name": "insufficientSolBalance",
+      "msg": "Insufficient SOL balance"
     },
     {
       "code": 6024,
@@ -1332,6 +1222,21 @@ export type Soljar = {
       "code": 6028,
       "name": "invalidCurrencyMint",
       "msg": "Invalid currency mint"
+    },
+    {
+      "code": 6029,
+      "name": "depositCountOverflow",
+      "msg": "Deposit count overflow"
+    },
+    {
+      "code": 6030,
+      "name": "withdrawlCountOverflow",
+      "msg": "Withdrawl count overflow"
+    },
+    {
+      "code": 6031,
+      "name": "supporterCountOverflow",
+      "msg": "Supporter count overflow"
     }
   ],
   "types": [
@@ -1359,10 +1264,6 @@ export type Soljar = {
           {
             "name": "currency",
             "type": "u8"
-          },
-          {
-            "name": "referrer",
-            "type": "string"
           },
           {
             "name": "memo",

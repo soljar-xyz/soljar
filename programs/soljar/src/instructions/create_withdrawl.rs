@@ -9,7 +9,7 @@ pub fn create_withdrawl(ctx: Context<CreateWithdrawl>, currency_mint: Pubkey, am
     if currency_mint == Pubkey::default() {
         msg!("TRANSFERING SOL");
         let jar_balance = ctx.accounts.jar.to_account_info().lamports();
-        require!(jar_balance >= amount, SoljarError::InsufficientFunds);
+        require!(jar_balance >= amount, SoljarError::InsufficientSolBalance);
 
         **ctx.accounts.jar.to_account_info().try_borrow_mut_lamports()? = jar_balance
             .checked_sub(amount)
@@ -28,7 +28,7 @@ pub fn create_withdrawl(ctx: Context<CreateWithdrawl>, currency_mint: Pubkey, am
     withdrawl.currency = currency;
 
     let jar = &mut ctx.accounts.jar;
-    jar.withdrawl_count = jar.withdrawl_count.checked_add(1).unwrap();
+    jar.withdrawl_count = jar.withdrawl_count.checked_add(1).ok_or(SoljarError::WithdrawlCountOverflow)?;
     jar.updated_at = Clock::get()?.unix_timestamp;
 
     Ok(())
@@ -54,10 +54,4 @@ pub struct CreateWithdrawl<'info> {
     pub withdrawl: Account<'info, Withdrawl>,
 
     system_program: Program<'info, System>,
-}
-
-#[error_code]
-pub enum CustomError {
-    #[msg("Insufficient funds in jar")]
-    InsufficientFunds,
 }
