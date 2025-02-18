@@ -74,4 +74,6 @@ pub enum SoljarError {
     UsernameMustBeLowercase,
     #[msg("Tip link ID must be lowercase")]
     TipLinkIdMustBeLowercase,
+    #[msg("Invalid deposit")]
+    InvalidDeposit,
 }

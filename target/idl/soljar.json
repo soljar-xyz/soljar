@@ -1251,6 +1251,11 @@
       "code": 6035,
       "name": "TipLinkIdMustBeLowercase",
       "msg": "Tip link ID must be lowercase"
+    },
+    {
+      "code": 6036,
+      "name": "InvalidDeposit",
+      "msg": "Invalid deposit"
     }
   ],
   "types": [

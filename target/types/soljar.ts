@@ -1257,6 +1257,11 @@ export type Soljar = {
       "code": 6035,
       "name": "tipLinkIdMustBeLowercase",
       "msg": "Tip link ID must be lowercase"
+    },
+    {
+      "code": 6036,
+      "name": "invalidDeposit",
+      "msg": "Invalid deposit"
     }
   ],
   "types": [

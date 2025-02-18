@@ -15,6 +15,10 @@ pub fn add_supporter(
 
     let deposit = &mut ctx.accounts.deposit;
     msg!("deposit: {:?}", deposit.amount);
+
+    // check if deposit amount is same as amount
+    require!(deposit.amount == amount, SoljarError::InvalidDeposit);
+
     let jar = &mut ctx.accounts.jar;
 
     if supporter.signer == ctx.accounts.signer.key() {

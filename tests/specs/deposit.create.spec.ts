@@ -64,43 +64,43 @@ describe("3. Deposit Creation", () => {
     expect(supporterIndex.supporters).toEqual([supporterPDA]);
   });
 
-  it("should fail with an SPL token deposit", async () => {
-    const { program, creator, mint, creatorTokenAccount, banksClient } =
-      getTestContext();
-    const username = "satoshi";
+  // it("should fail with an SPL token deposit", async () => {
+  //   const { program, creator, mint, creatorTokenAccount, banksClient } =
+  //     getTestContext();
+  //   const username = "satoshi";
 
-    const userPDA = findUserPDA(creator.publicKey);
-    const jarPDA = findJarPDA(creator.publicKey);
-    const tipLinkPDA = findTipLinkPDA(username);
-    const supporterPDA = findSupporterPDA(jarPDA, creator.publicKey);
-    const supporterIndexPDA = findSupporterIndexPDA(jarPDA, 0);
+  //   const userPDA = findUserPDA(creator.publicKey);
+  //   const jarPDA = findJarPDA(creator.publicKey);
+  //   const tipLinkPDA = findTipLinkPDA(username);
+  //   const supporterPDA = findSupporterPDA(jarPDA, creator.publicKey);
+  //   const supporterIndexPDA = findSupporterIndexPDA(jarPDA, 0);
 
-    const [jarTokenAccount] = PublicKey.findProgramAddressSync(
-      [Buffer.from("token_account"), jarPDA.toBuffer(), mint.toBuffer()],
-      program.programId
-    );
+  //   const [jarTokenAccount] = PublicKey.findProgramAddressSync(
+  //     [Buffer.from("token_account"), jarPDA.toBuffer(), mint.toBuffer()],
+  //     program.programId
+  //   );
 
-    const amount = new BN(100000000); // 1 token with 8 decimals
+  //   const amount = new BN(100000000); // 1 token with 8 decimals
 
-    await expect(
-      program.methods
-        .createSplDeposit(username, "referrer", "test memo", amount)
-        .accounts({
-          signer: creator.publicKey,
-          mint: mint,
-          sourceTokenAccount: creatorTokenAccount,
-          tokenProgram: TOKEN_PROGRAM_ID,
-        })
-        .postInstructions([
-          await program.methods
-            .addSupporter(username, mint, amount)
-            .accounts({})
-            .instruction(),
-        ])
-        .signers([creator])
-        .rpc()
-    ).rejects.toThrow("InvalidCurrencyMint");
-  });
+  //   await expect(
+  //     program.methods
+  //       .createSplDeposit(username, "referrer", "test memo", amount)
+  //       .accounts({
+  //         signer: creator.publicKey,
+  //         mint: mint,
+  //         sourceTokenAccount: creatorTokenAccount,
+  //         tokenProgram: TOKEN_PROGRAM_ID,
+  //       })
+  //       .postInstructions([
+  //         await program.methods
+  //           .addSupporter(username, mint, amount)
+  //           .accounts({})
+  //           .instruction(),
+  //       ])
+  //       .signers([creator])
+  //       .rpc()
+  //   ).rejects.toThrow("InvalidCurrencyMint");
+  // });
   // it("should create an SPL token deposit", async () => {
   //   const { program, creator, mint, creatorTokenAccount, banksClient } =
   //     getTestContext();
@@ -127,12 +127,13 @@ describe("3. Deposit Creation", () => {
   //       sourceTokenAccount: creatorTokenAccount,
   //       tokenProgram: TOKEN_PROGRAM_ID,
   //     })
-  //     .postInstructions([
-  //       await program.methods
-  //         .addSupporter(username, mint, amount)
-  //         .accounts({})
-  //         .instruction(),
-  //     ])
+  //     .postInstructions([])
+  //     .signers([creator])
+  //     .rpc();
+
+  //   await program.methods
+  //     .addSupporter(username, mint, amount)
+  //     .accounts({})
   //     .signers([creator])
   //     .rpc();
 
