@@ -1,6 +1,7 @@
 import { getTestContext } from "../utils/setup";
 import {
   Currency,
+  findDepositPDA,
   findJarPDA,
   findSupporterIndexPDA,
   findSupporterPDA,
@@ -119,6 +120,16 @@ describe("3. Deposit Creation", () => {
 
   //   const amount = new BN(100000000); // 1 token with 8 decimals
 
+  //   const jarAccount = await program.account.jar.fetch(jarPDA);
+
+  //   console.log("jarAccount.depositCount", jarAccount.depositCount);
+
+  //   const leftDepositPDA = findDepositPDA(jarPDA, jarAccount.depositCount);
+  //   console.log("leftDepositPDA", leftDepositPDA);
+
+  //   const rightDepositPDA = findDepositPDA(jarPDA, jarAccount.depositCount - 1);
+  //   console.log("rightDepositPDA", rightDepositPDA);
+
   //   await program.methods
   //     .createSplDeposit(username, "referrer", "test memo", amount)
   //     .accounts({
@@ -127,13 +138,13 @@ describe("3. Deposit Creation", () => {
   //       sourceTokenAccount: creatorTokenAccount,
   //       tokenProgram: TOKEN_PROGRAM_ID,
   //     })
-  //     .postInstructions([])
-  //     .signers([creator])
-  //     .rpc();
-
-  //   await program.methods
-  //     .addSupporter(username, mint, amount)
-  //     .accounts({})
+  //     .postInstructions([
+  //       await program.methods
+  //         .addSupporter(username, mint, jarAccount.depositCount, amount)
+  //         .accounts({})
+  //         .signers([creator])
+  //         .instruction(),
+  //     ])
   //     .signers([creator])
   //     .rpc();
 
@@ -157,12 +168,43 @@ describe("3. Deposit Creation", () => {
   //   expect(Number(supporter.tips[1].amount)).toEqual(amount.toNumber());
   //   expect(Number(supporter.tipCount)).toEqual(2);
 
-  //   // Verify supporter index
-  //   const supporterIndex = await program.account.supporterIndex.fetch(
-  //     supporterIndexPDA
-  //   );
-  //   expect(Number(supporterIndex.totalItems)).toEqual(1);
-  //   expect(supporterIndex.supporters).toEqual([supporterPDA]);
+  //   // // Verify supporter index
+  //   // const supporterIndex = await program.account.supporterIndex.fetch(
+  //   //   supporterIndexPDA
+  //   // );
+  //   // expect(Number(supporterIndex.totalItems)).toEqual(1);
+  //   // expect(supporterIndex.supporters).toEqual([supporterPDA]);
+  // });
+
+  // it("should fail if the deposit already has a signer", async () => {
+  //   const { program, creator, mint, creatorTokenAccount, banksClient } =
+  //     getTestContext();
+  //   const username = "satoshi";
+
+  //   const userPDA = findUserPDA(creator.publicKey);
+  //   const jarPDA = findJarPDA(creator.publicKey);
+  //   const tipLinkPDA = findTipLinkPDA(username);
+  //   const supporterPDA = findSupporterPDA(jarPDA, creator.publicKey);
+  //   const supporterIndexPDA = findSupporterIndexPDA(jarPDA, 0);
+
+  //   const depositPDA = findDepositPDA(jarPDA, 1);
+
+  //   const deposit = await program.account.deposit.fetch(depositPDA);
+
+  //   const jarAccount = await program.account.jar.fetch(jarPDA);
+
+  //   await expect(
+  //     program.methods
+  //       .addSupporter(
+  //         username,
+  //         mint,
+  //         jarAccount.depositCount - 1,
+  //         deposit.amount
+  //       )
+  //       .accounts({})
+  //       .signers([creator])
+  //       .rpc()
+  //   ).rejects.toThrow("DepositAlreadyHasSigner");
   // });
 
   // it("should create an SPL token deposit with newMember", async () => {

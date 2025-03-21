@@ -85,9 +85,8 @@ export type Soljar = {
                 "path": "jar"
               },
               {
-                "kind": "account",
-                "path": "jar.deposit_count",
-                "account": "jar"
+                "kind": "arg",
+                "path": "depositId"
               }
             ]
           }
@@ -172,6 +171,10 @@ export type Soljar = {
         {
           "name": "currencyMint",
           "type": "pubkey"
+        },
+        {
+          "name": "depositId",
+          "type": "u32"
         },
         {
           "name": "amount",
@@ -1262,6 +1265,21 @@ export type Soljar = {
       "code": 6036,
       "name": "invalidDeposit",
       "msg": "Invalid deposit"
+    },
+    {
+      "code": 6037,
+      "name": "missingAccountInfo",
+      "msg": "Missing account info"
+    },
+    {
+      "code": 6038,
+      "name": "supporterAccountNotInitialized",
+      "msg": "Supporter account not initialized"
+    },
+    {
+      "code": 6039,
+      "name": "depositAlreadyHasSigner",
+      "msg": "Deposit already has a signer"
     }
   ],
   "types": [

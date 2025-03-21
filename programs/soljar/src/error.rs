@@ -76,4 +76,10 @@ pub enum SoljarError {
     TipLinkIdMustBeLowercase,
     #[msg("Invalid deposit")]
     InvalidDeposit,
+    #[msg("Missing account info")]
+    MissingAccountInfo,
+    #[msg("Supporter account not initialized")]
+    SupporterAccountNotInitialized,
+    #[msg("Deposit already has a signer")]
+    DepositAlreadyHasSigner,
 }

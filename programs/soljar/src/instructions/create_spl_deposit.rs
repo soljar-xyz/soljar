@@ -32,7 +32,7 @@ pub fn create_spl_deposit(
     require!(amount > 0, SoljarError::InvalidAmount);
 
 
-    let jar = &ctx.accounts.jar;
+    let jar = &mut ctx.accounts.jar;
 
 
 
@@ -71,7 +71,6 @@ pub fn create_spl_deposit(
 
 
     let deposit = &mut ctx.accounts.deposit;
-    deposit.signer = ctx.accounts.signer.key();
     deposit.link_id = jar.id.clone();
     deposit.currency = currency;
     deposit.amount = amount;
@@ -79,6 +78,8 @@ pub fn create_spl_deposit(
     deposit.memo = memo;
 
 
+    jar.deposit_count = jar.deposit_count.checked_add(1).ok_or(SoljarError::DepositCountOverflow)?;
+    jar.updated_at = Clock::get()?.unix_timestamp;
 
     Ok(())
 }

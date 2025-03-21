@@ -49,8 +49,8 @@ pub mod soljar {
         instructions::create_deposit::create_deposit(ctx, tip_link_id, referrer, memo, amount)
     }
 
-    pub fn add_supporter(ctx: Context<AddSupporter>, tip_link_id: String, currency_mint: Pubkey, amount: u64) -> Result<()> {
-        instructions::add_supporter::add_supporter(ctx, tip_link_id, currency_mint, amount)
+    pub fn add_supporter(ctx: Context<AddSupporter>, tip_link_id: String, currency_mint: Pubkey, deposit_id: u32, amount: u64,) -> Result<()> {
+        instructions::add_supporter::add_supporter(ctx, tip_link_id, currency_mint, deposit_id, amount)
     }
 
     pub fn create_withdrawl(ctx: Context<CreateWithdrawl>, currency_mint: Pubkey, amount: u64) -> Result<()> {

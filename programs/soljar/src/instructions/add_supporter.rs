@@ -8,12 +8,20 @@ pub fn add_supporter(
     ctx: Context<AddSupporter>,
     _tip_link_id: String,
     currency_mint: Pubkey,
+    _deposit_id: u32,
     amount: u64,
 ) -> Result<()> {
+
     let supporter = &mut ctx.accounts.supporter;
     let currency = get_currency_from_mint(currency_mint)?;
 
     let deposit = &mut ctx.accounts.deposit;
+    
+    if !deposit.signer.eq(&Pubkey::default()) {
+        return Err(SoljarError::DepositAlreadyHasSigner.into());
+    }
+    deposit.signer = ctx.accounts.signer.key();
+
     msg!("deposit: {:?}", deposit.amount);
 
     // check if deposit amount is same as amount
@@ -98,14 +106,11 @@ pub fn add_supporter(
         jar.updated_at = Clock::get()?.unix_timestamp;
     }
 
-    jar.deposit_count = jar.deposit_count.checked_add(1).ok_or(SoljarError::DepositCountOverflow)?;
-    jar.updated_at = Clock::get()?.unix_timestamp;
-
     Ok(())
 }
 
 #[derive(Accounts)]
-#[instruction(tip_link_id: String, currency_mint: Pubkey)]
+#[instruction(tip_link_id: String, currency_mint: Pubkey, deposit_id: u32)]
 pub struct AddSupporter<'info> {
     #[account(mut)]
     pub signer: Signer<'info>,
@@ -116,19 +121,19 @@ pub struct AddSupporter<'info> {
         bump,
         has_one = jar
     )]
-    tip_link: Account<'info, TipLink>,
+    pub tip_link: Box<Account<'info, TipLink>>,
 
     #[account(
         mut,
     )]
-    jar: Account<'info, Jar>,
+    pub jar: Box<Account<'info, Jar>>,
 
     #[account(
         mut,
-        seeds = [b"deposit", jar.key().as_ref(), &jar.deposit_count.to_le_bytes()],
+        seeds = [b"deposit", jar.key().as_ref(), &deposit_id.to_le_bytes()],
         bump,
     )]
-    deposit: Account<'info, Deposit>,
+    pub deposit: Box<Account<'info, Deposit>>,
 
 
 
@@ -148,7 +153,7 @@ pub struct AddSupporter<'info> {
         seeds = [b"supporter", jar.key().as_ref(), signer.key().as_ref()],
         bump,
     )]
-    supporter: Account<'info, Supporter>,
+    pub supporter: Box<Account<'info, Supporter>>,
 
     system_program: Program<'info, System>,
 }

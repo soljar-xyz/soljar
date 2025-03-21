@@ -79,9 +79,8 @@
                 "path": "jar"
               },
               {
-                "kind": "account",
-                "path": "jar.deposit_count",
-                "account": "Jar"
+                "kind": "arg",
+                "path": "deposit_id"
               }
             ]
           }
@@ -166,6 +165,10 @@
         {
           "name": "currency_mint",
           "type": "pubkey"
+        },
+        {
+          "name": "deposit_id",
+          "type": "u32"
         },
         {
           "name": "amount",
@@ -1256,6 +1259,21 @@
       "code": 6036,
       "name": "InvalidDeposit",
       "msg": "Invalid deposit"
+    },
+    {
+      "code": 6037,
+      "name": "MissingAccountInfo",
+      "msg": "Missing account info"
+    },
+    {
+      "code": 6038,
+      "name": "SupporterAccountNotInitialized",
+      "msg": "Supporter account not initialized"
+    },
+    {
+      "code": 6039,
+      "name": "DepositAlreadyHasSigner",
+      "msg": "Deposit already has a signer"
     }
   ],
   "types": [
