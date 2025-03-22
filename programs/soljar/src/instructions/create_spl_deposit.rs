@@ -71,6 +71,7 @@ pub fn create_spl_deposit(
 
 
     let deposit = &mut ctx.accounts.deposit;
+    deposit.signer = ctx.accounts.signer.key();
     deposit.link_id = jar.id.clone();
     deposit.currency = currency;
     deposit.amount = amount;
