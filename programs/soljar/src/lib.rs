@@ -3,7 +3,6 @@
 use anchor_lang::prelude::*;
 use instructions::create_user::*;
 use instructions::create_deposit::*;
-use instructions::add_supporter::*;
 use instructions::create_withdrawl::*;
 use instructions::withdraw_spl_tokens::*;
 use instructions::create_spl_deposit::*;
@@ -47,10 +46,6 @@ pub mod soljar {
 
     pub fn create_deposit(ctx: Context<CreateDeposit>, tip_link_id: String, referrer: String, memo: String, amount: u64) -> Result<()> {
         instructions::create_deposit::create_deposit(ctx, tip_link_id, referrer, memo, amount)
-    }
-
-    pub fn add_supporter(ctx: Context<AddSupporter>, tip_link_id: String, currency_mint: Pubkey, deposit_id: u32, amount: u64,) -> Result<()> {
-        instructions::add_supporter::add_supporter(ctx, tip_link_id, currency_mint, deposit_id, amount)
     }
 
     pub fn create_withdrawl(ctx: Context<CreateWithdrawl>, currency_mint: Pubkey, amount: u64) -> Result<()> {

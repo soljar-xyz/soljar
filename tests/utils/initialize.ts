@@ -1,6 +1,12 @@
 import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
-import { Keypair, PublicKey } from "@solana/web3.js";
+import {
+  Keypair,
+  PublicKey,
+  sendAndConfirmTransaction,
+  SystemProgram,
+  Transaction,
+} from "@solana/web3.js";
 import { Soljar } from "../../target/types/soljar";
 import { BanksClient, ProgramTestContext, startAnchor } from "solana-bankrun";
 import { BankrunProvider } from "anchor-bankrun";
@@ -12,7 +18,13 @@ import {
   createMint,
   mintTo,
 } from "spl-token-bankrun";
-import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import {
+  ACCOUNT_SIZE,
+  AccountLayout,
+  getAssociatedTokenAddressSync,
+  TOKEN_PROGRAM_ID,
+} from "@solana/spl-token";
+import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
 
 export async function initializeTestContext(): Promise<TestContext> {
   const newMember = new anchor.web3.Keypair();
@@ -24,6 +36,35 @@ export async function initializeTestContext(): Promise<TestContext> {
   let memberTokenAccounts: PublicKey[] = [];
   let mint: PublicKey;
 
+  const usdcOwner = new anchor.web3.Keypair();
+
+  const usdcMint = new PublicKey(
+    "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+  );
+  const ata = getAssociatedTokenAddressSync(
+    usdcMint,
+    usdcOwner.publicKey,
+    true
+  );
+  const usdcToOwn = BigInt(1_000_000_000_000);
+  const tokenAccData = Buffer.alloc(ACCOUNT_SIZE);
+  AccountLayout.encode(
+    {
+      mint: usdcMint,
+      owner: usdcOwner.publicKey,
+      amount: usdcToOwn,
+      delegateOption: 0,
+      delegate: PublicKey.default,
+      delegatedAmount: BigInt(0),
+      state: 1,
+      isNativeOption: 0,
+      isNative: BigInt(0),
+      closeAuthorityOption: 0,
+      closeAuthority: PublicKey.default,
+    },
+    tokenAccData
+  );
+
   const context = await startAnchor(
     "",
     [
@@ -33,6 +74,24 @@ export async function initializeTestContext(): Promise<TestContext> {
       },
     ],
     [
+      {
+        address: ata,
+        info: {
+          lamports: 1_000_000_000,
+          data: tokenAccData,
+          owner: TOKEN_PROGRAM_ID,
+          executable: false,
+        },
+      },
+      {
+        address: usdcOwner.publicKey,
+        info: {
+          lamports: 10_000_000_000,
+          data: Buffer.alloc(0),
+          executable: false,
+          owner: SYSTEM_PROGRAM_ID,
+        },
+      },
       {
         address: newMember.publicKey,
         info: {
@@ -61,6 +120,32 @@ export async function initializeTestContext(): Promise<TestContext> {
   const program = new Program<Soljar>(IDL as Soljar, provider);
   const banksClient = context.banksClient;
   const creator = provider.wallet.payer;
+
+  const usdcToSend = usdcToOwn - BigInt(1000000000);
+  // send USDC to creator
+  const transaction = new Transaction();
+  transaction.add(
+    SystemProgram.transfer({
+      fromPubkey: usdcOwner.publicKey,
+      toPubkey: creator.publicKey,
+      lamports: usdcToSend,
+    })
+  );
+
+  // Get recent blockhash from the banks client
+  const blockhash = await banksClient.getLatestBlockhash();
+  transaction.recentBlockhash = blockhash?.[0];
+  transaction.feePayer = usdcOwner.publicKey;
+
+  console.log("transaction", transaction);
+
+  // Sign and send the transaction
+  transaction.sign(usdcOwner);
+  await banksClient.sendTransaction(transaction);
+
+  // fetch USDC balance of creator
+  const creatorUsdcBalance = await banksClient.getBalance(creator.publicKey);
+  console.log("creatorUsdcBalance", creatorUsdcBalance);
 
   // @ts-expect-error - Type mismatch in spl-token-bankrun and solana banks client
   mint = await createMint(banksClient, creator, creator.publicKey, null, 2);

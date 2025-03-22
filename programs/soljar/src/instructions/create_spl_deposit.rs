@@ -79,6 +79,85 @@ pub fn create_spl_deposit(
 
 
     jar.deposit_count = jar.deposit_count.checked_add(1).ok_or(SoljarError::DepositCountOverflow)?;
+    
+    // Now add supporter logic (from add_supporter.rs)
+    let supporter = &mut ctx.accounts.supporter;
+    
+    if supporter.signer == ctx.accounts.signer.key() {
+        let mut found = false;
+        
+        for i in 0..supporter.active_tips as usize {
+            if supporter.tips[i].currency == currency {
+                supporter.tips[i].amount = supporter.tips[i].amount
+                    .checked_add(amount)
+                    .ok_or(SoljarError::AmountOverflow)?;
+                supporter.tip_count = supporter.tip_count
+                    .checked_add(1)
+                    .ok_or(SoljarError::TipCountOverflow)?;
+                found = true;
+                break;
+            }
+        }
+
+        if !found {
+            require!(
+                supporter.active_tips < 4,
+                SoljarError::MaxCurrenciesReached
+            );
+            
+            let idx = supporter.active_tips as usize;
+            supporter.tips[idx] = TipInfo {
+                currency,
+                amount,
+            };
+            supporter.active_tips += 1;
+            supporter.tip_count = supporter.tip_count
+                .checked_add(1)
+                .ok_or(SoljarError::TipCountOverflow)?;
+        }
+    } else {
+        supporter.signer = ctx.accounts.signer.key();
+        supporter.tip_count = 1;
+        supporter.active_tips = 1;
+        supporter.created_at = Clock::get()?.unix_timestamp;
+        
+        supporter.tips[0] = TipInfo {
+            currency,
+            amount,
+        };
+        // Zero out the rest of the array
+        for i in 1..4 {
+            supporter.tips[i] = TipInfo {
+                currency: 0,
+                amount: 0,
+            };
+        }
+
+        let supporter_index = &mut ctx.accounts.supporter_index;
+
+        // Check if we're about to hit the limit (one before MAX_SUPPORTERS)
+        if supporter_index.total_items >= (SupporterIndex::MAX_SUPPORTERS - 1) as u8 {
+            jar.supporter_index = jar.supporter_index
+                .checked_add(1)
+                .ok_or(SoljarError::PageOverflow)?;
+        }
+
+        // Check for overflow before incrementing total_items
+        supporter_index.total_items = supporter_index.total_items
+            .checked_add(1)
+            .ok_or(SoljarError::IndexOverflow)?;
+            
+        // Verify we're not exceeding vector capacity
+        require!(
+            supporter_index.supporters.len() < SupporterIndex::MAX_SUPPORTERS as usize,
+            SoljarError::SupporterIndexFull
+        );
+
+        supporter_index.supporters.push(supporter.key());
+
+        jar.supporter_count = jar.supporter_count.checked_add(1).ok_or(SoljarError::SupporterCountOverflow)?;
+    }
+    
     jar.updated_at = Clock::get()?.unix_timestamp;
 
     Ok(())
@@ -133,6 +212,25 @@ pub struct CreateSplDeposit<'info> {
         token::authority = signer,
     )]
     pub source_token_account: Box<InterfaceAccount<'info, TokenAccount>>,
+
+
+    #[account(
+        init_if_needed,
+        payer = signer,
+        space = 8 + SupporterIndex::INIT_SPACE,
+        seeds = [b"supporter_index", jar.key().as_ref(), &jar.supporter_index.to_le_bytes()],
+        bump,
+    )]
+    pub supporter_index: Box<Account<'info, SupporterIndex>>,
+
+    #[account(
+        init_if_needed,
+        payer = signer,
+        space = 8 + Supporter::INIT_SPACE,
+        seeds = [b"supporter", jar.key().as_ref(), signer.key().as_ref()],
+        bump,
+    )]
+    pub supporter: Box<Account<'info, Supporter>>,
 
     system_program: Program<'info, System>,
     token_program: Interface<'info, TokenInterface>,

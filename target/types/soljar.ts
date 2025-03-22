@@ -14,175 +14,6 @@ export type Soljar = {
   },
   "instructions": [
     {
-      "name": "addSupporter",
-      "discriminator": [
-        37,
-        136,
-        43,
-        131,
-        3,
-        221,
-        114,
-        11
-      ],
-      "accounts": [
-        {
-          "name": "signer",
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "tipLink",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  116,
-                  105,
-                  112,
-                  95,
-                  108,
-                  105,
-                  110,
-                  107
-                ]
-              },
-              {
-                "kind": "arg",
-                "path": "tipLinkId"
-              }
-            ]
-          }
-        },
-        {
-          "name": "jar",
-          "writable": true,
-          "relations": [
-            "tipLink"
-          ]
-        },
-        {
-          "name": "deposit",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  100,
-                  101,
-                  112,
-                  111,
-                  115,
-                  105,
-                  116
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "jar"
-              },
-              {
-                "kind": "arg",
-                "path": "depositId"
-              }
-            ]
-          }
-        },
-        {
-          "name": "supporterIndex",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  115,
-                  117,
-                  112,
-                  112,
-                  111,
-                  114,
-                  116,
-                  101,
-                  114,
-                  95,
-                  105,
-                  110,
-                  100,
-                  101,
-                  120
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "jar"
-              },
-              {
-                "kind": "account",
-                "path": "jar.supporter_index",
-                "account": "jar"
-              }
-            ]
-          }
-        },
-        {
-          "name": "supporter",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  115,
-                  117,
-                  112,
-                  112,
-                  111,
-                  114,
-                  116,
-                  101,
-                  114
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "jar"
-              },
-              {
-                "kind": "account",
-                "path": "signer"
-              }
-            ]
-          }
-        },
-        {
-          "name": "systemProgram",
-          "address": "11111111111111111111111111111111"
-        }
-      ],
-      "args": [
-        {
-          "name": "tipLinkId",
-          "type": "string"
-        },
-        {
-          "name": "currencyMint",
-          "type": "pubkey"
-        },
-        {
-          "name": "depositId",
-          "type": "u32"
-        },
-        {
-          "name": "amount",
-          "type": "u64"
-        }
-      ]
-    },
-    {
       "name": "createDeposit",
       "discriminator": [
         157,
@@ -471,6 +302,73 @@ export type Soljar = {
         {
           "name": "sourceTokenAccount",
           "writable": true
+        },
+        {
+          "name": "supporterIndex",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  117,
+                  112,
+                  112,
+                  111,
+                  114,
+                  116,
+                  101,
+                  114,
+                  95,
+                  105,
+                  110,
+                  100,
+                  101,
+                  120
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "jar"
+              },
+              {
+                "kind": "account",
+                "path": "jar.supporter_index",
+                "account": "jar"
+              }
+            ]
+          }
+        },
+        {
+          "name": "supporter",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  117,
+                  112,
+                  112,
+                  111,
+                  114,
+                  116,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "jar"
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
         },
         {
           "name": "systemProgram",
